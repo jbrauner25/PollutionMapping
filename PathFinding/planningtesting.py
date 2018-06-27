@@ -28,5 +28,3 @@ kalman.update(600, (34.01, -117.01), 10)
 planner = Planning.planner(env)
 planner.set_config(100, 100, 0.5, 0.1)
 
-path = planner.find_path((34.05, -117.06), 5000, 50)
-print(path)

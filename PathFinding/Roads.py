@@ -67,10 +67,4 @@ def set_cart_coords(graph, originCoord = None):
 	nx.set_node_attributes(graph, originDict, 'origin')
 	return graph
 
-'''from streetNetworkGraphing import nodeList_to_edgeList
-***SEE GRAPH ROUTING
-graph.edge[node1][node2][0] gives name, potentially, for a road.'''
-
-'''graph.node[node2]['y']'''
-
 load_graph()

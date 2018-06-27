@@ -1,0 +1,20 @@
+Cost function:
+new node cost:
+Closeness to previously set path
+How far we've branched out (weighting unexplored paths vs explored paths to a depth)
+Variance of node's pollution
+distance penalty = e^((dx-previouspath length)/scale)
+
+add to previous node cost
+divide by all nodes
+
+define a class for taking data. Sets up files and takes in an environment. Updates this environment.
+Can either treat this as a dictionary which then updates the environment with a function call, or update it as it goes.
+
+Traffic works by updating traffic live, so maybe we can realtime process pollution data back into env as it is called each loop when it updates traffic.
+
+Make pollution data across edges? This would be used by the cost function for the cost of going across an edge.
+
+Graph clustering for path planning.
+
+Sum (lambda * variance_i + (1-lambda)*particle_count_estimate_i)
