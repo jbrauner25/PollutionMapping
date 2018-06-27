@@ -30,7 +30,7 @@ class planner(object):
         self.graph = self.env.graph
 
     def update_edge_weight(self):
-        '''New function'''
+        '''Must run set_config before running this'''
         first = 1
         past_node_cost = 0
         for u, v, data in self.env.graph.edges(keys=False, data=True):
@@ -69,10 +69,10 @@ class planner(object):
         node_pol = self.env.get_node_attribute(node, 'pol')
         node_avg_wt_nbr_dgre = self.env.get_stat(node, 'avg_weighted_neighbor_degree', )
         return (1-self.lambda2) * (self.lambda1 * node_var + (1-self.lambda1)*node_pol) + self.lambda2 * node_avg_wt_nbr_dgre
-
-    def find_path(self, starting_coord, dist_max, time_max):
-        starting_node = self.env.get_nearest_node(starting_coord)
-        return self.random_tree_ahh(starting_node, dist_max, time_max)
+    #
+    # def find_path(self, starting_coord, dist_max, time_max):
+    #     starting_node = self.env.get_nearest_node(starting_coord)
+    #     return self.random_tree_ahh(starting_node, dist_max, time_max)
 
 
 
@@ -233,39 +233,39 @@ class planner(object):
     #
     # 	return came_from, cost_so_far
 
-    def random_tree_ahh(self, start, distance_max, time_max):
-        frontier = PriorityQueue()
-        frontier.put([start], 0)
-        cost_so_far = {}
-        cost_so_far[start] = [0, 0]
-        path_list = []
-        time_start = time.time()
-
-        while not frontier.empty() and time.time() - time_start <= time_max:
-            current_path = [frontier.get_no_pop()]
-            print("CURRENT PATH " + str(current_path))
-            current_node = current_path[-1]
-
-            if cost_so_far[current_path][1] >= distance_max:  # change to time
-                cost = cost_so_far[current_path]
-                path_list.append([frontier.get(), cost])
-
-            neighbors = list(self.env.graph.successors(current_node)) + list(self.env.graph.predecessors(current_node))
-
-            for next in neighbors:
-                if next != current_path[-2]:
-                    distance = self.env.get_path_length([current_node, next])
-                    new_priority = (cost_so_far[current_path][0] + self.priority(current_node, next, distance))/2
-                    print(new_priority)
-                    print(cost_so_far[current_path])
-                    new_distance = cost_so_far[current_path][1] + distance
-                    frontier.put(next, new_priority)
-                    current_path.append(next)
-                    cost_so_far[current_path] = new_priority, new_distance
-        return path_list
-
-
-
-
-
-
+    # def random_tree_ahh(self, start, distance_max, time_max):
+    #     frontier = PriorityQueue()
+    #     frontier.put([start], 0)
+    #     cost_so_far = {}
+    #     cost_so_far[start] = [0, 0]
+    #     path_list = []
+    #     time_start = time.time()
+    #
+    #     while not frontier.empty() and time.time() - time_start <= time_max:
+    #         current_path = [frontier.get_no_pop()]
+    #         print("CURRENT PATH " + str(current_path))
+    #         current_node = current_path[-1]
+    #
+    #         if cost_so_far[current_path][1] >= distance_max:  # change to time
+    #             cost = cost_so_far[current_path]
+    #             path_list.append([frontier.get(), cost])
+    #
+    #         neighbors = list(self.env.graph.successors(current_node)) + list(self.env.graph.predecessors(current_node))
+    #
+    #         for next in neighbors:
+    #             if next != current_path[-2]:
+    #                 distance = self.env.get_path_length([current_node, next])
+    #                 new_priority = (cost_so_far[current_path][0] + self.priority(current_node, next, distance))/2
+    #                 print(new_priority)
+    #                 print(cost_so_far[current_path])
+    #                 new_distance = cost_so_far[current_path][1] + distance
+    #                 frontier.put(next, new_priority)
+    #                 current_path.append(next)
+    #                 cost_so_far[current_path] = new_priority, new_distance
+    #     return path_list
+    #
+    #
+    #
+    #
+    #
+    #
