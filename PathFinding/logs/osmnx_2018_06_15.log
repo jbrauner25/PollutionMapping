@@ -1,0 +1,9 @@
+2018-06-15 13:38:02,957 INFO osmnx Configured osmnx
+2018-06-15 13:38:16,561 INFO osmnx Projected the GeoDataFrame "geometry to project" to UTM-36 in 0.01 seconds
+2018-06-15 13:38:16,571 INFO osmnx Projected the GeoDataFrame "geometry to project" to default_crs in 0.00 seconds
+2018-06-15 13:38:30,465 INFO osmnx Configured osmnx
+2018-06-15 13:38:49,747 INFO osmnx Projected the GeoDataFrame "geometry to project" to UTM-36 in 0.01 seconds
+2018-06-15 13:38:49,752 INFO osmnx Projected the GeoDataFrame "geometry to project" to default_crs in 0.00 seconds
+2018-06-15 13:40:45,351 INFO osmnx Configured osmnx
+2018-06-15 13:43:11,296 INFO osmnx Configured osmnx
+2018-06-15 13:43:24,920 INFO osmnx Projected the GeoDataFrame "geometry to project" to UTM-24 in 0.00 seconds
