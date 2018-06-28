@@ -4,14 +4,14 @@ import utils
 
 
 class PolEnv(Env):
-	def __init__(self, unproj_graph, fleet, node_location_list=None, origin=None, origin_id=None):
-		Env.__init__(self, unproj_graph, fleet, node_location_list)
+	def __init__(self, unproj_graph, node_location_list=None, origin=None, origin_id=None):
+		Env.__init__(self, unproj_graph, node_location_list)
 		self.origin = origin
 		self.origin_id = origin_id
 		if self.origin is None:
 			self.set_origin()
 		self.update_cart_coords()
-		self.stats = ox.extended_stats(self.graph, ecc=True, bc=True, cc=True)
+		self.stats = ox.extended_stats(self.graph, ecc=False, bc=True, cc=False)
 
 	def get_stat(self, node, stat):
 		return self.stats[stat][node]

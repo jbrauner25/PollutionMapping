@@ -1,11 +1,10 @@
 import poll_env
-import Tree
 import time
 import copy
 import networkx as nx
 from collections import deque
 from heapq import heappush, heappop
-from itertools import count
+import itertools
 
 #
 # class PriorityQueue:
@@ -39,7 +38,7 @@ class planner(object):
                 first = 0
             node_cost = self.priority(v)
             edge_cost = (past_node_cost + node_cost) / 2
-            data['weight'] = edge_cost
+            data['weight'] = (edge_cost, data['length'])
             past_node_cost = node_cost
 
     def set_config(self, iter_max, branch_per_expansion, lambda1, lambda2):
@@ -128,36 +127,37 @@ class planner(object):
             seen = {}
             # fringe is heapq with 3-tuples (distance,c,node)
             # use the count c to avoid comparing nodes (may not be able to)
-            c = count()
+            counter = itertools.count()
+            routes = []
             fringe = []
             for source in sources:
-                seen[source] = 0
-                push(fringe, (0, 0, 0, next(c), source))
+                seen[source] = (0,0,0)
+                push(fringe, (0, 0, 0, next(counter), source))
             while fringe:
                 (p, l, c, _, v) = pop(fringe)
-                if v in dist:
-                    continue  # already searched this node.
+                # if v in dist:
+                #     continue  # already searched this node.
                 dist[v] = (l, c, p)
                 if v == target:
                     break  # We aren't doing a targeted search, so #TODO find a way to make this untargeted
-                for u, e in nx.successors(v).items():
-                    cost = self.env.get_edge_data((v, u), 'weight')  # Make this return a tuple of (Length, Cost, 0)
-                    if cost is None:
+                for u in nx.successors(v):
+                    new_edge_cost = self.env.get_edge_data((v, u), 'weight')  # Make this return a tuple of (Length, Cost, 0)
+                    if new_edge_cost is None:
                         continue  # Lets assume we don't have any nodes skipped
-                    length = dist[v][0] + cost[0]
-                    cost = dist[v][1] + cost[1]
+                    length = dist[v][0] + new_edge_cost[0]
+                    cost = dist[v][1] + new_edge_cost[1]
                     priori = length / cost
                     if cutoff is not None:
-                        if length > cutoff:  # Checks distance in vu_distance tuple in case it is above cutoff distance.
+                        print("LEBNGTT")
+                        print(length)
+                        if length >= cutoff:  # Checks distance in vu_distance tuple in case it is above cutoff distance.
                             #TODO Make the program save the paths (or find out how to access them) once above the cutoff. This is our limiting factor, along with processing time, hopefully.
+                            routes.append((paths[v], dist[v]))
+                            print(paths[v])
                             continue
-                    # if u in dist:  # We can see a decrease in cost
-                    #     if vu_dist < dist[u]:
-                    #         raise ValueError('Contradictory paths found:',
-                    #                          'negative weights?')
                     elif u not in seen or priori < seen[u][2]:
                         seen[u] = (length, cost, priori)
-                        push(fringe, (priori, length, cost, next(c), u))
+                        push(fringe, (priori, length, cost, next(counter), u))
                         if paths is not None:
                             paths[u] = paths[v] + [u]
                         if pred is not None:
@@ -264,8 +264,28 @@ class planner(object):
     #                 cost_so_far[current_path] = new_priority, new_distance
     #     return path_list
     #
-    #
-    #
-    #
-    #
-    #
+    def expand_itter(self, queued, finished, location_point, dist_max):
+        while queued:
+            if queued[0] not in finished:
+                node = queued[0]
+                node_loc = self.env.get_node_to_cart(node)
+                node_to_loc = utils.distance(node_loc, location_point)
+                meas_dist_var = self.meas_var_dist(node_to_loc)
+                priori_node_var = self.env.get_node_attribute(node, 'var')  # Calls before to check if it exists
+                if priori_node_var:
+                    priori_node_pol = self.env.get_node_attribute(node, 'pol')
+                    node_pol, node_var = self.kalman_filter(priori_node_pol, priori_node_var, meas_pollution,
+                                                            meas_dist_var)
+                else:
+                    node_pol = meas_pollution
+                    node_var = meas_dist_var
+                self.env.set_node_attribute(node, 'pol', node_pol)
+                self.env.set_node_attribute(node, 'var', node_var)  # May have to call env as PolEnv._....
+            finished.append(queued[0])
+            queued.pop(0)
+            neighbors = list(self.env.graph.successors(node)) + list(self.env.graph.predecessors(node))
+            for neigh in neighbors:
+                if neigh not in finished and neigh not in queued:
+                    queued.append(neigh)
+            if len(queued) == 1:
+                return

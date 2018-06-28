@@ -7,7 +7,6 @@ import pandas as pd
 import pandas as pd
 import numpy as np
 from utils import saveImagesToGif
-from fleet import Fleet
 from planner import Planner
 from poll_env import *
 from Kalman import *
@@ -16,8 +15,8 @@ ox.config(use_cache=True, log_console=True)
 
 
 
-# north, south, east, west = 34.07, 34, -117, -117.07
-north, south, east, west = 34.108161, 34.099192, -117.710652, -117.721394
+north, south, east, west = 34.05, 34, -117, -117.05
+#north, south, east, west = 34.108161, 34.099192, -117.710652, -117.721394
 
 G = ox.graph_from_bbox(north, south, east, west, network_type='drive', simplify=True, truncate_by_edge=True)
 
@@ -25,19 +24,34 @@ env = PolEnv(G)
 
 kalman = kalman(env)
 
-kalman.update(505, (34.108161, -117.710652), 15)  # bot right
-kalman.update(503, (34.108161, -117.721394), 15)  # bot left
-kalman.update(550, (34.103676500000006, -117.719853), 15)
+kalman.update(505, (34.05, -117.0), 300)  # bot right
+kalman.update(503, (34.05, -117.05), 300)  # bot left
+kalman.update(550, (34.025, -117.025), 300)
 
-kalman.update(495, (34.099192, -117.710652), 15)  # top right
-kalman.update(497, (34.099192, -117.721394), 15)  # top left
+kalman.update(495, (34.0, -117.0), 300)  # top right
+kalman.update(497, (34.0, -117.05), 300)  # top left
 
 planner = Planning.planner(env)
-planner.set_config(10, 5, 0.3, 0.1)
+planner.set_config(10, 5, 0.1, 0.1)
 planner.update_edge_weight()
-planner.dijkstras(4683226686, pred={}, paths={}, cutoff=None)
+dist, paths, pred = planner.dijkstras([54543043], pred={}, paths={54543043: [54543043]})
+print("hi")
+# max = None
+# for key, value in dist.items():
+#     if max is None or max < value[0]:
+#         max = value[0]
+#         storedkey = key
+# path = [storedkey]
+# print(storedkey)
+# while True:
+#     y = pred[storedkey][0]
+#     print(y)
+#     path.append(y)
+#     if y == 54543043:
+#         break
+#     storedkey = y
 
-
+#####fig, ax = ox.plot_graph_route(env.graph, path, node_size=0)
 # GRAPHING DATA
 # nc = ox.get_node_colors_by_attr(env.graph, 'pol', cmap='plasma', num_bins=20)
 #
