@@ -83,4 +83,8 @@ xcoord = aveXcoord;
 ycoord = aveYcoord;
 time_nmea = unique_time_nmea;
 
+%translate x and y coordinates so (0, 0) is origin
+xcoord = xcoord - min(xcoord);
+ycoord = ycoord - min(ycoord);
+
 end

@@ -40,7 +40,7 @@ function [raw_binned_data, binned_data, central_coord, combined_data] = binMaker
     %call determineRuns helper function to translate startTimes into start
     %indices in matched_data_mat (ie, what indices does that time correspond
     %to?)
-    startIndices = determineRuns(combined_data,startTimesMat);
+    startIndices = getStartIndices(combined_data,startTimesMat);
     %Remove all data from matched_data_mat that does not occur within the first
     %start time and the last (end) time (ie, we haven't started driving yet, or
     %we've finished sampling and are driving back but haven't turned off the
@@ -62,8 +62,8 @@ function [raw_binned_data, binned_data, central_coord, combined_data] = binMaker
     for i=1:size(combined_data, 1)
         for j=time_pointer:length(startIndices)-1
             if i < startIndices(j+1)
-                row = ceil((combined_data(i, 3)-ymin + .01)/bin_height);
-                col = ceil((combined_data(i, 2)-xmin + .01)/bin_width);
+                row = ceil((combined_data(i, 3)-ymin + .1)/bin_height);
+                col = ceil((combined_data(i, 2)-xmin + .1)/bin_width);
                 if row > numBins(1)
                     row = numBins(1);
                 end

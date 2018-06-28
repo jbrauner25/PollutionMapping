@@ -1,4 +1,4 @@
-function [Y_pred,var_pred,diff,binned_data] = FixedRankFilter2D(nmea_file,mcpc_file,startTimesMat,r,numBins,resolution, training1, training2, training1_var, training2_var)
+function [Y_pred,var_pred,diff,binned_data] = FixedRankFilter2D(nmea_file,mcpc_file,startTimesMat,r,numBins,resolution, training1, training2, training1var, training2var)
     
     %nmea_file='data/coordinates3.txt'; mcpc_file='data/MCPC_180502_142439.txt'; numBins=[40 50]; r=16; resolution=2;
     %startTimesMat = ['02-May-2018 14:28:09';'02-May-2018 14:35:09';'02-May-2018 14:42:09';'02-May-2018 14:49:09';'02-May-2018 14:56:09'];
@@ -69,9 +69,9 @@ function [Y_pred,var_pred,diff,binned_data] = FixedRankFilter2D(nmea_file,mcpc_f
     %Compute sigma_1, sigma_2, sigmaLag_2 from training sets. Because the
     %training sets are detrended, the variance can be computed by
     %multiplying it by its transpose and dividing by N.
-    if exist('training1_var', 'var')
-        sigma_1 = diag(reshape(training1_var, 1, [])); 
-        sigma_2 = diag(reshape(training2_var, 1, [])); 
+    if exist('training1', 'var')
+        sigma_1 = diag; 
+        sigma_2 = (training2*training2')/N;
     else
         sigma_1 = (training1*training1')/N; 
         sigma_2 = (training2*training2')/N;
@@ -212,7 +212,7 @@ function [Y_pred,var_pred,diff,binned_data] = FixedRankFilter2D(nmea_file,mcpc_f
     bd = reshape(binned_data, numBins(1), numBins(2), []);
     var = reshape(var_pred, numBins(1), numBins(2), []);
     cc = reshape(central_coord, numBins(1), numBins(2), size(central_coord, 2));
-    fp = '/Users/jaredbrauner/Documents/data/Pollution_Monitoring/PollutionMapping/FRF/plots/2D/180621/test_map.png';
+    fp = '/Users/jaredbrauner/Documents/data/Pollution_Monitoring/PollutionMapping/FRF/plots/2D/180621/test_map_bw.png';
     xSize = central_coord(end, 1) - central_coord(1, 1);
     ySize = central_coord(end, 2) - central_coord(1, 2);
     img = imread(fp);
