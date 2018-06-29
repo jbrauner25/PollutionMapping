@@ -172,6 +172,98 @@ class planner(object):
             # Because this function probably (hopefully) normalizes distances, priori will be the value wanted to grab the min of.
             return dist, paths, pred
 
+    def dijkstras2(self, sources, pred=None, paths=None,
+                                  cutoff=None, target=None):
+            """Uses Dijkstra's algorithm to find shortest weighted paths
+
+            Parameters
+            ----------
+            G : NetworkX graph
+
+            sources : non-empty iterable of nodes
+                Starting nodes for paths. If this is just an iterable containing
+                a single node, then all paths computed by this function will
+                start from that node. If there are two or more nodes in this
+                iterable, the computed paths may begin from any one of the start
+                nodes.
+
+            weight: function
+                Function with (u, v, data) input that returns that edges weight
+
+            pred: dict of lists, optional(default=None)
+                dict to store a list of predecessors keyed by that node
+                If None, predecessors are not stored.
+
+            paths: dict, optional (default=None)
+                dict to store the path list from source to each node, keyed by node.
+                If None, paths are not stored.
+
+            target : node label, optional
+                Ending node for path. Search is halted when target is found.
+
+            cutoff : integer or float, optional
+                Depth to stop the search. Only return paths with length <= cutoff.
+
+            Returns
+            -------
+            distance : dictionary
+                A mapping from node to shortest distance to that node from one
+                of the source nodes.
+
+            Notes
+            -----
+            The optional predecessor and path dictionaries can be accessed by
+            the caller through the original pred and paths objects passed
+            as arguments. No need to explicitly return pred or paths.
+
+            """
+            nx = self.env.graph
+            push = heappush
+            pop = heappop
+            dist = {}  # dictionary of final distances
+            seen = {}  # Dict of node, and a tuple of length, cost, and priori
+            # fringe is heapq with 3-tuples (distance,c,node)
+            # use the count c to avoid comparing nodes (may not be able to)
+            routes = []
+            fringe = []
+            data_graph = nx.DiGraph()
+            for source in sources:
+                seen[source] = (0,0,0)
+                push(fringe, (0, 0, 0, source))
+            while fringe:
+                (p, l, c, v) = pop(fringe)
+                # if v in dist:
+                #     continue  # already searched this node.
+                dist[v] = (l, c, p)
+                # isn't doing a targeted search, so #TODO find a way to make this untargeted
+                for u in nx.successors(v):
+                    if u not in paths[v]:
+                        new_edge_cost = self.env.get_edge_data((v, u), 'weight')  # Make this return a tuple of (Length, Cost, 0)
+                        if new_edge_cost is None:
+                            continue  # Lets assume we don't have any nodes skipped
+                        length = dist[v][0] + new_edge_cost[0]
+                        cost = dist[v][1] + new_edge_cost[1]
+                        priori = length / cost
+                        if cutoff is not None:
+                            print("LEBNGTT")
+                            print(length)
+                            if length >= cutoff:  # Checks distance in vu_distance tuple in case it is above cutoff distance.
+                                #TODO Make the program save the paths (or find out how to access them) once above the cutoff. This is our limiting factor, along with processing time, hopefully.
+                                routes.append((paths[v], dist[v]))
+                                continue
+                        elif u not in seen or priori < seen[u][2]:
+                            seen[u] = (length, cost, priori)
+                            push(fringe, (priori, length, cost, u))
+                            if paths is not None:
+                                paths[u] = paths[v] + [u]
+
+
+            # The optional predecessor and path dictionaries can be accessed
+            # by the caller via the pred and paths objects passed as arguments.
+            # Dist will be a dictionary of nodes as key, and tuple (Length, cost, and priori).
+            # Because this function probably (hopefully) normalizes distances, priori will be the value wanted to grab the min of.
+            return dist, paths, pred
+
     # def put_node_to_queue(self, node):
     # 	heapq.heappush(node)
     #
@@ -265,22 +357,48 @@ class planner(object):
     #     return path_list
     #
     def expand_itter(self, queued, finished, location_point, dist_max):
+        nx = self.env.graph
+        push = heappush
+        pop = heappop
+        dist = {}  # dictio
+        path = {}
+        fringe = []
+        for source in sources:
+            seen[source] = (0, 0, 0)
+            queued.append(source)
         while queued:
-            if queued[0] not in finished:
+            (p, l, c, v) = seen[queued]
                 node = queued[0]
                 node_loc = self.env.get_node_to_cart(node)
                 node_to_loc = utils.distance(node_loc, location_point)
                 meas_dist_var = self.meas_var_dist(node_to_loc)
                 priori_node_var = self.env.get_node_attribute(node, 'var')  # Calls before to check if it exists
-                if priori_node_var:
-                    priori_node_pol = self.env.get_node_attribute(node, 'pol')
-                    node_pol, node_var = self.kalman_filter(priori_node_pol, priori_node_var, meas_pollution,
-                                                            meas_dist_var)
-                else:
-                    node_pol = meas_pollution
-                    node_var = meas_dist_var
-                self.env.set_node_attribute(node, 'pol', node_pol)
-                self.env.set_node_attribute(node, 'var', node_var)  # May have to call env as PolEnv._....
+            dist[v] = (l, c, p)
+            for u in nx.successors(v):
+                new_edge_cost = self.env.get_edge_data((v, u), 'weight')  # Make this return a tuple of (Length, Cost, 0)
+                if new_edge_cost is None:
+                    continue  # Lets assume we don't have any nodes skipped
+                length = dist[v][0] + new_edge_cost[0]
+                cost = dist[v][1] + new_edge_cost[1]
+                priori = length / cost
+                if cutoff is not None:
+                    print("LEBNGTT")
+                    print(length)
+                    if length >= cutoff:  # Checks distance in vu_distance tuple in case it is above cutoff distance.
+                        # TODO Make the program save the paths (or find out how to access them) once above the cutoff. This is our limiting factor, along with processing time, hopefully.
+                        routes.append((paths[v], dist[v]))
+                        print(paths[v])
+                        continue
+            elif u not in seen or priori < seen[u][2]:
+                seen[u] = (length, cost, priori)
+                push(fringe, (priori, length, cost, next(counter), u))
+                if paths is not None:
+                    paths[u] = paths[v] + [u]
+                if pred is not None:
+                    pred[u] = [v]
+            elif priori == seen[u][2]:
+                if pred is not None:
+                    pred[u].append(v)
             finished.append(queued[0])
             queued.pop(0)
             neighbors = list(self.env.graph.successors(node)) + list(self.env.graph.predecessors(node))
