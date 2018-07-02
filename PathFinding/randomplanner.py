@@ -154,15 +154,15 @@ class planner(object):
                 G.node[counter]['weight'] = new_priori
                 succ_nodeset = copy.copy(nodeset)
                 succ_nodeset.add(successor_node)
-                print(new_length)
                 if new_length >= max_dist:
                     route_count += 1
                     if end_node is None:
-                        end_node = counter
-                        current_max = new_priori
-                    elif new_priori < current_max:
-                        current_max = new_priori
-                        end_node = counter
+                        end_node = counter_start
+                        current_max = priori
+                    elif priori < current_max:
+                        current_max = priori
+                        end_node = counter_start
+                    break
                 else:
                     queued.insert(0, (successor_node, counter, succ_nodeset))
             if route_count >= min_routes_considered:

@@ -27,23 +27,29 @@ kalman = kalman(env)
 
 kalman.update(30, (34.05, -117.0), 300)  # bot right
 kalman.update(603, (34.05, -117.05), 300)  # bot left
+nc = ox.get_node_colors_by_attr(env.graph, 'pol', cmap='plasma', num_bins=20)
+fig, ax = ox.plot_graph(env.graph, fig_height=6, node_color=nc, node_size=12, node_zorder=2, edge_color='#dddddd', use_geom=True)
 kalman.update(550, (34.025, -117.025), 300)
-
+nc = ox.get_node_colors_by_attr(env.graph, 'pol', cmap='plasma', num_bins=20)
+fig, ax = ox.plot_graph(env.graph, fig_height=6, node_color=nc, node_size=12, node_zorder=2, edge_color='#dddddd', use_geom=True)
 kalman.update(495, (34.0, -117.0), 300)  # top right
+nc = ox.get_node_colors_by_attr(env.graph, 'pol', cmap='plasma', num_bins=20)
+fig, ax = ox.plot_graph(env.graph, fig_height=6, node_color=nc, node_size=12, node_zorder=2, edge_color='#dddddd', use_geom=True)
 kalman.update(400, (34.0, -117.05), 300)  # top left
-
-planner = planning2.planner(env)
-planner.set_config(10, 5, 0.5, 0.9)
-planner.update_edge_weight()
-paths = planner.get_path(54543043)
-print(paths)
-lists = []
-for k in sorted(paths, key=lambda k: len(paths[k]), reverse=True):
-    lists.append(k)
-# routes = planner.dijkstras2([54543043], pred={}, paths={54543043: [54543043]}, cutoff=10000)
-# print(routes)
-for k in lists:
-    fig, ax = ox.plot_graph_route(env.graph, paths[k], node_size=0)
+nc = ox.get_node_colors_by_attr(env.graph, 'pol', cmap='plasma', num_bins=20)
+fig, ax = ox.plot_graph(env.graph, fig_height=6, node_color=nc, node_size=12, node_zorder=2, edge_color='#dddddd', use_geom=True)
+# planner = planning2.planner(env)
+# planner.set_config(10, 5, 0.5, 0.9)
+# planner.update_edge_weight()
+# paths = planner.get_path(54543043)
+# print(paths)
+# lists = []
+# for k in sorted(paths, key=lambda k: len(paths[k]), reverse=True):
+#     lists.append(k)
+# # routes = planner.dijkstras2([54543043], pred={}, paths={54543043: [54543043]}, cutoff=10000)
+# # print(routes)
+# for k in lists:
+#     fig, ax = ox.plot_graph_route(env.graph, paths[k], node_size=0)
 # max = None
 # for key, value in dist.items():
 #     if max is None or max < value[0]:
