@@ -11,6 +11,7 @@ from planner import Planner
 from poll_env import *
 from Kalman import *
 import Planning
+import planning2
 ox.config(use_cache=True, log_console=True)
 
 
@@ -24,18 +25,25 @@ env = PolEnv(G)
 
 kalman = kalman(env)
 
-kalman.update(505, (34.05, -117.0), 300)  # bot right
-kalman.update(503, (34.05, -117.05), 300)  # bot left
+kalman.update(30, (34.05, -117.0), 300)  # bot right
+kalman.update(603, (34.05, -117.05), 300)  # bot left
 kalman.update(550, (34.025, -117.025), 300)
 
 kalman.update(495, (34.0, -117.0), 300)  # top right
-kalman.update(497, (34.0, -117.05), 300)  # top left
+kalman.update(400, (34.0, -117.05), 300)  # top left
 
-planner = Planning.planner(env)
-planner.set_config(10, 5, 0.1, 0.1)
+planner = planning2.planner(env)
+planner.set_config(10, 5, 0.5, 0.9)
 planner.update_edge_weight()
-dist, paths, pred = planner.dijkstras([54543043], pred={}, paths={54543043: [54543043]})
-print("hi")
+paths = planner.get_path(54543043)
+print(paths)
+lists = []
+for k in sorted(paths, key=lambda k: len(paths[k]), reverse=True):
+    lists.append(k)
+# routes = planner.dijkstras2([54543043], pred={}, paths={54543043: [54543043]}, cutoff=10000)
+# print(routes)
+for k in lists:
+    fig, ax = ox.plot_graph_route(env.graph, paths[k], node_size=0)
 # max = None
 # for key, value in dist.items():
 #     if max is None or max < value[0]:
