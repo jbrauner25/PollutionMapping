@@ -30,12 +30,6 @@ function [Y_pred,var_pred,diff,binned_data] = FixedRankFilter2D(nmea_file,mcpc_f
     binned_data = log(binned_data);
     %transpose binned_data so time is 3rd dimension
     binned_data = binned_data';
-%     binned_data_temp = reshape(binned_data, numBins(1), numBins(2), []);
-%     binned_data_temp(8:15, 6:13, 6) = zeros(8, 8);
-%     binned_data = reshape(binned_data_temp, numBins(1) * numBins(2), []);
-    
-    %binned_data(:, 3) = binned_data(:, 2) .* 1.05;
-    %binned_data(:, 4) = binned_data(:, 3) .* 1.05;
         
     %detrend the first two runs (the training sets). Detrend using all data
     %because we assume that all data will be availble to us for the
@@ -60,7 +54,10 @@ function [Y_pred,var_pred,diff,binned_data] = FixedRankFilter2D(nmea_file,mcpc_f
     [Q, R] = qr(S, 0);
     
     %Set signal to noise ratio
-    SNR = 1;
+    SNR = 100;
+    
+    %set value of d, the threshold value for the positive definite process.
+    dVal = 2;
     
     %change r to the number of basis functions for THIS resolution,
     %instead of the number of basis functions for the 1ST resolution.
@@ -86,11 +83,8 @@ function [Y_pred,var_pred,diff,binned_data] = FixedRankFilter2D(nmea_file,mcpc_f
     
     %Create an identity matrix of size N to multiply by sigma2_xi and
     %sigma2_eps. Then the two can be added to create the diagonal matrix D.
-    I_N = eye(N);
-    D = (sigma2_xi * I_N) + (sigma2_eps * I_N);
-    
-    %set value of d, the threshold value for the positive definite process.
-    dVal = .5;
+    D = (sigma2_xi * eye(N)) + (sigma2_eps * eye(N));
+    Dii = sigma2_xi+sigma2_eps;
     
     %The following process is used to calculate sigma_1_PD
     A = D^(-1/2) * sigma_1 * D^(-1/2) - eye(N);
@@ -149,7 +143,6 @@ function [Y_pred,var_pred,diff,binned_data] = FixedRankFilter2D(nmea_file,mcpc_f
     P_t_tp =zeros([r r T]);
     Y_pred = zeros([N T]);
     var_pred = zeros([N T]);
-    Dii = sigma2_xi+sigma2_eps;
   
     for t=1:T
         %detrend data for this test
@@ -162,7 +155,6 @@ function [Y_pred,var_pred,diff,binned_data] = FixedRankFilter2D(nmea_file,mcpc_f
             eta_t_tp(:,t) = H_t(:,:,t+1) * eta_t_t(:,t-1);
             P_t_tp(:,:,t) = H_t(:,:,t+1) * P_t_t(:,:,t-1) * H_t(:,:,t+1)' + U_t(:,:,t+1);
         end
-        %G = P_t_tp(:,:,t) * St' * inv(St * P_t_tp(:,:,t) * St' + (Dii .* eye(n)));
         G = P_t_tp(:,:,t)*St'*((1/Dii).*eye(n)-(Dii^(-2)).*St*inv(inv(P_t_tp(:,:,t))+(1/Dii).*St'*St)*St');
         eta_t_t(:,t) = eta_t_tp(:,t) + G * (Z_obs - St * eta_t_tp(:,t));
         P_t_t(:,:,t) = P_t_tp(:,:,t) - G * St * P_t_tp(:,:,t);
@@ -171,26 +163,19 @@ function [Y_pred,var_pred,diff,binned_data] = FixedRankFilter2D(nmea_file,mcpc_f
             (Z_obs- St * eta_t_tp(:,t));
         var_pred(:,t) = reshape(diag(S * P_t_tp(:,:,t) * S' + sigma2_xi - (sigma2_xi.*M)*...
             ((1/Dii).*eye(n)-(Dii^(-2)).* St * inv(inv(P_t_tp(:,:,t))+(1/Dii).*St' * St) * St')*(sigma2_xi.*M')...
-            -2 * S * P_t_tp(:,:,t)*St'*((1/Dii).*eye(n)-(Dii^(-2)).*St*inv(inv(P_t_tp(:,:,t))+(1/Dii).*St'*St)*St')*...
-            (sigma2_xi.*M')),N,1);      
+            -2 * S * P_t_tp(:,:,t)*G*(sigma2_xi.*M')),N,1);      
        
         sigma = (Y_pred(:,t) * Y_pred(:,t)') / N;        
-        %make sigma_t positive definite
+        %make sigma_t positive definite and add to sigma_t
         A = D^(-1/2) * sigma * D^(-1/2) - eye(N);
         [eigvec, eigval] = eig(A); 
         d = diag(eigval);
         d(d <= dVal) = dVal;
         eigval_PD = diag(d);
         A_PD = eigvec * eigval_PD * eigvec';
-        sigma_t_PD = (D^(1/2)) *A_PD * (D^(1/2)) + D;
+        sigma_t(:,:,t+2) = (D^(1/2)) *A_PD * (D^(1/2)) + D;
   
-        %add sigma_t_PD and sigmaLag_t_PD to their respective matrices
-        sigma_t(:,:,t+2) = sigma_t_PD;
-%         if t==1
-%             sigmaLag_t(:,:,t+2) = (training2 * Y_pred(:,t)') / N;
-%         else
-%             sigmaLag_t(:,:,t+2) = (Y_pred(:,t-1) * Y_pred(:,t)') / N;
-%         end
+        %calculate sigmaLag from sigma_t and sigma_t-1
         sigmaLag_t(:,:,t+2) = (sigma_t(:,:,t+1) * sigma_t(:,:,t+2)') / N;
         %Calculate new values for K,L,H,U,
         K_t(:,:,t+2) = R \ Q' * (sigma_t(:,:,t+2) - D) * Q * (inv(R))';
@@ -218,92 +203,6 @@ function [Y_pred,var_pred,diff,binned_data] = FixedRankFilter2D(nmea_file,mcpc_f
     img = imread(fp);
     img = imresize(img, [xSize, ySize]);
     
-    %subplot(2,4,1);
-    surf(cc(:,:,2), cc(:,:,1), Y_2d(:,:,1), 'FaceAlpha', .35, 'FaceColor', 'interp', 'EdgeColor', 'none');
-    axis('square')
-    xlabel('x position (m)');
-    ylabel('y position (m)');
-    zlabel('Average Concentration (#/cc)');
-    title('Average Concentration vs Position (Morning, t=1)');
-    hold on
-    g = hgtransform('Matrix', makehgtform('xrotate', pi, 'translate', [central_coord(1,1),-1*xSize-central_coord(1,2),-7000]));
-    image(g, img);
-    
-%     subplot(2,4,2);
-%     surf(cc(:,:,2), cc(:,:,1), Y_2d(:,:,2), 'FaceAlpha', .35, 'FaceColor', 'interp', 'EdgeColor', 'none');
-%     axis('square')
-%     xlabel('x position (m)');
-%     ylabel('y position (m)');
-%     zlabel('Average Concentration (#/cc)');
-%     title('Average Concentration vs Position (Morning, t=2)');
-%     hold on
-%     g = hgtransform('Matrix', makehgtform('xrotate', pi, 'translate', [central_coord(1,1),-1*xSize-central_coord(1,2),-7000]));
-%     image(g, img);
-%     
-%     subplot(2,4,3);
-%     surf(cc(:,:,2), cc(:,:,1), Y_2d(:,:,3), 'FaceAlpha', .35, 'FaceColor', 'interp', 'EdgeColor', 'none');
-%     axis('square')
-%     xlabel('x position (m)');
-%     ylabel('y position (m)');
-%     zlabel('Average Concentration (#/cc)');
-%     title('Average Concentration vs Position (Morning, t=3)');
-%     hold on
-%     g = hgtransform('Matrix', makehgtform('xrotate', pi, 'translate', [central_coord(1,1),-1*xSize-central_coord(1,2),-7000]));
-%     image(g, img);
-%     
-%     subplot(2,4,4);
-%     surf(cc(:,:,2), cc(:,:,1), Y_2d(:,:,4), 'FaceAlpha', .35, 'FaceColor', 'interp', 'EdgeColor', 'none');
-%     axis('square')
-%     xlabel('x position (m)');
-%     ylabel('y position (m)');
-%     zlabel('Average Concentration (#/cc)');
-%     title('Average Concentration vs Position (Morning, t=4)');
-%     hold on
-%     g = hgtransform('Matrix', makehgtform('xrotate', pi, 'translate', [central_coord(1,1),-1*xSize-central_coord(1,2),-7000]));
-%     image(g, img);
-%     
-%     subplot(2,4,5);
-%     surf(cc(:,:,2), cc(:,:,1), var(:,:,1), 'FaceAlpha', .35, 'FaceColor', 'interp', 'EdgeColor', 'none');
-%     axis('square')
-%     xlabel('x position (m)');
-%     ylabel('y position (m)');
-%     zlabel('Variance ((#/cc)^{2})');
-%     title('Variance vs Position (Morning, t=1)');
-%     hold on
-%     g = hgtransform('Matrix', makehgtform('xrotate', pi, 'translate', [central_coord(1,1),-1*xSize-central_coord(1,2),0]));
-%     image(g, img);
-%     
-%     subplot(2,4,6);
-%     surf(cc(:,:,2), cc(:,:,1), var(:,:,2), 'FaceAlpha', .35, 'FaceColor', 'interp', 'EdgeColor', 'none');
-%     axis('square')
-%     xlabel('x position (m)');
-%     ylabel('y position (m)');
-%     zlabel('Variance ((#/cc)^{2})');
-%     title('Variance vs Position (Morning, t=2)');
-%     hold on
-%     g = hgtransform('Matrix', makehgtform('xrotate', pi, 'translate', [central_coord(1,1),-1*xSize-central_coord(1,2),0]));
-%     image(g, img);
-%     
-%     subplot(2,4,7);
-%     surf(cc(:,:,2), cc(:,:,1), var(:,:,3), 'FaceAlpha', .35, 'FaceColor', 'interp', 'EdgeColor', 'none');
-%     axis('square')
-%     xlabel('x position (m)');
-%     ylabel('y position (m)');
-%     zlabel('Variance ((#/cc)^{2})');
-%     title('Variance vs Position (Morning, t=3)');
-%     hold on
-%     g = hgtransform('Matrix', makehgtform('xrotate', pi, 'translate', [central_coord(1,1),-1*xSize-central_coord(1,2),0]));
-%     image(g, img);
-%     
-%     subplot(2,4,8);
-%     surf(cc(:,:,2), cc(:,:,1), var(:,:,4), 'FaceAlpha', .35, 'FaceColor', 'interp', 'EdgeColor', 'none');
-%     axis('square')
-%     xlabel('x position (m)');
-%     ylabel('y position (m)');
-%     zlabel('Variance ((#/cc)^{2})');
-%     title('Variance vs Position (Morning, t=4)');
-%     hold on
-%     g = hgtransform('Matrix', makehgtform('xrotate', pi, 'translate', [central_coord(1,1),-1*xSize-central_coord(1,2),0]));
-%     image(g, img);
+    graph2D(Y_2d, df, bd, var, cc, fp, xSize, ySize, img, central_coord);
     
 end
