@@ -4,6 +4,7 @@ import networkx as nx
 from CoordCart import coord_cart
 from poll_env import PolEnv
 import utils
+import random
 
 
 class kalman(object):
@@ -13,8 +14,8 @@ class kalman(object):
     def wipe_initilize(self):
         '''Sets all pol to 0 and variance to 9999'''
         for node in self.env.graph.nodes():
-            self.env.set_node_attribute(node, 'var', 999999)
-            self.env.set_node_attribute(node, 'pol', 100)
+            self.env.set_node_attribute(node, 'var', random.randrange(999999999999999,99999999999999999999))
+            self.env.set_node_attribute(node, 'pol', random.randrange(100,200))
 
     @staticmethod
     def kalman_filter(node_pol, node_var, meas_pol, meas_var):
@@ -43,12 +44,12 @@ class kalman(object):
     def meas_var_dist(distance):
         """calculates the measured value variance for a given point given
         the variance is linear with respect to distance"""
-        var = (324000) * distance
+        var = (5000) * distance ** 2
         return var
 
     def update(self, pollution, location_point, count_max):  # Loc_point in lat/long
         count = 0
-        start_node = self.env.get_nearest_node(location_point)  # Location point must be in lat/long
+        start_node = ox.get_nearest_node(self.env.G, location_point)  # Location point must be in lat/long
         cart_loc = coord_cart(location_point,
                               self.env.origin)  # Changes location point into X-Y based on origin for calculating distance
         # Finds the pol data's cartesian coord from grabbing the origin from the start node.

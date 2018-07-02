@@ -26,6 +26,7 @@ class tester(object):
         self.points = []
         self.updated_nodes = []
         self.planner = None
+        self.unproj = None
 
     def create_bounds(self, north, south, east, west):
         self.north, self.south, self.east, self.west = north, south, east, west
@@ -35,31 +36,38 @@ class tester(object):
         self.env = PolEnv(G)
         self.graph = self.env.graph
         self.kalman = kalman(self.env)
+        self.unproj = G
 
     def random_kalman(self, pol_count, pol_min, pol_max):
+        self.kalman.wipe_initilize()
         for x in range(pol_count):
             point = (random.uniform(self.south, self.north), random.uniform(self.east, self.west))
+            print(point)
             self.points.append(point)
-            self.updated_nodes.append(self.env.get_nearest_node(point))
-            self.kalman.update(random.randint(pol_min, pol_max), point, 200)
+            y = self.updated_nodes.append(ox.get_nearest_node(self.unproj, point))
+            self.kalman.update(random.randint(pol_min, pol_max), point, 100)
 
     def plan(self):
-        start_node = self.env.get_nearest_node(random.choice(self.points))
-        self.planner = randomplanner.planner(self.env)
+        start_node = ox.get_nearest_node(self.unproj, random.choice(self.points))
+        self.planner = randomplanner.planner(self.kalman.env)
+        nc = ox.get_node_colors_by_attr(self.kalman.env.graph, 'var', cmap='plasma', num_bins=20)
+        ns = [50 if node in self.updated_nodes else 8 for node in self.kalman.env.graph.nodes()]
+        fig, ax = ox.plot_graph(self.kalman.env.graph, fig_height=6, node_color=nc, node_size=ns, node_zorder=2,
+                                edge_color='#dddddd', use_geom=True)
         self.planner.set_config(10, 5, 1.0, 0.0)
         self.planner.update_edge_weight()
-        end, graph, dict = self.planner.random_paths_unique_random_queue(54570674, 6000, 50)
+        end, graph, dict = self.planner.random_paths_unique_random_queue(start_node, 10000, 5)
         path = self.planner.path_recreator(graph, 0, end)
         path_converted = self.planner.path_converter(dict, path, 0, end)
         print(path_converted)
-        nc = ox.get_node_colors_by_attr(self.env.graph, 'var', cmap='plasma', num_bins=20)
+        nc = ox.get_node_colors_by_attr(self.kalman.env.graph, 'pol', cmap='plasma', num_bins=20)
         fig, ax = ox.plot_graph_route(self.env.graph, path_converted, node_color=nc)
 
 
 test = tester()
-test.create_bounds(34.05, 34, -117.01, -117.05)
+test.create_bounds(34.050, 34.000, -117.010, -117.050)
 test.create_graph()
-test.random_kalman(30, 300, 500)
+test.random_kalman(10, 10000, 20000)
 test.plan()
 
 
