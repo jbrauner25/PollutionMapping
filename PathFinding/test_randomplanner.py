@@ -31,7 +31,7 @@ class tester(object):
         self.north, self.south, self.east, self.west = north, south, east, west
 
     def create_graph(self):
-        G = ox.graph_from_bbox(self.north, self.south, self.east, self.west, network_type='drive', simplify=False, clean_periphery=True)
+        G = ox.graph_from_bbox(self.north, self.south, self.east, self.west, network_type='drive', simplify=True, clean_periphery=True)
         self.env = PolEnv(G)
         self.graph = self.env.graph
         self.kalman = kalman(self.env)
@@ -59,7 +59,7 @@ class tester(object):
 test = tester()
 test.create_bounds(34.05, 34, -117.01, -117.05)
 test.create_graph()
-test.random_kalman(10, 300, 500)
+test.random_kalman(30, 300, 500)
 test.plan()
 
 
