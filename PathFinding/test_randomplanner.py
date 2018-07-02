@@ -31,7 +31,7 @@ class tester(object):
         self.north, self.south, self.east, self.west = north, south, east, west
 
     def create_graph(self):
-        G = ox.graph_from_bbox(self.north, self.south, self.east, self.west, network_type='drive', simplify=True, clean_periphery=True)
+        G = ox.graph_from_bbox(self.north, self.south, self.east, self.west, network_type='drive', simplify=False, clean_periphery=True)
         self.env = PolEnv(G)
         self.graph = self.env.graph
         self.kalman = kalman(self.env)
@@ -41,25 +41,25 @@ class tester(object):
             point = (random.uniform(self.south, self.north), random.uniform(self.east, self.west))
             self.points.append(point)
             self.updated_nodes.append(self.env.get_nearest_node(point))
-            self.kalman.update(random.randint(pol_min, pol_max), point, 100)
+            self.kalman.update(random.randint(pol_min, pol_max), point, 200)
 
     def plan(self):
         start_node = self.env.get_nearest_node(random.choice(self.points))
         self.planner = randomplanner.planner(self.env)
-        self.planner.set_config(10, 5, 0.5, 0.0)
+        self.planner.set_config(10, 5, 1.0, 0.0)
         self.planner.update_edge_weight()
         end, graph, dict = self.planner.random_paths_unique_random_queue(54570674, 6000, 50)
         path = self.planner.path_recreator(graph, 0, end)
         path_converted = self.planner.path_converter(dict, path, 0, end)
         print(path_converted)
-        nc = ox.get_node_colors_by_attr(self.env.graph, 'pol', cmap='plasma', num_bins=20)
+        nc = ox.get_node_colors_by_attr(self.env.graph, 'var', cmap='plasma', num_bins=20)
         fig, ax = ox.plot_graph_route(self.env.graph, path_converted, node_color=nc)
 
 
 test = tester()
 test.create_bounds(34.05, 34, -117.01, -117.05)
 test.create_graph()
-test.random_kalman(30, 300, 500)
+test.random_kalman(10, 300, 500)
 test.plan()
 
 

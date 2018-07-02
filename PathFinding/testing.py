@@ -24,19 +24,18 @@ G = ox.graph_from_bbox(north, south, east, west, network_type='drive', simplify=
 env = PolEnv(G)
 
 kalman = kalman(env)
+kalman.wipe_initilize()
 
-kalman.update(30, (34.05, -117.0), 300)  # bot right
-kalman.update(603, (34.05, -117.05), 300)  # bot left
-nc = ox.get_node_colors_by_attr(env.graph, 'pol', cmap='plasma', num_bins=20)
+kalman.update(30, (34.05, -117.0), 100)  # bot right
+kalman.update(603, (34.05, -117.05), 100)  # bot left
+kalman.update(550, (34.025, -117.025), 100)
+nc = ox.get_node_colors_by_attr(env.graph, 'pol', cmap='plasma', num_bins=None)
 fig, ax = ox.plot_graph(env.graph, fig_height=6, node_color=nc, node_size=12, node_zorder=2, edge_color='#dddddd', use_geom=True)
-kalman.update(550, (34.025, -117.025), 300)
-nc = ox.get_node_colors_by_attr(env.graph, 'pol', cmap='plasma', num_bins=20)
+kalman.update(495, (34.0, -117.0), 30)  # top right
+nc = ox.get_node_colors_by_attr(env.graph, 'var', cmap='plasma', num_bins=20)
 fig, ax = ox.plot_graph(env.graph, fig_height=6, node_color=nc, node_size=12, node_zorder=2, edge_color='#dddddd', use_geom=True)
-kalman.update(495, (34.0, -117.0), 300)  # top right
-nc = ox.get_node_colors_by_attr(env.graph, 'pol', cmap='plasma', num_bins=20)
-fig, ax = ox.plot_graph(env.graph, fig_height=6, node_color=nc, node_size=12, node_zorder=2, edge_color='#dddddd', use_geom=True)
-kalman.update(400, (34.0, -117.05), 300)  # top left
-nc = ox.get_node_colors_by_attr(env.graph, 'pol', cmap='plasma', num_bins=20)
+kalman.update(400, (34.0, -117.05), 30)  # top left
+nc = ox.get_node_colors_by_attr(env.graph, 'var', cmap='plasma', num_bins=20)
 fig, ax = ox.plot_graph(env.graph, fig_height=6, node_color=nc, node_size=12, node_zorder=2, edge_color='#dddddd', use_geom=True)
 # planner = planning2.planner(env)
 # planner.set_config(10, 5, 0.5, 0.9)

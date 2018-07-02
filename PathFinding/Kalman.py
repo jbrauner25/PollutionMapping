@@ -10,6 +10,12 @@ class kalman(object):
     def __init__(self, PolEnv):
         self.env = PolEnv
 
+    def wipe_initilize(self):
+        '''Sets all pol to 0 and variance to 9999'''
+        for node in self.env.graph.nodes():
+            self.env.set_node_attribute(node, 'var', 999999)
+            self.env.set_node_attribute(node, 'pol', 100)
+
     @staticmethod
     def kalman_filter(node_pol, node_var, meas_pol, meas_var):
         kg = node_var / (node_var + meas_var)
