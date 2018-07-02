@@ -27,7 +27,7 @@ def Kalman_Filter(map, data, filter_radius):
                     node.set_state_est(node.get_state_est() + K_t * (point[2] - node.get_state_est()))
                     node.set_variance_est(node.get_variance_est() - K_t * node.get_variance_est())
     #matlab_matrices(map)
-    graph_state_est(map) #graph state estimates of the filtered map in matplotlib
+    #graph_state_est(map) #graph state estimates of the filtered map in matplotlib
     #graph_variance(map) #graph variance of the filtered map in matplotlib
     '''
     xs = []

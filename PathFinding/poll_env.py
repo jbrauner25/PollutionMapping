@@ -56,10 +56,11 @@ class PolEnv(Env):
 
     def get_lat_long_coords(self):
         """returns list of tuples giving latitude, longitude pair"""
-        return [self.get_node_lat_long(n) for n in self.get_all_nodes()]
+        return [self.get_node_lat_long(n) for n in self.graph.nodes()]
 
     def get_node_lat_long(self, node_location):
         """Returns lat long coordinates given node location of graph"""
+        node_location.astype(np.int_)
         node = self.graph.nodes()[node_location]
         return (node['lat'], node['lon'])
 
