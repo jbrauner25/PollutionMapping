@@ -34,9 +34,9 @@ kalman.update(495, (34.0, -117.0), 300)  # top right
 kalman.update(400, (34.0, -117.05), 300)  # top left
 
 planner = randomplanner.planner(env)
-planner.set_config(10, 5, 0.5, 0.9)
+planner.set_config(10, 5, 0.9, 0.1)
 planner.update_edge_weight()
-end, graph, dict = planner.random_paths(54543043, 2000, 5)
+end, graph, dict = planner.random_paths_unique_random_queue(54570674, 7000, 500)
 path = planner.path_recreator(graph, 0, end)
 path_converted = planner.path_converter(dict, path, 0, end)
 print(path_converted)
