@@ -139,8 +139,8 @@ class planner(object):
             node, counter_start, nodeset = queued.pop(random.randrange(len(queued)))
             succ = list(self.env.graph.successors(node))
             edit_succ = [x for x in succ if x not in nodeset]
-            if len(edit_succ) >= 3:
-                succ = random.sample(edit_succ, 3)
+            if len(edit_succ) >= 2:
+                succ = random.sample(edit_succ, 2)
             successors = edit_succ
             _, cost, length, priori = unique_to_node[counter_start]
             for successor_node in successors:
@@ -156,6 +156,7 @@ class planner(object):
                 succ_nodeset.add(successor_node)
                 if new_length >= max_dist:
                     route_count += 1
+                    print("Route!")
                     if end_node is None:
                         end_node = counter_start
                         current_max = priori

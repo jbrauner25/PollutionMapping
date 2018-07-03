@@ -1,18 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-<<<<<<< HEAD
-    <list default="true" id="0427c071-085e-4e2e-ab4a-95dd2880b275" name="Default" comment="">
+    <list default="true" id="029c1c8e-deb8-4b67-9454-591e434a4180" name="Default" comment="Kalman Filtering is broken">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FRF/FixedRankFilter2D.m" beforeDir="false" afterPath="$PROJECT_DIR$/FRF/FixedRankFilter2D.m" afterDir="false" />
-=======
-    <list default="true" id="029c1c8e-deb8-4b67-9454-591e434a4180" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Kalman_Filter/KF_test6.py" beforeDir="false" afterPath="$PROJECT_DIR$/Kalman_Filter/KF_test6.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PathFinding/Kalman.py" beforeDir="false" afterPath="$PROJECT_DIR$/PathFinding/Kalman.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PathFinding/env.py" beforeDir="false" afterPath="$PROJECT_DIR$/PathFinding/env.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PathFinding/randomplanner.py" beforeDir="false" afterPath="$PROJECT_DIR$/PathFinding/randomplanner.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PathFinding/test_randomplanner.py" beforeDir="false" afterPath="$PROJECT_DIR$/PathFinding/test_randomplanner.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PathFinding/testing.py" beforeDir="false" afterPath="$PROJECT_DIR$/PathFinding/testing.py" afterDir="false" />
->>>>>>> 25cd8d80f4d81bcc4064a9212ee8fc3097261d55
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -22,26 +16,17 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-<<<<<<< HEAD
-    <SUITE FILE_PATH="coverage/PollutionMapping$KF_test5.coverage" NAME="KF_test5 Coverage Results" MODIFIED="1530561903233" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Kalman_Filter" />
-    <SUITE FILE_PATH="coverage/PollutionMapping$testing.coverage" NAME="testing Coverage Results" MODIFIED="1530568450596" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/PathFinding" />
-=======
-    <SUITE FILE_PATH="coverage/PollutionMapping$testing.coverage" NAME="testing Coverage Results" MODIFIED="1530572263461" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/PathFinding" />
-    <SUITE FILE_PATH="coverage/PollutionMapping$test_randomplanner.coverage" NAME="test_randomplanner Coverage Results" MODIFIED="1530573647129" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/PathFinding" />
->>>>>>> 25cd8d80f4d81bcc4064a9212ee8fc3097261d55
+    <SUITE FILE_PATH="coverage/PollutionMapping$KF_test6.coverage" NAME="KF_test6 Coverage Results" MODIFIED="1530641418350" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Kalman_Filter" />
+    <SUITE FILE_PATH="coverage/PollutionMapping$testing.coverage" NAME="testing Coverage Results" MODIFIED="1530635450212" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/PathFinding" />
+    <SUITE FILE_PATH="coverage/PollutionMapping$test_randomplanner.coverage" NAME="test_randomplanner Coverage Results" MODIFIED="1530650046080" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/PathFinding" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file leaf-file-name="testing.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/PathFinding/testing.py">
           <provider selected="true" editor-type-id="text-editor">
-<<<<<<< HEAD
-            <state relative-caret-position="186">
-              <caret line="25" column="20" selection-start-line="25" selection-start-column="20" selection-end-line="25" selection-end-column="20" />
-=======
-            <state relative-caret-position="459">
-              <caret line="42" column="129" lean-forward="true" selection-start-line="42" selection-end-line="42" selection-end-column="129" />
->>>>>>> 25cd8d80f4d81bcc4064a9212ee8fc3097261d55
+            <state relative-caret-position="221">
+              <caret line="28" column="52" selection-start-line="28" selection-start-column="52" selection-end-line="28" selection-end-column="52" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -49,19 +34,11 @@
           </provider>
         </entry>
       </file>
-<<<<<<< HEAD
-      <file leaf-file-name="Kalman.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/PathFinding/Kalman.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-973">
-              <caret line="21" column="26" selection-start-line="21" selection-start-column="26" selection-end-line="21" selection-end-column="26" />
-=======
-      <file leaf-file-name="test_randomplanner.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="test_randomplanner.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/PathFinding/test_randomplanner.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="410">
-              <caret line="69" column="21" selection-start-line="69" selection-start-column="21" selection-end-line="69" selection-end-column="21" />
->>>>>>> 25cd8d80f4d81bcc4064a9212ee8fc3097261d55
+            <state relative-caret-position="359">
+              <caret line="67" column="87" selection-start-line="67" selection-start-column="87" selection-end-line="67" selection-end-column="87" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -69,18 +46,13 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="test_randomplanner.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/PathFinding/test_randomplanner.py">
+      <file leaf-file-name="randomplanner.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/PathFinding/randomplanner.py">
           <provider selected="true" editor-type-id="text-editor">
-<<<<<<< HEAD
-            <state relative-caret-position="557">
-              <caret line="83" column="37" lean-forward="true" selection-start-line="83" selection-start-column="37" selection-end-line="83" selection-end-column="37" />
-=======
-            <state relative-caret-position="345">
-              <caret line="163" column="34" selection-start-line="163" selection-start-column="34" selection-end-line="163" selection-end-column="34" />
->>>>>>> 25cd8d80f4d81bcc4064a9212ee8fc3097261d55
+            <state relative-caret-position="-2822">
+              <caret line="59" column="35" selection-start-line="59" selection-start-column="35" selection-end-line="59" selection-end-column="35" />
               <folding>
-                <element signature="e#0#18#0" expanded="true" />
+                <element signature="e#0#15#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -89,15 +61,8 @@
       <file leaf-file-name="poll_env.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/PathFinding/poll_env.py">
           <provider selected="true" editor-type-id="text-editor">
-<<<<<<< HEAD
-            <state relative-caret-position="257">
-              <caret line="59" lean-forward="true" selection-start-line="59" selection-end-line="59" />
-              <folding>
-                <element signature="e#0#17#0" expanded="true" />
-              </folding>
-=======
-            <state relative-caret-position="189">
-              <caret line="58" selection-start-line="58" selection-end-line="58" />
+            <state relative-caret-position="607">
+              <caret line="73" selection-start-line="73" selection-end-line="73" />
             </state>
           </provider>
         </entry>
@@ -105,43 +70,57 @@
       <file leaf-file-name="env.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/PathFinding/env.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="24">
-              <caret line="38" lean-forward="true" selection-start-line="38" selection-end-line="38" />
+            <state relative-caret-position="352">
+              <caret line="33" selection-start-line="33" selection-end-line="33" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="digraph.py" pinned="false" current-in-tab="false">
-        <entry file="file://$USER_HOME$/Anaconda3/envs/PolMap/Lib/site-packages/networkx/classes/digraph.py">
+      <file leaf-file-name="utils.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/PathFinding/utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="17">
-              <caret line="782" selection-start-line="782" selection-end-line="782" />
->>>>>>> 25cd8d80f4d81bcc4064a9212ee8fc3097261d55
+            <state relative-caret-position="306">
+              <caret line="45" column="26" lean-forward="true" selection-start-line="45" selection-start-column="26" selection-end-line="45" selection-end-column="26" />
             </state>
           </provider>
         </entry>
       </file>
-<<<<<<< HEAD
-      <file leaf-file-name="randomplanner.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/PathFinding/randomplanner.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="242">
-              <caret line="234" column="52" selection-start-line="234" selection-start-column="52" selection-end-line="234" selection-end-column="52" />
-=======
-      <file leaf-file-name="Kalman.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Kalman.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/PathFinding/Kalman.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="109">
-              <caret line="46" column="38" selection-start-line="46" selection-start-column="38" selection-end-line="46" selection-end-column="38" />
->>>>>>> 25cd8d80f4d81bcc4064a9212ee8fc3097261d55
+            <state relative-caret-position="-374">
+              <caret line="53" column="88" selection-start-line="53" selection-start-column="88" selection-end-line="53" selection-end-column="88" />
               <folding>
-                <element signature="e#0#15#0" expanded="true" />
+                <element signature="e#0#18#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="tile.py" pinned="false" current-in-tab="false">
+        <entry file="file://$USER_HOME$/Anaconda3/envs/PolMap/Lib/site-packages/pandas/core/reshape/tile.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="482">
+              <caret line="331" selection-start-line="331" selection-end-line="331" />
+            </state>
+          </provider>
+        </entry>
+      </file>
     </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>path</find>
+      <find>config</find>
+      <find>dist</find>
+    </findStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -149,22 +128,15 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/PathFinding/testing.py" />
         <option value="$PROJECT_DIR$/PathFinding/Planning.py" />
-<<<<<<< HEAD
-        <option value="$PROJECT_DIR$/Kalman_Filter/Kalman_Filter.py" />
-        <option value="$PROJECT_DIR$/Kalman_Filter/KF_test5.py" />
-        <option value="$PROJECT_DIR$/PathFinding/Kalman.py" />
-        <option value="$PROJECT_DIR$/PathFinding/poll_env.py" />
-=======
         <option value="$PROJECT_DIR$/PathFinding/planning2.py" />
-        <option value="$PROJECT_DIR$/PathFinding/randomplanner.py" />
         <option value="$PROJECT_DIR$/PathFinding/poll_env.py" />
-        <option value="$PROJECT_DIR$/PathFinding/testing.py" />
         <option value="$PROJECT_DIR$/PathFinding/env.py" />
-        <option value="$PROJECT_DIR$/PathFinding/test_randomplanner.py" />
+        <option value="$PROJECT_DIR$/PathFinding/testing.py" />
+        <option value="$PROJECT_DIR$/Kalman_Filter/KF_test6.py" />
+        <option value="$PROJECT_DIR$/PathFinding/randomplanner.py" />
         <option value="$PROJECT_DIR$/PathFinding/Kalman.py" />
->>>>>>> 25cd8d80f4d81bcc4064a9212ee8fc3097261d55
+        <option value="$PROJECT_DIR$/PathFinding/test_randomplanner.py" />
       </list>
     </option>
   </component>
@@ -177,13 +149,12 @@
   <component name="NodePackageJsonFileManager">
     <packageJsonPaths />
   </component>
-  <component name="ProjectFrameBounds" fullScreen="true">
-    <option name="x" value="1280" />
-    <option name="y" value="-489" />
-    <option name="width" value="1920" />
-    <option name="height" value="1080" />
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="1796" />
+    <option name="y" value="-1115" />
+    <option name="width" value="420" />
+    <option name="height" value="187" />
   </component>
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
@@ -199,7 +170,18 @@
             <path>
               <item name="PollutionMapping" type="b2602c69:ProjectViewProjectNode" />
               <item name="PollutionMapping" type="462c0819:PsiDirectoryNode" />
+              <item name="Kalman_Filter" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="PollutionMapping" type="b2602c69:ProjectViewProjectNode" />
+              <item name="PollutionMapping" type="462c0819:PsiDirectoryNode" />
               <item name="PathFinding" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="PollutionMapping" type="b2602c69:ProjectViewProjectNode" />
+              <item name="PollutionMapping" type="462c0819:PsiDirectoryNode" />
+              <item name="PathFinding" type="462c0819:PsiDirectoryNode" />
+              <item name=".idea" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -210,10 +192,128 @@
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
-    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RestoreUpdateTree" date="Moments ago" ActionInfo="_Update">
+    <UpdatedFiles>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Updated from server" />
+        <option name="myStatusName" value="Changed on server" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="CHANGED_ON_SERVER" />
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Updated" />
+          <option name="myStatusName" value="Changed" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" value="UPDATED" />
+          <PATH vcs="Git" revision="">$PROJECT_DIR$/.idea/workspace.xml</PATH>
+          <PATH vcs="Git" revision="">$PROJECT_DIR$/FRF/FixedRankFilter2D.m</PATH>
+          <PATH vcs="Git" revision="">$PROJECT_DIR$/FRF/FixedRankFilter2D.m~</PATH>
+          <PATH vcs="Git" revision="">$PROJECT_DIR$/PathFinding/__pycache__/CoordCart.cpython-36.pyc</PATH>
+          <PATH vcs="Git" revision="">$PROJECT_DIR$/PathFinding/__pycache__/Kalman.cpython-36.pyc</PATH>
+          <PATH vcs="Git" revision="">$PROJECT_DIR$/PathFinding/__pycache__/Planning.cpython-36.pyc</PATH>
+          <PATH vcs="Git" revision="">$PROJECT_DIR$/PathFinding/__pycache__/env.cpython-36.pyc</PATH>
+          <PATH vcs="Git" revision="">$PROJECT_DIR$/PathFinding/__pycache__/planner.cpython-36.pyc</PATH>
+          <PATH vcs="Git" revision="">$PROJECT_DIR$/PathFinding/__pycache__/planning2.cpython-36.pyc</PATH>
+          <PATH vcs="Git" revision="">$PROJECT_DIR$/PathFinding/__pycache__/poll_env.cpython-36.pyc</PATH>
+          <PATH vcs="Git" revision="">$PROJECT_DIR$/PathFinding/__pycache__/utils.cpython-36.pyc</PATH>
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Created" />
+          <option name="myStatusName" value="Created" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" value="CREATED" />
+          <PATH vcs="Git" revision="">$PROJECT_DIR$/.gitignore</PATH>
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Deleted" />
+          <option name="myStatusName" value="Deleted" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="true" />
+          <option name="myId" value="REMOVED_FROM_REPOSITORY" />
+        </FILE-GROUP>
+        <FILE-GROUP>
+          <option name="myUpdateName" value="Restored" />
+          <option name="myStatusName" value="Will be restored" />
+          <option name="mySupportsDeletion" value="false" />
+          <option name="myCanBeAbsent" value="false" />
+          <option name="myId" value="RESTORED" />
+        </FILE-GROUP>
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Modified" />
+        <option name="myStatusName" value="Modified" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="MODIFIED" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Skipped" />
+        <option name="myStatusName" value="Skipped" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="SKIPPED" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Merged with conflicts" />
+        <option name="myStatusName" value="Will be merged with conflicts" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="MERGED_WITH_CONFLICTS" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Merged with tree conflicts" />
+        <option name="myStatusName" value="Merged with tree conflicts" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="MERGED_WITH_TREE_CONFLICT" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Merged with property conflicts" />
+        <option name="myStatusName" value="Will be merged with property conflicts" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="MERGED_WITH_PROPERTY_CONFLICT" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Merged" />
+        <option name="myStatusName" value="Will be merged" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="MERGED" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Not in repository" />
+        <option name="myStatusName" value="Not in repository" />
+        <option name="mySupportsDeletion" value="true" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="UNKNOWN" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Locally added" />
+        <option name="myStatusName" value="Locally added" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="LOCALLY_ADDED" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Locally removed" />
+        <option name="myStatusName" value="Locally removed" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="LOCALLY_REMOVED" />
+      </FILE-GROUP>
+      <FILE-GROUP>
+        <option name="myUpdateName" value="Switched" />
+        <option name="myStatusName" value="Switched" />
+        <option name="mySupportsDeletion" value="false" />
+        <option name="myCanBeAbsent" value="false" />
+        <option name="myId" value="SWITCHED" />
+      </FILE-GROUP>
+    </UpdatedFiles>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -227,8 +327,8 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.testing">
-    <configuration name="KF_test5" type="PythonConfigurationType" factoryName="Python" temporary="true">
+  <component name="RunManager" selected="Python.test_randomplanner">
+    <configuration name="KF_test6" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="PollutionMapping" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -241,7 +341,26 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Kalman_Filter/KF_test5.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Kalman_Filter/KF_test6.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+    </configuration>
+    <configuration name="test_randomplanner" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="PollutionMapping" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/PathFinding" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/PathFinding/test_randomplanner.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -268,12 +387,14 @@
     </configuration>
     <list>
       <item itemvalue="Python.testing" />
-      <item itemvalue="Python.KF_test5" />
+      <item itemvalue="Python.test_randomplanner" />
+      <item itemvalue="Python.KF_test6" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.test_randomplanner" />
+        <item itemvalue="Python.KF_test6" />
         <item itemvalue="Python.testing" />
-        <item itemvalue="Python.KF_test5" />
       </list>
     </recent_temporary>
   </component>
@@ -282,14 +403,33 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="0427c071-085e-4e2e-ab4a-95dd2880b275" name="Default" comment="" />
-      <created>1530122481749</created>
+      <changelist id="029c1c8e-deb8-4b67-9454-591e434a4180" name="Default" comment="" />
+      <created>1530236889770</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1530122481749</updated>
+      <updated>1530236889770</updated>
     </task>
-<<<<<<< HEAD
-=======
+    <task id="LOCAL-00001" summary="working on pathing">
+      <created>1530313834065</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1530313834065</updated>
+    </task>
+    <task id="LOCAL-00002" summary="random pathing working">
+      <created>1530559553299</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1530559553299</updated>
+    </task>
+    <task id="LOCAL-00003" summary="All functions working">
+      <created>1530563682242</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1530563682242</updated>
+    </task>
     <task id="LOCAL-00004" summary="working on kalman filter">
       <created>1530562441425</created>
       <option name="number" value="00004" />
@@ -311,59 +451,48 @@
       <option name="project" value="LOCAL" />
       <updated>1530568446514</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
->>>>>>> 25cd8d80f4d81bcc4064a9212ee8fc3097261d55
+    <task id="LOCAL-00007" summary="Kalman Filtering is broken">
+      <created>1530573672690</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1530573672690</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Kalman Filtering is broken">
+      <created>1530637062811</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1530637062811</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
-  <component name="TodoView">
-    <todo-panel id="selected-file">
-      <is-autoscroll-to-source value="true" />
-    </todo-panel>
-    <todo-panel id="all">
-      <are-packages-shown value="true" />
-      <is-autoscroll-to-source value="true" />
-    </todo-panel>
-  </component>
   <component name="ToolWindowManager">
-    <frame x="1280" y="-489" width="1920" height="1080" extended-state="0" />
+    <frame x="973" y="-1088" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-<<<<<<< HEAD
-      <window_info anchor="bottom" id="TODO" order="6" weight="0.32935324" />
-      <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
-      <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Version Control" order="7" weight="0.32935324" />
-      <window_info anchor="bottom" id="Python Console" order="7" weight="0.32935324" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.26467663" />
-      <window_info anchor="bottom" id="Terminal" order="7" weight="0.2716418" />
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.17199148" />
-=======
       <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.5026652" side_tool="true" visible="true" weight="0.32897604" />
+      <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.50319827" side_tool="true" weight="0.39760348" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="7" sideWeight="0.49946696" weight="0.30718955" />
       <window_info anchor="bottom" id="Python Console" order="7" sideWeight="0.49946696" weight="0.16122004" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49733475" visible="true" weight="0.32897604" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4968017" visible="true" weight="0.32897604" />
       <window_info anchor="bottom" id="Terminal" order="7" sideWeight="0.4989339" weight="0.32897604" />
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.1663113" />
->>>>>>> 25cd8d80f4d81bcc4064a9212ee8fc3097261d55
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="3" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.32935324" />
-      <window_info anchor="right" id="SciView" order="3" weight="0.32960597" />
+      <window_info anchor="right" id="SciView" order="3" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
-<<<<<<< HEAD
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.39900497" />
-=======
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.4978678" weight="0.39760348" />
->>>>>>> 25cd8d80f4d81bcc4064a9212ee8fc3097261d55
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.4968017" weight="0.39760348" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="right" id="Commander" order="0" weight="0.4" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.3298969" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Message" order="0" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -398,18 +527,14 @@
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
-<<<<<<< HEAD
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <option name="time" value="2" />
-=======
   <component name="VcsManagerConfiguration">
     <MESSAGE value="working on pathing" />
     <MESSAGE value="random pathing working" />
     <MESSAGE value="All functions working" />
     <MESSAGE value="working on kalman filter" />
     <MESSAGE value="Fixed pol_env" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed pol_env" />
+    <MESSAGE value="Kalman Filtering is broken" />
+    <option name="LAST_COMMIT_MESSAGE" value="Kalman Filtering is broken" />
     <option name="UPDATE_GROUP_BY_PACKAGES" value="true" />
   </component>
   <component name="XDebuggerManager">
@@ -417,11 +542,11 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/PathFinding/testing.py</url>
-          <line>52</line>
+          <line>50</line>
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/PathFinding/testing.py</url>
-          <line>54</line>
+          <line>52</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -436,17 +561,26 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/PathFinding/testing.py</url>
-          <line>47</line>
+          <line>45</line>
           <option name="timeStamp" value="5" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/PathFinding/testing.py</url>
-          <line>34</line>
+          <line>32</line>
           <option name="timeStamp" value="20" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PathFinding/test_randomplanner.py</url>
+          <line>59</line>
+          <option name="timeStamp" value="37" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PathFinding/test_randomplanner.py</url>
+          <line>60</line>
+          <option name="timeStamp" value="38" />
+        </line-breakpoint>
       </breakpoints>
-      <option name="time" value="32" />
->>>>>>> 25cd8d80f4d81bcc4064a9212ee8fc3097261d55
+      <option name="time" value="39" />
     </breakpoint-manager>
   </component>
   <component name="debuggerHistoryManager">
@@ -464,90 +598,127 @@
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/PathFinding/Pathing.py" />
     <entry file="file://$PROJECT_DIR$/PathFinding/Planning.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="7" column="27" lean-forward="true" selection-start-line="7" selection-start-column="27" selection-end-line="7" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/PathFinding/PolEnv.py" />
-    <entry file="file://$PROJECT_DIR$/PathFinding/fleet.py" />
-    <entry file="file://$PROJECT_DIR$/PathFinding/env.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="14" column="62" lean-forward="true" selection-start-line="14" selection-start-column="62" selection-end-line="14" selection-end-column="62" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/PathFinding/MCPC_170802_142909.txt" />
-    <entry file="file://$PROJECT_DIR$/PathFinding/MCPC_Parser.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/PathFinding/coordinates.txt" />
-    <entry file="file://$PROJECT_DIR$/PathFinding/Compile.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-311" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Kalman_Filter/Kalman_Filter.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="217">
-          <caret line="16" column="39" selection-start-line="16" selection-start-column="39" selection-end-line="16" selection-end-column="39" />
+        <state relative-caret-position="1071">
+          <caret line="69" column="125" selection-start-line="69" selection-start-column="125" selection-end-line="69" selection-end-column="125" />
           <folding>
-            <element signature="e#0#25#0" expanded="true" />
+            <element signature="e#0#15#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Kalman_Filter/KF_test5.py">
+    <entry file="file://$PROJECT_DIR$/PathFinding/planning2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="23" selection-start-line="23" selection-end-line="23" />
+        <state relative-caret-position="408">
+          <caret line="30" selection-start-line="30" selection-end-line="30" />
           <folding>
-            <element signature="e#0#27#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Kalman_Filter/Variance.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-54">
-          <folding>
-            <element signature="e#0#25#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/PathFinding/Kalman.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-973">
-          <caret line="21" column="26" selection-start-line="21" selection-start-column="26" selection-end-line="21" selection-end-column="26" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#0#15#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/PathFinding/testing.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="186">
-          <caret line="25" column="20" selection-start-line="25" selection-start-column="20" selection-end-line="25" selection-end-column="20" />
+        <state relative-caret-position="544">
+          <caret line="45" selection-start-line="45" selection-end-line="45" selection-end-column="67" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-<<<<<<< HEAD
+    <entry file="file://$PROJECT_DIR$/PathFinding/test_randomplanner.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="425">
+          <caret line="38" column="57" selection-start-line="38" selection-start-column="57" selection-end-line="38" selection-end-column="57" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Anaconda3/envs/PolMap/Lib/site-packages/networkx/algorithms/shortest_paths/unweighted.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5661">
+          <caret line="333" selection-start-line="333" selection-end-line="333" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/PathFinding/poll_env.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="257">
-          <caret line="59" lean-forward="true" selection-start-line="59" selection-end-line="59" />
+        <state relative-caret-position="323">
+          <caret line="21" selection-start-line="21" selection-end-line="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Anaconda3/envs/PolMap/Lib/site-packages/networkx/classes/graph.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="14688">
+          <caret line="874" selection-start-line="874" selection-end-line="874" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Anaconda3/envs/PolMap/Lib/site-packages/networkx/classes/digraph.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="13158">
+          <caret line="782" selection-start-line="782" selection-end-line="782" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PathFinding/Kalman.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
           <folding>
-            <element signature="e#0#17#0" expanded="true" />
-=======
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PathFinding/randomplanner.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1105">
+          <caret line="73" column="23" lean-forward="true" selection-start-line="73" selection-start-column="23" selection-end-line="73" selection-end-column="23" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Anaconda3/envs/PolMap/Lib/random.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="108">
+          <caret line="313" selection-start-line="313" selection-end-line="313" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Anaconda3/envs/PolMap/Lib/site-packages/networkx/classes/graph.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="14688">
+          <caret line="874" selection-start-line="874" selection-end-line="874" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PathFinding/planning2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="408">
+          <caret line="30" selection-start-line="30" selection-end-line="30" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PathFinding/Planning.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1071">
+          <caret line="69" column="125" selection-start-line="69" selection-start-column="125" selection-end-line="69" selection-end-column="125" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$USER_HOME$/Anaconda3/envs/PolMap/Lib/site-packages/networkx/algorithms/shortest_paths/unweighted.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="108">
@@ -558,16 +729,6 @@
     <entry file="file://$PROJECT_DIR$/PathFinding/cache/6a912e4f6a24a8dc3a510174daee97cc.json">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/PathFinding/testing.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="459">
-          <caret line="42" column="129" lean-forward="true" selection-start-line="42" selection-end-line="42" selection-end-column="129" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/Anaconda3/envs/PolMap/Lib/site-packages/networkx/classes/digraph.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="17">
@@ -575,68 +736,99 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/PathFinding/randomplanner.py">
+    <entry file="file://$PROJECT_DIR$/PathFinding/testing.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="163" column="34" selection-start-line="163" selection-start-column="34" selection-end-line="163" selection-end-column="34" />
+        <state relative-caret-position="221">
+          <caret line="28" column="52" selection-start-line="28" selection-start-column="52" selection-end-line="28" selection-end-column="52" />
           <folding>
-            <element signature="e#0#15#0" expanded="true" />
->>>>>>> 25cd8d80f4d81bcc4064a9212ee8fc3097261d55
+            <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-<<<<<<< HEAD
-    <entry file="file://$PROJECT_DIR$/PathFinding/test_randomplanner.py">
+    <entry file="file://$PROJECT_DIR$/PathFinding/Kalman_Filter/Kalman_Filter/Data_Parser.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="557">
-          <caret line="83" column="37" lean-forward="true" selection-start-line="83" selection-start-column="37" selection-end-line="83" selection-end-column="37" />
+        <state relative-caret-position="323">
+          <caret line="28" column="27" lean-forward="true" selection-start-line="28" selection-start-column="27" selection-end-line="28" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Anaconda3/envs/PolMap/Lib/site-packages/pandas/core/reshape/tile.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="482">
+          <caret line="331" selection-start-line="331" selection-end-line="331" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Kalman_Filter/KF_test6.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="357">
+          <caret line="24" column="22" lean-forward="true" selection-start-line="24" selection-start-column="22" selection-end-line="24" selection-end-column="22" />
           <folding>
-            <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#0#27#0" expanded="true" />
           </folding>
-=======
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PathFinding/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="45" column="26" lean-forward="true" selection-start-line="45" selection-start-column="26" selection-end-line="45" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Kalman_Filter/Variance.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#0#25#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/PathFinding/poll_env.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="189">
-          <caret line="58" selection-start-line="58" selection-end-line="58" />
->>>>>>> 25cd8d80f4d81bcc4064a9212ee8fc3097261d55
+        <state relative-caret-position="607">
+          <caret line="73" selection-start-line="73" selection-end-line="73" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/PathFinding/env.py">
       <provider selected="true" editor-type-id="text-editor">
-<<<<<<< HEAD
-        <state relative-caret-position="242">
-          <caret line="234" column="52" selection-start-line="234" selection-start-column="52" selection-end-line="234" selection-end-column="52" />
-=======
-        <state relative-caret-position="24">
-          <caret line="38" lean-forward="true" selection-start-line="38" selection-end-line="38" />
+        <state relative-caret-position="352">
+          <caret line="33" selection-start-line="33" selection-end-line="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PathFinding/Kalman.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-374">
+          <caret line="53" column="88" selection-start-line="53" selection-start-column="88" selection-end-line="53" selection-end-column="88" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PathFinding/randomplanner.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2822">
+          <caret line="59" column="35" selection-start-line="59" selection-start-column="35" selection-end-line="59" selection-end-column="35" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/PathFinding/test_randomplanner.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="410">
-          <caret line="69" column="21" selection-start-line="69" selection-start-column="21" selection-end-line="69" selection-end-column="21" />
->>>>>>> 25cd8d80f4d81bcc4064a9212ee8fc3097261d55
+        <state relative-caret-position="359">
+          <caret line="67" column="87" selection-start-line="67" selection-start-column="87" selection-end-line="67" selection-end-column="87" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-<<<<<<< HEAD
-=======
-    <entry file="file://$PROJECT_DIR$/PathFinding/Kalman.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="109">
-          <caret line="46" column="38" selection-start-line="46" selection-start-column="38" selection-end-line="46" selection-end-column="38" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
->>>>>>> 25cd8d80f4d81bcc4064a9212ee8fc3097261d55
   </component>
 </project>
