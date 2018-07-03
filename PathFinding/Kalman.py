@@ -44,7 +44,7 @@ class kalman(object):
     def meas_var_dist(distance):
         """calculates the measured value variance for a given point given
         the variance is linear with respect to distance"""
-        var = (5000) * distance ** 2
+        var = 200 * distance ** 6
         return var
 
     def update(self, pollution, location_point, count_max):  # Loc_point in lat/long
@@ -90,7 +90,24 @@ class kalman(object):
     #
     # 	return finished
 
-    def expand_itter(self, queued, finished, meas_pollution, location_point, count, count_max):
+    def kalman_loop(self, meas_pollution, location_point):
+        for node in self.env.nodes():
+            node_loc = self.env.get_node_to_cart(node)
+            node_to_loc = utils.distance(node_loc, location_point)
+            meas_dist_var = self.meas_var_dist(node_to_loc)
+            priori_node_var = self.env.get_node_attribute(node, 'var')  # Calls before to check if it exists
+            if priori_node_var:
+                priori_node_pol = self.env.get_node_attribute(node, 'pol')
+                node_pol, node_var = self.kalman_filter(priori_node_pol, priori_node_var, meas_pollution,
+                                                        meas_dist_var)
+            else:
+                node_pol = meas_pollution
+                node_var = meas_dist_var
+                print("stop")
+            self.env.set_node_attribute(node, 'pol', node_pol)
+            self.env.set_node_attribute(node, 'var', node_var)
+
+def expand_itter(self, queued, finished, meas_pollution, location_point, count, count_max):
         # TODO Write this again based on time, so we go to as far as a depth we can hit until a time limit is reached.
         queued.append("0")
         while count < count_max and queued:
@@ -113,6 +130,7 @@ class kalman(object):
                 else:
                     node_pol = meas_pollution
                     node_var = meas_dist_var
+                    print("stop")
                 self.env.set_node_attribute(node, 'pol', node_pol)
                 self.env.set_node_attribute(node, 'var', node_var)  # May have to call env as PolEnv._....
             finished.append(queued[0])

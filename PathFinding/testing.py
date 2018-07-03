@@ -26,14 +26,12 @@ env = PolEnv(G)
 kalman = kalman(env)
 kalman.wipe_initilize()
 
-kalman.update(500, (34.05, -117.0), 100)  # bot right
-nc = ox.get_node_colors_by_attr(env.graph, 'pol', cmap='plasma', num_bins=None)
-fig, ax = ox.plot_graph(kalman.env.graph, fig_height=6, node_color=nc, node_size=12, node_zorder=2, edge_color='#dddddd', use_geom=True)
+kalman.update(500, (34.05, -117.0), 50)  # bot right
 kalman.update(500, (34.05, -117.05), 100)  # bot left
-nc = ox.get_node_colors_by_attr(env.graph, 'pol', cmap='plasma', num_bins=None)
+nc = ox.get_node_colors_by_attr(env.graph, 'pol', cmap='plasma', num_bins=20)
 fig, ax = ox.plot_graph(kalman.env.graph, fig_height=6, node_color=nc, node_size=12, node_zorder=2, edge_color='#dddddd', use_geom=True)
 kalman.update(20, (34.025, -117.025), 100)
-nc = ox.get_node_colors_by_attr(kalman.env.graph, 'pol', cmap='plasma', num_bins=None)
+nc = ox.get_node_colors_by_attr(kalman.env.graph, 'pol', cmap='plasma', num_bins=20)
 fig, ax = ox.plot_graph(env.graph, fig_height=6, node_color=nc, node_size=12, node_zorder=2, edge_color='#dddddd', use_geom=True)
 kalman.update(500, (34.0, -117.0), 100)  # top right
 nc = ox.get_node_colors_by_attr(env.graph, 'pol', cmap='plasma', num_bins=20)
