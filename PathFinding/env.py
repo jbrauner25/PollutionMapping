@@ -42,7 +42,7 @@ class Env(object):
         Return the graph node nearest to some specified (y, x) point of the object's graph,
         and optionally the distance between the node and the point.
         """
-        return ox.get_nearest_node(self.graph, point)
+        return ox.get_nearest_node(self.graph, point, method='euclidean')
 
     def get_all_nodes(self):
         """Return list of all nodes in env's graph."""

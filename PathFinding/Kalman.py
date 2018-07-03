@@ -4,6 +4,7 @@ import networkx as nx
 from CoordCart import coord_cart
 from poll_env import PolEnv
 import utils
+import random
 
 
 class kalman(object):
@@ -13,8 +14,8 @@ class kalman(object):
     def wipe_initilize(self):
         '''Sets all pol to 0 and variance to 9999'''
         for node in self.env.graph.nodes():
-            self.env.set_node_attribute(node, 'var', 999999)
-            self.env.set_node_attribute(node, 'pol', 100)
+            self.env.set_node_attribute(node, 'var', random.randrange(999999999999999,99999999999999999999))
+            self.env.set_node_attribute(node, 'pol', random.randrange(100,200))
 
     @staticmethod
     def kalman_filter(node_pol, node_var, meas_pol, meas_var):
@@ -43,12 +44,12 @@ class kalman(object):
     def meas_var_dist(distance):
         """calculates the measured value variance for a given point given
         the variance is linear with respect to distance"""
-        var = (324000) * distance
+        var = 200 * distance ** 6
         return var
 
     def update(self, pollution, location_point, count_max):  # Loc_point in lat/long
         count = 0
-        start_node = self.env.get_nearest_node(location_point)  # Location point must be in lat/long
+        start_node = ox.get_nearest_node(self.env.G, location_point)  # Location point must be in lat/long
         cart_loc = coord_cart(location_point,
                               self.env.origin)  # Changes location point into X-Y based on origin for calculating distance
         # Finds the pol data's cartesian coord from grabbing the origin from the start node.
@@ -89,7 +90,24 @@ class kalman(object):
     #
     # 	return finished
 
-    def expand_itter(self, queued, finished, meas_pollution, location_point, count, count_max):
+    def kalman_loop(self, meas_pollution, location_point):
+        for node in self.env.nodes():
+            node_loc = self.env.get_node_to_cart(node)
+            node_to_loc = utils.distance(node_loc, location_point)
+            meas_dist_var = self.meas_var_dist(node_to_loc)
+            priori_node_var = self.env.get_node_attribute(node, 'var')  # Calls before to check if it exists
+            if priori_node_var:
+                priori_node_pol = self.env.get_node_attribute(node, 'pol')
+                node_pol, node_var = self.kalman_filter(priori_node_pol, priori_node_var, meas_pollution,
+                                                        meas_dist_var)
+            else:
+                node_pol = meas_pollution
+                node_var = meas_dist_var
+                print("stop")
+            self.env.set_node_attribute(node, 'pol', node_pol)
+            self.env.set_node_attribute(node, 'var', node_var)
+
+def expand_itter(self, queued, finished, meas_pollution, location_point, count, count_max):
         # TODO Write this again based on time, so we go to as far as a depth we can hit until a time limit is reached.
         queued.append("0")
         while count < count_max and queued:
@@ -112,6 +130,7 @@ class kalman(object):
                 else:
                     node_pol = meas_pollution
                     node_var = meas_dist_var
+                    print("stop")
                 self.env.set_node_attribute(node, 'pol', node_pol)
                 self.env.set_node_attribute(node, 'var', node_var)  # May have to call env as PolEnv._....
             finished.append(queued[0])
