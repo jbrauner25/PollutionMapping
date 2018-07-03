@@ -30,6 +30,8 @@ function [Y_pred,var_pred,diff,binned_data] = FixedRankFilter2D(nmea_file,mcpc_f
     binned_data = log(binned_data);
     %transpose binned_data so time is 3rd dimension
     binned_data = binned_data';
+    training1 = training1';
+    training2 = training2';
         
     %detrend the first two runs (the training sets). Detrend using all data
     %because we assume that all data will be availble to us for the
@@ -54,7 +56,7 @@ function [Y_pred,var_pred,diff,binned_data] = FixedRankFilter2D(nmea_file,mcpc_f
     [Q, R] = qr(S, 0);
     
     %Set signal to noise ratio
-    SNR = 100;
+    SNR = 5;
     
     %set value of d, the threshold value for the positive definite process.
     dVal = 2;
@@ -74,6 +76,13 @@ function [Y_pred,var_pred,diff,binned_data] = FixedRankFilter2D(nmea_file,mcpc_f
         sigma_2 = (training2*training2')/N;
     end
     sigmaLag_2 = ((training1*training2')/N)';
+    
+%     t1 = training1 - mean(training1);
+%     t2 = training2 - mean(training2);
+%     sigma_1 = (t1 * t1')/N;
+%     sigma_2 = (t2 * t2')/N;
+%     sigmaLag_2 = (t1 * t2')/N;
+    
     
     %Now that we have sigma_1, we can calculate Kprelim, sigma2_xi and
     %sigma2_eps
@@ -163,8 +172,11 @@ function [Y_pred,var_pred,diff,binned_data] = FixedRankFilter2D(nmea_file,mcpc_f
             (Z_obs- St * eta_t_tp(:,t));
         var_pred(:,t) = reshape(diag(S * P_t_tp(:,:,t) * S' + sigma2_xi - (sigma2_xi.*M)*...
             ((1/Dii).*eye(n)-(Dii^(-2)).* St * inv(inv(P_t_tp(:,:,t))+(1/Dii).*St' * St) * St')*(sigma2_xi.*M')...
-            -2 * S * P_t_tp(:,:,t)*G*(sigma2_xi.*M')),N,1);      
-       
+            -2 * S * P_t_tp(:,:,t)*G*(sigma2_xi.*M')),N,1);    
+        
+        %Y_pred(:,t) = Y_pred(:,t) + allTrends(:, t+2);
+        
+        %sigma = ((Y_pred(:,t)-mean(Y_pred(:,t)))*(Y_pred(:,t)-mean(Y_pred(:,t)))')/N;
         sigma = (Y_pred(:,t) * Y_pred(:,t)') / N;        
         %make sigma_t positive definite and add to sigma_t
         A = D^(-1/2) * sigma * D^(-1/2) - eye(N);
@@ -176,6 +188,11 @@ function [Y_pred,var_pred,diff,binned_data] = FixedRankFilter2D(nmea_file,mcpc_f
         sigma_t(:,:,t+2) = (D^(1/2)) *A_PD * (D^(1/2)) + D;
   
         %calculate sigmaLag from sigma_t and sigma_t-1
+%         if t==1
+%             sigmaLag_t(:,:,t+2) = (t2*(Y_pred(:,t)-mean(Y_pred(:,t)))')/N;
+%         else
+%             sigmaLag_t(:,:,t+2) = ((Y_pred(:,t-1)-mean(Y_pred(:,t-1)))*(Y_pred(:,t)-mean(Y_pred(:,t)))')/N;
+%         end
         sigmaLag_t(:,:,t+2) = (sigma_t(:,:,t+1) * sigma_t(:,:,t+2)') / N;
         %Calculate new values for K,L,H,U,
         K_t(:,:,t+2) = R \ Q' * (sigma_t(:,:,t+2) - D) * Q * (inv(R))';
@@ -189,6 +206,7 @@ function [Y_pred,var_pred,diff,binned_data] = FixedRankFilter2D(nmea_file,mcpc_f
     
     %reverse log transformation
     Y_pred = exp(Y_pred);
+    var_pred = exp(var_pred);
     binned_data = exp(binned_data);
     diff = Y_pred - binned_data;
     
