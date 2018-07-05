@@ -27,8 +27,8 @@ for j in range(map.numRows): #Create 2D arrays for x, y, z axis
         var_pred_row.append(map.get_node(i, j).get_variance_est())
     y_pred.append(y_pred_row); var_pred.append(var_pred_row)
 
-scipy.io.savemat('/Users/jaredbrauner/Documents/data/Pollution_Monitoring/FRF/training/2D/T6.mat',
-    mdict={'T6': y_pred, 'T6Var': var_pred})
+# scipy.io.savemat('/Users/jaredbrauner/Documents/data/Pollution_Monitoring/FRF/training/2D/T6.mat',
+#     mdict={'T6': y_pred, 'T6Var': var_pred})
 
 #scipy.io.savemat('/Users/jaredbrauner/Documents/data/Pollution_Monitoring/FRF/training/2D/T4.mat',
 #    mdict={'training2': y_pred, 'training2_var': var_pred})

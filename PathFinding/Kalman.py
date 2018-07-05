@@ -44,7 +44,7 @@ class kalman(object):
     def meas_var_dist(distance):
         """calculates the measured value variance for a given point given
         the variance is linear with respect to distance"""
-        var = 200 * distance ** 6
+        var = 500 * distance
         return var
 
     def update(self, pollution, location_point, count_max):  # Loc_point in lat/long
@@ -59,7 +59,7 @@ class kalman(object):
     def distance(node_loc, loc):  # Uses Cart Points
         dx = node_loc[0] - loc[0]
         dy = node_loc[1] - loc[1]
-        return math.sqrt(dx ^ 2 + dy ^ 2)
+        return dx ^ 2 + dy ^ 2
 
     #
     # def expand(self, queued, finished, meas_pollution, location_point, count, count_max):
@@ -90,10 +90,19 @@ class kalman(object):
     #
     # 	return finished
 
+    def get_distance(self, node2, lat1=None, long1=None, node1=None):
+        if node1 is not None:
+            lat1, long1 = self.env.get_node_lat_long(node1)
+        lat2, long2 = self.env.get_node_lat_long(node2)
+        return ox.utils.great_circle_vec(lat1, long1, lat2, long2)
+
+
+
     def kalman_loop(self, meas_pollution, location_point):
         for node in self.env.nodes():
-            node_loc = self.env.get_node_to_cart(node)
-            node_to_loc = utils.distance(node_loc, location_point)
+            # node_loc = self.env.get_node_to_cart(node)
+            # node_to_loc = utils.distance(node_loc, location_point)
+            node_to_loc = self.get_distance(node, location_point[0], location_point[1])
             meas_dist_var = self.meas_var_dist(node_to_loc)
             priori_node_var = self.env.get_node_attribute(node, 'var')  # Calls before to check if it exists
             if priori_node_var:

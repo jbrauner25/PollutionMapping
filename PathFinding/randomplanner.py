@@ -8,6 +8,7 @@ import itertools
 import random
 import time
 import copy
+import bisect
 
 
 #
@@ -132,15 +133,14 @@ class planner(object):
         end_node = None
         counter = next(c)
         G.add_node(counter)
-        # nx.add_node(G, counter)
         unique_to_node[counter] = (origin_node, 0, 0, 0)
         next(c)
         while queued:
             node, counter_start, nodeset = queued.pop(random.randrange(len(queued)))
             succ = list(self.env.graph.successors(node))
             edit_succ = [x for x in succ if x not in nodeset]
-            if len(edit_succ) >= 3:
-                succ = random.sample(edit_succ, 3)
+            if len(edit_succ) >= self.branch_per_expansion:
+                edit_succ = random.sample(edit_succ, self.branch_per_expansion)
             successors = edit_succ
             _, cost, length, priori = unique_to_node[counter_start]
             for successor_node in successors:
@@ -203,7 +203,52 @@ class planner(object):
                 G.node[counter]['weight'] = new_priori
                 succ_nodeset = copy.copy(nodeset)
                 succ_nodeset.add(successor_node)
-                print(new_length)
+                if new_length >= max_dist:
+                    route_count += 1
+                    if end_node is None:
+                        end_node = [counter]
+                    elif G.nodes[end_node]['weight'] > new_priori:
+                        end_node = counter
+                else:
+                    queued.insert(0, (successor_node, counter, succ_nodeset))
+            if route_count >= min_routes_considered:
+                return end_node, G, unique_to_node
+        return end_node, G, unique_to_node
+
+    def random_paths_unique_random_queue_multiple_routes(self, origin_node, max_dist, min_routes_considered):
+        time_start = time.time()
+        c = itertools.count()
+        G = nx.Graph()
+        route_count = 0
+        unique_to_node = {}
+        nodeset = set()
+        nodeset.add(origin_node)
+        queued = [(origin_node, 0, nodeset)]
+        end_node = None
+        counter = next(c)
+        G.add_node(counter)
+        # nx.add_node(G, counter)
+        unique_to_node[counter] = (origin_node, 0, 0, 0)
+        next(c)
+        while queued:
+            node, counter_start, nodeset = queued.pop(random.randrange(len(queued)))
+            succ = list(self.env.graph.successors(node))
+            edit_succ = [x for x in succ if x not in nodeset]
+            if len(edit_succ) >= 3:
+                succ = random.sample(edit_succ, 3)
+            successors = edit_succ
+            _, cost, length, priori = unique_to_node[counter_start]
+            for successor_node in successors:
+                new_edge_cost = self.env.get_edge_data((node, successor_node), 'weight')  # returns tuple (cost, length)
+                new_length = length + new_edge_cost[1]
+                new_cost = cost + new_edge_cost[0]
+                new_priori = new_cost  # / new_length
+                counter = next(c)
+                unique_to_node[counter] = (successor_node, new_cost, new_length, new_priori)
+                G.add_edge(counter_start, counter)
+                G.node[counter]['weight'] = new_priori
+                succ_nodeset = copy.copy(nodeset)
+                succ_nodeset.add(successor_node)
                 if new_length >= max_dist:
                     route_count += 1
                     if end_node is None:
@@ -216,11 +261,113 @@ class planner(object):
                 return end_node, G, unique_to_node
         return end_node, G, unique_to_node
 
+    def dijstras(self, origin_node, max_dist, min_routes_considered):
+        c = itertools.count()
+        G = nx.Graph()
+        push = heappush
+        pop = heappop
+        route_count = 0
+        unique_to_node = {}
+        nodeset = set()
+        nodeset.add(origin_node)
+        queue = []
+        push(queue, (0, origin_node, 0, nodeset))
+        end_nodes = None
+        counter = next(c)
+        G.add_node(counter)
+        # nx.add_node(G, counter)
+        unique_to_node[counter] = (origin_node, 0, 0, 0)
+        next(c)
+        while queue:
+            _, node, counter_start, nodeset = pop(queue)
+            succ = list(self.env.graph.successors(node))
+            edit_succ = [x for x in succ if x not in nodeset]
+            if len(edit_succ) >= self.branch_per_expansion:
+                edit_succ = random.sample(edit_succ, self.branch_per_expansion)
+            successors = edit_succ
+            _, cost, length, priori = unique_to_node[counter_start]
+            for successor_node in successors:
+                new_edge_cost = self.env.get_edge_data((node, successor_node), 'weight')  # returns tuple (cost, length)
+                new_length = length + new_edge_cost[1]
+                new_cost = cost + new_edge_cost[0]
+                new_priori = new_cost / new_length
+                counter = next(c)
+                unique_to_node[counter] = (successor_node, new_cost, new_length, new_priori)
+                G.add_edge(counter_start, counter)
+                G.node[counter]['weight'] = new_priori
+                succ_nodeset = copy.copy(nodeset)
+                succ_nodeset.add(successor_node)
+                if new_length >= max_dist:
+                    route_count += 1
+                    if end_nodes is None:
+                        end_nodes = [(counter_start, cost)]
+                    else:
+                        end_nodes.append((counter_start, cost))
+                    break
+                else:
+                    push(queue, (new_priori, successor_node, counter, succ_nodeset))
+            if route_count >= min_routes_considered:
+                break
+        sorted_end_nodes = sorted(end_nodes, key=lambda x: x[1], reverse=True)
+        edited_sorted_end_nodes = [x[0] for x in sorted_end_nodes]
+        return edited_sorted_end_nodes, G, unique_to_node
 
-    def path_recreator(self, G, start_node, end_node):
+    def dijkstras_path_recreator(self, G, start_node, end_node):
         return nx.shortest_simple_paths(G, start_node, end_node)
 
-    def path_converter(self, dict, path, start, end):
+    def dijstras_multi_cost(self, origin_node, max_dist, min_routes_considered):
+        c = itertools.count()
+        G = nx.Graph()
+        push = heappush
+        pop = heappop
+        route_count = 0
+        unique_to_node = {}
+        nodeset = set()
+        nodeset.add(origin_node)
+        queue = []
+        push(queue, (0, origin_node, 0, nodeset))
+        end_nodes = None
+        counter = next(c)
+        G.add_node(counter)
+        # nx.add_node(G, counter)
+        unique_to_node[counter] = (origin_node, 0, 0, 0)
+        next(c)
+        while queue:
+            _, node, counter_start, nodeset = pop(queue)
+            succ = list(self.env.graph.successors(node))
+            edit_succ = [x for x in succ if x not in nodeset]
+            if len(edit_succ) >= self.branch_per_expansion:
+                edit_succ = random.sample(edit_succ, self.branch_per_expansion)
+            successors = edit_succ
+            _, cost, length, priori = unique_to_node[counter_start]
+            for successor_node in successors:
+                new_edge_cost = self.env.get_edge_data((node, successor_node), 'weight')  # returns tuple (cost, length)
+                new_length = length + new_edge_cost[1]
+                new_cost = cost + new_edge_cost[0]
+                new_priori = priori + new_edge_cost[0] * new_edge_cost[1]
+                counter = next(c)
+                unique_to_node[counter] = (successor_node, new_cost, new_length, new_priori)
+                G.add_edge(counter_start, counter)
+                G.node[counter]['weight'] = new_priori
+                succ_nodeset = copy.copy(nodeset)
+                succ_nodeset.add(successor_node)
+                if new_length >= max_dist:
+                    route_count += 1
+                    if end_nodes is None:
+                        end_nodes = [(counter_start, priori)]
+                    else:
+                        end_nodes.append((counter_start, priori))
+                    break
+                else:
+                    push(queue, (new_priori, successor_node, counter, succ_nodeset))
+            if route_count >= min_routes_considered:
+                break
+        sorted_end_nodes = sorted(end_nodes, key=lambda x: x[1], reverse=True)
+        edited_sorted_end_nodes = [x[0] for x in sorted_end_nodes]
+        return edited_sorted_end_nodes, G, unique_to_node
+
+    def path_converter(self, dict, G, start_node, end_node):
+        path = nx.shortest_simple_paths(G, start_node, end_node)
         new_path = []
         for node in path:
             for no in node:
@@ -245,6 +392,7 @@ class planner(object):
             node_cost = self.priority(v)
             edge_cost = (past_node_cost + node_cost) / 2
             data['weight'] = (edge_cost, data['length'])
+            data['cost'] = edge_cost
             past_node_cost = node_cost
 
     def get_path(self, source):
@@ -252,8 +400,7 @@ class planner(object):
         paths = dict(paths)
         return paths[source]
 
-    def set_config(self, iter_max, branch_per_expansion, lambda1, lambda2):
-        self.iter_max = iter_max
-        self.branch_per_expansion = branch_per_expansion
+    def set_config(self, branch_per_expans, lambda1, lambda2):
+        self.branch_per_expansion = branch_per_expans
         self.lambda1 = lambda1
         self.lambda2 = lambda2
