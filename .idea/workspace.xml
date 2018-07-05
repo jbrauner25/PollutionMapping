@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="029c1c8e-deb8-4b67-9454-591e434a4180" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PathFinding/Kalman.py" beforeDir="false" afterPath="$PROJECT_DIR$/PathFinding/Kalman.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PathFinding/randomplanner.py" beforeDir="false" afterPath="$PROJECT_DIR$/PathFinding/randomplanner.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PathFinding/test_randomplanner.py" beforeDir="false" afterPath="$PROJECT_DIR$/PathFinding/test_randomplanner.py" afterDir="false" />
     </list>
@@ -16,15 +17,15 @@
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/PollutionMapping$KF_test6.coverage" NAME="KF_test6 Coverage Results" MODIFIED="1530641418350" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Kalman_Filter" />
     <SUITE FILE_PATH="coverage/PollutionMapping$testing.coverage" NAME="testing Coverage Results" MODIFIED="1530635450212" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/PathFinding" />
-    <SUITE FILE_PATH="coverage/PollutionMapping$test_randomplanner.coverage" NAME="test_randomplanner Coverage Results" MODIFIED="1530815916882" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/PathFinding" />
+    <SUITE FILE_PATH="coverage/PollutionMapping$test_randomplanner.coverage" NAME="test_randomplanner Coverage Results" MODIFIED="1530831043934" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/PathFinding" />
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="test_randomplanner.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="test_randomplanner.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/PathFinding/test_randomplanner.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="585">
-              <caret line="127" selection-start-line="127" selection-end-line="127" />
+            <state relative-caret-position="-322">
+              <caret line="115" column="45" selection-start-line="115" selection-start-column="45" selection-end-line="115" selection-end-column="45" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -32,11 +33,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="randomplanner.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="randomplanner.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/PathFinding/randomplanner.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="432">
-              <caret line="358" column="63" selection-start-line="358" selection-start-column="63" selection-end-line="358" selection-end-column="63" />
+            <state relative-caret-position="-3059">
+              <caret line="305" column="71" selection-start-line="305" selection-start-column="71" selection-end-line="305" selection-end-column="71" />
               <folding>
                 <element signature="e#0#15#0" expanded="true" />
               </folding>
@@ -104,8 +105,8 @@
       <file leaf-file-name="Kalman.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/PathFinding/Kalman.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="799">
-              <caret line="53" column="88" selection-start-line="53" selection-start-column="88" selection-end-line="53" selection-end-column="88" />
+            <state relative-caret-position="324">
+              <caret line="117" column="118" lean-forward="true" selection-start-line="117" selection-start-column="118" selection-end-line="117" selection-end-column="118" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -151,9 +152,9 @@
         <option value="$PROJECT_DIR$/PathFinding/env.py" />
         <option value="$PROJECT_DIR$/PathFinding/testing.py" />
         <option value="$PROJECT_DIR$/Kalman_Filter/KF_test6.py" />
-        <option value="$PROJECT_DIR$/PathFinding/Kalman.py" />
         <option value="$PROJECT_DIR$/PathFinding/randomplanner.py" />
         <option value="$PROJECT_DIR$/PathFinding/test_randomplanner.py" />
+        <option value="$PROJECT_DIR$/PathFinding/Kalman.py" />
       </list>
     </option>
   </component>
@@ -167,10 +168,10 @@
     <packageJsonPaths />
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="973" />
-    <option name="y" value="-1088" />
-    <option name="width" value="1936" />
-    <option name="height" value="1056" />
+    <option name="x" value="-18" />
+    <option name="y" value="-18" />
+    <option name="width" value="3876" />
+    <option name="height" value="2196" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -363,11 +364,18 @@
       <option name="project" value="LOCAL" />
       <updated>1530650488146</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Path planning made">
+      <created>1530816201985</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1530816201985</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="973" y="-1088" width="1936" height="1056" extended-state="6" />
+    <frame x="-6" y="-6" width="1292" height="692" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -375,11 +383,12 @@
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="7" sideWeight="0.49946696" weight="0.30718955" />
       <window_info anchor="bottom" id="Python Console" order="7" sideWeight="0.49946696" weight="0.16100179" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49626866" weight="0.32897604" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49626866" weight="0.5402504" />
       <window_info anchor="bottom" id="Terminal" order="7" sideWeight="0.4989339" weight="0.32897604" />
       <window_info content_ui="combo" id="Project" order="0" weight="0.16897655" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="3" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.3298969" />
       <window_info anchor="right" id="SciView" order="3" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
@@ -390,7 +399,6 @@
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Find" order="1" weight="0.3298969" />
     </layout>
     <layout-to-restore>
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -456,7 +464,8 @@
     <MESSAGE value="Fixed pol_env" />
     <MESSAGE value="Kalman Filtering is broken" />
     <MESSAGE value="Kalman Filtering is fixed!" />
-    <option name="LAST_COMMIT_MESSAGE" value="Kalman Filtering is fixed!" />
+    <MESSAGE value="Path planning made" />
+    <option name="LAST_COMMIT_MESSAGE" value="Path planning made" />
     <option name="UPDATE_GROUP_BY_PACKAGES" value="true" />
   </component>
   <component name="XDebuggerManager">
@@ -493,30 +502,40 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/PathFinding/test_randomplanner.py</url>
-          <line>60</line>
-          <option name="timeStamp" value="37" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/PathFinding/test_randomplanner.py</url>
-          <line>61</line>
-          <option name="timeStamp" value="38" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/PathFinding/test_randomplanner.py</url>
-          <line>93</line>
+          <line>70</line>
           <option name="timeStamp" value="40" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/PathFinding/randomplanner.py</url>
-          <line>312</line>
+          <line>363</line>
           <option name="timeStamp" value="41" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/PathFinding/randomplanner.py</url>
+          <line>469</line>
+          <option name="timeStamp" value="42" />
+        </line-breakpoint>
       </breakpoints>
-      <option name="time" value="42" />
+      <option name="time" value="43" />
     </breakpoint-manager>
   </component>
   <component name="debuggerHistoryManager">
     <expressions id="evaluateExpression">
+      <expression>
+        <expression-string>end_nodes</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>sorted_end_nodes</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>edited_sorted_end_nodes</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
       <expression>
         <expression-string>self.updated_nodes</expression-string>
         <language-id>Python</language-id>
@@ -754,16 +773,6 @@
     <entry file="file://$PROJECT_DIR$/Kalman_Filter/Variance.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/PathFinding/Kalman.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="799">
-          <caret line="53" column="88" selection-start-line="53" selection-start-column="88" selection-end-line="53" selection-end-column="88" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/PathFinding/env.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="403">
@@ -805,22 +814,32 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/PathFinding/randomplanner.py">
+    <entry file="file://$PROJECT_DIR$/PathFinding/Kalman.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="432">
-          <caret line="358" column="63" selection-start-line="358" selection-start-column="63" selection-end-line="358" selection-end-column="63" />
+        <state relative-caret-position="324">
+          <caret line="117" column="118" lean-forward="true" selection-start-line="117" selection-start-column="118" selection-end-line="117" selection-end-column="118" />
           <folding>
-            <element signature="e#0#15#0" expanded="true" />
+            <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/PathFinding/test_randomplanner.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="585">
-          <caret line="127" selection-start-line="127" selection-end-line="127" />
+        <state relative-caret-position="-322">
+          <caret line="115" column="45" selection-start-line="115" selection-start-column="45" selection-end-line="115" selection-end-column="45" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/PathFinding/randomplanner.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-3059">
+          <caret line="305" column="71" selection-start-line="305" selection-start-column="71" selection-end-line="305" selection-end-column="71" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
           </folding>
         </state>
       </provider>

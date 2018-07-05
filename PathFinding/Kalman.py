@@ -19,6 +19,7 @@ class kalman(object):
 
     @staticmethod
     def kalman_filter(node_pol, node_var, meas_pol, meas_var):
+        '''Function returns a filtered pollution and variance through kalman filtering'''
         kg = node_var / (node_var + meas_var)
         new_pol = float(node_pol) + kg * (meas_pol - node_pol)
         new_var = (1 - kg) * node_var
@@ -26,19 +27,11 @@ class kalman(object):
 
     @staticmethod
     def flatten(array):
+        '''Turns a 2d array into a 1D array'''
         for x in range(len(array)):
             if type(array[x]) == list:
                 return array[:x] + flatten(array[x]) + flatten(array[x + 1:])
         return array
-
-    @staticmethod
-    def remove_duplicates(array):
-        """Could just use set()"""
-        new_array = []
-        for x in array:
-            if x not in new_array:
-                new_array.append(x)
-        return new_array
 
     @staticmethod
     def meas_var_dist(distance):
@@ -48,6 +41,8 @@ class kalman(object):
         return var
 
     def update(self, pollution, location_point, count_max):  # Loc_point in lat/long
+        '''Finds closest node to initial nearest point, turns that initial point into x-y cart point based on origin
+        calls the expand itter function to iterate kalman filtering to a depth of n nodes.'''
         count = 0
         start_node = ox.get_nearest_node(self.env.G, location_point)  # Location point must be in lat/long
         cart_loc = coord_cart(location_point,
@@ -57,6 +52,7 @@ class kalman(object):
 
     @staticmethod
     def distance(node_loc, loc):  # Uses Cart Points
+        '''Calculates distance from two points'''
         dx = node_loc[0] - loc[0]
         dy = node_loc[1] - loc[1]
         return dx ^ 2 + dy ^ 2
@@ -91,6 +87,7 @@ class kalman(object):
     # 	return finished
 
     def get_distance(self, node2, lat1=None, long1=None, node1=None):
+        '''Returns the distance between a point and a node, or a node and a node, in meters'''
         if node1 is not None:
             lat1, long1 = self.env.get_node_lat_long(node1)
         lat2, long2 = self.env.get_node_lat_long(node2)
@@ -99,6 +96,7 @@ class kalman(object):
 
 
     def kalman_loop(self, meas_pollution, location_point):
+        '''Loops through every node in given graph and runs kalman filtering on it's data'''
         for node in self.env.nodes():
             # node_loc = self.env.get_node_to_cart(node)
             # node_to_loc = utils.distance(node_loc, location_point)
