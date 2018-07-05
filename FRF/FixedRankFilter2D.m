@@ -16,7 +16,7 @@ function [Y_pred,var_pred,diff,binned_data] = FixedRankFilter2D(nmea_file,mcpc_f
     %central_coord = coordinates for the center of each bin
     %combined_data = array of nmea coordinates matched with respective mcpc
     %values
-    [~, binned_data, central_coord, ~] = binMaker2D(xcoord, ycoord, time_nmea, aveconc, time_mcpc, numBins, startTimesMat);
+    [~, binned_data, central_coord, combined_data] = binMaker2D(xcoord, ycoord, time_nmea, aveconc, time_mcpc, numBins, startTimesMat);
     
     %if training sets are run through simple KF, replace them with
     %respective binned data
@@ -44,8 +44,8 @@ function [Y_pred,var_pred,diff,binned_data] = FixedRankFilter2D(nmea_file,mcpc_f
 
     [S, eta, resolution] = createBasisFunctions2D(reshape(central_coord, numBins(1), [], 2), r, resolution, binned_data(:, 2));
     
-    training1 = detrended_data(:, 1);
-    training2 = detrended_data(:, 2);
+%     training1 = detrended_data(:, 1);
+%     training2 = detrended_data(:, 2);
     %remove training sets from binned data
     binned_data = binned_data(:, 3:end);
     
@@ -56,10 +56,10 @@ function [Y_pred,var_pred,diff,binned_data] = FixedRankFilter2D(nmea_file,mcpc_f
     [Q, R] = qr(S, 0);
     
     %Set signal to noise ratio
-    SNR = 5;
+    SNR = 100;
     
     %set value of d, the threshold value for the positive definite process.
-    dVal = 2;
+    dVal = .5;
     
     %change r to the number of basis functions for THIS resolution,
     %instead of the number of basis functions for the 1ST resolution.
@@ -68,20 +68,28 @@ function [Y_pred,var_pred,diff,binned_data] = FixedRankFilter2D(nmea_file,mcpc_f
     %Compute sigma_1, sigma_2, sigmaLag_2 from training sets. Because the
     %training sets are detrended, the variance can be computed by
     %multiplying it by its transpose and dividing by N.
-    if exist('training1_var', 'var')
-        sigma_1 = diag(reshape(training1_var, 1, [])); 
-        sigma_2 = diag(reshape(training2_var, 1, [])); 
-    else
-        sigma_1 = (training1*training1')/N; 
-        sigma_2 = (training2*training2')/N;
-    end
-    sigmaLag_2 = ((training1*training2')/N)';
+%     if exist('training1_var', 'var')
+%         sigma_1 = diag(reshape(training1_var, 1, [])); 
+%         sigma_2 = diag(reshape(training2_var, 1, [])); 
+%     else
+%         sigma_1 = (training1*training1')/N; 
+%         sigma_2 = (training2*training2')/N;
+%     end
+%     sigmaLag_2 = ((training1*training2')/N)';
     
-%     t1 = training1 - mean(training1);
-%     t2 = training2 - mean(training2);
-%     sigma_1 = (t1 * t1')/N;
-%     sigma_2 = (t2 * t2')/N;
-%     sigmaLag_2 = (t1 * t2')/N;
+    t1 = training1 - mean(training1);
+    t2 = training2 - mean(training2);
+    sigma_1 = (t1 * t1')/N;
+    sigma_2 = (t2 * t2')/N;
+    sigmaLag_2 = (t1 * t2')/N;
+    if exist('training1_var', 'var')
+        training1_var = reshape(training1_var, N, 1);
+        training2_var = reshape(training2_var, N, 1);
+        for i=1:N
+           sigma_1(i,i) = training1_var(i);
+           sigma_2(i,i) = training2_var(i);
+        end
+    end
     
     
     %Now that we have sigma_1, we can calculate Kprelim, sigma2_xi and
@@ -169,15 +177,16 @@ function [Y_pred,var_pred,diff,binned_data] = FixedRankFilter2D(nmea_file,mcpc_f
         P_t_t(:,:,t) = P_t_tp(:,:,t) - G * St * P_t_tp(:,:,t);
         Y_pred(:,t) = S * eta_t_t(:,t) + sigma2_xi .* M *...
             ((1/Dii).*eye(n)-(Dii^(-2)).*St * inv(inv(P_t_tp(:,:,t))+(1/Dii).*St'*St)*St')*...
-            (Z_obs- St * eta_t_tp(:,t));
-        var_pred(:,t) = reshape(diag(S * P_t_tp(:,:,t) * S' + sigma2_xi - (sigma2_xi.*M)*...
-            ((1/Dii).*eye(n)-(Dii^(-2)).* St * inv(inv(P_t_tp(:,:,t))+(1/Dii).*St' * St) * St')*(sigma2_xi.*M')...
-            -2 * S * P_t_tp(:,:,t)*G*(sigma2_xi.*M')),N,1);    
+            (Z_obs- St * eta_t_tp(:,t)); 
+        var_pred(:,t)=reshape(diag(S*P_t_tp(:,:,t)*S'+sigma2_xi-(sigma2_xi.*M)*...
+                ((1/Dii).*eye(n)-(Dii^(-2)).*St*inv(inv(P_t_tp(:,:,t))+(1/Dii).*St'*St)*St')*(sigma2_xi.*M')...
+                -2*S*P_t_tp(:,:,t)*St'*((1/Dii).*eye(n)-(Dii^(-2)).*St*inv(inv(P_t_tp(:,:,t))+(1/Dii).*St'*St)*St')*...
+                (sigma2_xi.*M')),N,1);     
         
-        %Y_pred(:,t) = Y_pred(:,t) + allTrends(:, t+2);
+        Y_pred(:,t) = Y_pred(:,t) + allTrends(:, t+2);
         
-        %sigma = ((Y_pred(:,t)-mean(Y_pred(:,t)))*(Y_pred(:,t)-mean(Y_pred(:,t)))')/N;
-        sigma = (Y_pred(:,t) * Y_pred(:,t)') / N;        
+        sigma = ((Y_pred(:,t)-mean(Y_pred(:,t)))*(Y_pred(:,t)-mean(Y_pred(:,t)))')/N;
+        %sigma = (Y_pred(:,t) * Y_pred(:,t)') / N;        
         %make sigma_t positive definite and add to sigma_t
         A = D^(-1/2) * sigma * D^(-1/2) - eye(N);
         [eigvec, eigval] = eig(A); 
@@ -188,12 +197,12 @@ function [Y_pred,var_pred,diff,binned_data] = FixedRankFilter2D(nmea_file,mcpc_f
         sigma_t(:,:,t+2) = (D^(1/2)) *A_PD * (D^(1/2)) + D;
   
         %calculate sigmaLag from sigma_t and sigma_t-1
-%         if t==1
-%             sigmaLag_t(:,:,t+2) = (t2*(Y_pred(:,t)-mean(Y_pred(:,t)))')/N;
-%         else
-%             sigmaLag_t(:,:,t+2) = ((Y_pred(:,t-1)-mean(Y_pred(:,t-1)))*(Y_pred(:,t)-mean(Y_pred(:,t)))')/N;
-%         end
-        sigmaLag_t(:,:,t+2) = (sigma_t(:,:,t+1) * sigma_t(:,:,t+2)') / N;
+        if t==1
+            sigmaLag_t(:,:,t+2) = (t2*(Y_pred(:,t)-mean(Y_pred(:,t)))')/N;
+        else
+            sigmaLag_t(:,:,t+2) = ((Y_pred(:,t-1)-mean(Y_pred(:,t-1)))*(Y_pred(:,t)-mean(Y_pred(:,t)))')/N;
+        end
+        %sigmaLag_t(:,:,t+2) = (sigma_t(:,:,t+1) * sigma_t(:,:,t+2)') / N;
         %Calculate new values for K,L,H,U,
         K_t(:,:,t+2) = R \ Q' * (sigma_t(:,:,t+2) - D) * Q * (inv(R))';
         L_t(:,:,t+2) = R \ Q' * (sigmaLag_t(:,:,t+2)') * Q * (inv(R))';
@@ -201,12 +210,11 @@ function [Y_pred,var_pred,diff,binned_data] = FixedRankFilter2D(nmea_file,mcpc_f
         U_t(:,:,t+2) = K_t(:,:,t+2) - (H_t(:,:,t+2) * L_t(:,:,t+2));
         
         %add the trend back to the data
-        Y_pred(:,t) = Y_pred(:,t) + allTrends(:, t+2);
+        %Y_pred(:,t) = Y_pred(:,t) + allTrends(:, t+2);
     end
     
     %reverse log transformation
     Y_pred = exp(Y_pred);
-    var_pred = exp(var_pred);
     binned_data = exp(binned_data);
     diff = Y_pred - binned_data;
     
@@ -220,7 +228,8 @@ function [Y_pred,var_pred,diff,binned_data] = FixedRankFilter2D(nmea_file,mcpc_f
     ySize = central_coord(end, 2) - central_coord(1, 2);
     img = imread(fp);
     img = imresize(img, [xSize, ySize]);
+    startIndices = getStartIndices(combined_data, startTimesMat);
     
-    graph2D(Y_2d, df, bd, var, cc, fp, xSize, ySize, img, central_coord);
+    graph2D(Y_2d, df, bd, var, cc, fp, xSize, ySize, img, central_coord, combined_data, startIndices);
     
 end
