@@ -27,7 +27,7 @@ def calc_variance_slope(data, numBins, binSize):
         bin_variance.append(np.var(bins[i]))
         distances.append(i * binSize + binSize / 2)
     #Uncomment line below to plot variance vs distance
-    graph_variance_plot(distances, bin_variance)
+    #graph_variance_plot(distances, bin_variance)
     xs = np.array(distances)
     ys = np.array(bin_variance)
     #Calculate slope of line of best fit for points

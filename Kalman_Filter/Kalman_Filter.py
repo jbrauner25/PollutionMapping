@@ -14,7 +14,7 @@ def Kalman_Filter(map, data, filter_radius):
     '''Performs the Kalman Filter algorithm for every data point in "data"
     Only nodes on the map that are within the filter_radius of the data point
     are put through the filter.'''
-    m = calc_variance_slope(data, 5, 20)
+    m = calc_variance_slope(data, 5, 350)
     for point in data:
         for i in range(map.numCols):
             for j in range(map.numRows):
@@ -27,8 +27,8 @@ def Kalman_Filter(map, data, filter_radius):
                     node.set_state_est(node.get_state_est() + K_t * (point[2] - node.get_state_est()))
                     node.set_variance_est(node.get_variance_est() - K_t * node.get_variance_est())
     #matlab_matrices(map)
-    #graph_state_est(map) #graph state estimates of the filtered map in matplotlib
-    #graph_variance(map) #graph variance of the filtered map in matplotlib
+    graph_state_est(map) #graph state estimates of the filtered map in matplotlib
+    graph_variance(map) #graph variance of the filtered map in matplotlib
     '''
     xs = []
     ys = []

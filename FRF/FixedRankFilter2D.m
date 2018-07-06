@@ -42,7 +42,7 @@ function [Y_pred,var_pred,diff,binned_data] = FixedRankFilter2D(nmea_file,mcpc_f
         [allTrends(:, i), detrended_data(:, i)]=detrend2D(central_coord, binned_data(:, i));
     end
 
-    [S, eta, resolution] = createBasisFunctions2D(reshape(central_coord, numBins(1), [], 2), r, resolution, binned_data(:, 2));
+    [S, eta, resolution] = createBasisFunctions2D(reshape(central_coord, numBins(1), [], 2), r, resolution, detrended_data(:, 2));
     
 %     training1 = detrended_data(:, 1);
 %     training2 = detrended_data(:, 2);

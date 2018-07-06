@@ -40,7 +40,7 @@ class Map:
 
 class Node:
     '''Creates a node which stores current state estimation and variance for a point'''
-    def __init__(self, state=1, variance=999e20):
+    def __init__(self, state=1, variance=999e10):
         self.state_est = state
         self.variance_est = variance
 

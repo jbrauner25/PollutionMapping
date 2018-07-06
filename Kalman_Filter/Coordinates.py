@@ -23,10 +23,11 @@ def get_origin(data):
             min_lon = point[1]
     return min_lat, min_lon
 
-def convert_data_cart(data):
+def convert_data_cart(data, origin=False):
     '''Takes a 2D array of data, and converts the lat and lon to cartesian.
     Units are meters.'''
-    origin = get_origin(data)
+    if not origin:
+        origin = get_origin(data)
     new_data = []
     for point in data:
         x, y = coord_to_cart(point[0], point[1], origin[0], origin[1])

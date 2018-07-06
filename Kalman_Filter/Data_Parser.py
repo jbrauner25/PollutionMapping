@@ -1,4 +1,6 @@
 import csv
+import json
+from Coordinates import *
 
 def dataParserUCR(filename):
     '''Takes a filepath and returns data, a 2D array where each index is a seperate
@@ -59,6 +61,14 @@ def data_parser_NMEA_MCPC(nmea_file, mcpc_file, start_time, end_time):
         p[0] -= minx
         p[1] -= miny
     return new_data, fullWidth, fullHeight
+
+def data_parser_staticPA(sensor_dicts, origin, upper_coord):
+    data = []
+    for p in range(len(sensor_dicts)):
+        coords = coord_to_cart(sensor_dicts[p].get('Lat'), sensor_dicts[p].get('Lon'), origin[0], origin[1])
+        data.append([coords[0], coords[1], json.loads(sensor_dicts[p].get('Stats')).get('v')])
+    width, height = coord_to_cart(upper_coord[0], upper_coord[1], origin[0], origin[1])
+    return data, width, height
 
 def convert_string_time(str_time):
     h = int(str_time[0:2])
