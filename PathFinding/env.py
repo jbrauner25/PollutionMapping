@@ -25,7 +25,7 @@ class Env(object):
 
     def get_edge_length(self, edge):
         """Get length of edge. Currently uses shortest edge if there are multiple edges that share origin/dest."""
-        shortest_edge =  min(self.graph.get_edge_data(edge[0],edge[1]).values(),key=lambda x: x['length'])
+        shortest_edge =  min(self.graph.get_edge_data(edge[0], edge[1]).values(),key=lambda x: x['length'])
         return shortest_edge['length']
 
     def node_to_utm(self, node_location):
