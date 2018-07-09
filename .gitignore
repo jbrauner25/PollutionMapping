@@ -3,3 +3,6 @@
 cache/
 __pycache__/
 PathFinding/.idea
+PathFinding/cache
+PathFinding/__pycache__
+PathFinding/data
