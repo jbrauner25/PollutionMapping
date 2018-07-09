@@ -18,7 +18,7 @@ zlabel('Concentration (ug/m^{3})');
 axis('square'); 
 title('Concentration vs Position');
 hold on
-g = hgtransform('Matrix', makehgtform('xrotate', pi, 'translate', [xBinSize/2,-1*ySize-yBinSize/2,-3.5]));
+g = hgtransform('Matrix', makehgtform('xrotate', pi, 'translate', [xBinSize/2,-1*ySize-yBinSize/2,-5]));
 image(g, img);
 
 subplot (2, 2, 2); 
@@ -29,7 +29,7 @@ zlabel('Concentration (ug/m^{3})');
 axis('square'); 
 title('Concentration vs Position');
 hold on
-g = hgtransform('Matrix', makehgtform('xrotate', pi, 'translate', [xBinSize/2,-1*ySize-yBinSize/2,-3.5]));
+g = hgtransform('Matrix', makehgtform('xrotate', pi, 'translate', [xBinSize/2,-1*ySize-yBinSize/2,-5]));
 image(g, img);
 
 subplot (2, 2, 3); 

@@ -14,7 +14,7 @@ def Kalman_Filter(map, data, filter_radius):
     '''Performs the Kalman Filter algorithm for every data point in "data"
     Only nodes on the map that are within the filter_radius of the data point
     are put through the filter.'''
-    m = calc_variance_slope(data, 5, 350)
+    m = calc_variance_slope(data, 5, 200)
     for point in data:
         for i in range(map.numCols):
             for j in range(map.numRows):

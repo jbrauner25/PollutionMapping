@@ -117,6 +117,7 @@ function graph2D(Y_2d, df, bd, var, cc, fp, xSize, ySize, img, central_coord, co
     ylabel('y position (m)');
     zlabel('Mean Squared Error ((#/cc)^{2})');
     title('Mean Squared Error vs Position (Morning, t=1)');
+    caxis([1e3, 5e6]);
     hold on
     g = hgtransform('Matrix', makehgtform('xrotate', pi, 'translate', [central_coord(1,1),-1*xSize-central_coord(1,2),0]));
     image(g, img);
@@ -131,6 +132,7 @@ function graph2D(Y_2d, df, bd, var, cc, fp, xSize, ySize, img, central_coord, co
     ylabel('y position (m)');
     zlabel('Mean Squared Error ((#/cc)^{2})');
     title('Mean Squared Error vs Position (Morning, t=2)');
+    caxis([1e3, 5e6]);
     g = hgtransform('Matrix', makehgtform('xrotate', pi, 'translate', [central_coord(1,1),-1*xSize-central_coord(1,2),0]));
     image(g, img);
     hold on
@@ -144,6 +146,7 @@ function graph2D(Y_2d, df, bd, var, cc, fp, xSize, ySize, img, central_coord, co
     ylabel('y position (m)');
     zlabel('Mean Squared Error ((#/cc)^{2})');
     title('Mean Squared Error vs Position (Morning, t=3)');
+    caxis([1e3, 5e6]);
     hold on
     g = hgtransform('Matrix', makehgtform('xrotate', pi, 'translate', [central_coord(1,1),-1*xSize-central_coord(1,2),0]));
     image(g, img);
@@ -158,6 +161,7 @@ function graph2D(Y_2d, df, bd, var, cc, fp, xSize, ySize, img, central_coord, co
     ylabel('y position (m)');
     zlabel('Mean Squared Error ((#/cc)^{2})');
     title('Mean Squared Error vs Position (Morning, t=4)');
+    caxis([1e3, 5e6]);
     hold on
     g = hgtransform('Matrix', makehgtform('xrotate', pi, 'translate', [central_coord(1,1),-1*xSize-central_coord(1,2),0]));
     image(g, img);
