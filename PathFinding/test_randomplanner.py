@@ -157,6 +157,8 @@ test.create_bounds(34.0987490224, 34.0918462621, -117.7147334535, -117.720546480
 
 test.create_graph()
 test.env.load_data('dat.mat', (34.092116, -117.719905))
+test.plan_random_cost_per_node(4, 0.09, 0.1, 1500, 1500)
+
 #test.random_kalman(25, 15000, 20000)
 #test.grid_weighting_nodes(50, 5)
 #test.plan_brute_force(0.09, 0.1, 2200)

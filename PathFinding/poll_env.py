@@ -106,11 +106,12 @@ class PolEnv(Env):
         nodes_visualized = []
         for n in range(len(coord)):
             # Origin[0] = lat Origin[1] = long
-            new_latitude = origin[0] + (coord[n][1] / r_earth) * (180 / math.pi)
-            new_longitude = origin[1] + (coord[n][0] / r_earth) * (180 / math.pi) / math.cos(new_latitude * math.pi / 180)
+            new_latitude = origin[0] + (1.73*coord[n][0] / r_earth) * (180 / math.pi)
+            new_longitude = origin[1] + (1.5*coord[n][1] / r_earth) * (180 / math.pi) / math.cos(new_latitude * math.pi / 180)
+            print(str(new_latitude) + str(new_longitude))
             nodes_visualized.append((new_latitude, new_longitude))
             x, y, _, _ = utm.from_latlon(new_latitude, new_longitude)
-            grid.add_node(n, lat=new_latitude, lon=new_longitude, pol=pol[n], var=var[n], y=y, x=x)
+            grid.add_node(n, lat=new_latitude, lon=new_longitude, pol=pol[n][-1], var=var[n][-1], y=y, x=x)
         for n, data in self.graph.nodes(data=True):
             node = self.graph.nodes()[n]  # Returns the node attribute's dictionary.
             grid_copy = copy.deepcopy(grid)
@@ -127,19 +128,20 @@ class PolEnv(Env):
             summed_pol = 0.0
             summed_var = 0.0
             for m in range(4):
-                summed_pol += (1 - pol_var_dist[m][2]) * pol_var_dist[m][0]
-                summed_var += (1 - pol_var_dist[m][2]) * pol_var_dist[m][1]
-            summed_var = summed_var / 4
-            summed_pol = summed_pol / 4
+                summed_pol += (1 - (pol_var_dist[m][2] / total_dist)) * pol_var_dist[m][0]
+                summed_var += (1 - pol_var_dist[m][2] / total_dist) * pol_var_dist[m][1]
+            summed_var = summed_var / 3
+            summed_pol = summed_pol / 3
             data['pol'] = summed_pol
             data['var'] = summed_var
+            print("pol " + str(summed_pol))
         print("finished")
-        # nc = ox.get_node_colors_by_attr(self.graph, 'pol', cmap='plasma', num_bins=20)
+        nc = ox.get_node_colors_by_attr(self.graph, 'pol', cmap='plasma', num_bins=20)
         fig, ax = ox.plot_graph(self.G, fig_height=6, node_zorder=2,
-                                edge_color='#dddddd', use_geom=True, show=False, close=False)  # node_color=nc
+                                edge_color='#dddddd', node_color=nc, use_geom=True, show=False, close=False)  # node_color=nc
         for lat, long in nodes_visualized:
-            ax.scatter(long, lat, c='red', alpha=0.3, s=3)
-        ax.set_title("Weighted nodes from Grid")
+            ax.scatter(long, lat, c='red', alpha=0.1, s=2)
+        ax.set_title("Imported FRF Pollution")
         plt.show()
 
 
