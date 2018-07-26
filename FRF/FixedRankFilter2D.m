@@ -3,7 +3,7 @@ function [Y_pred,var_pred,diff,binned_data] = FixedRankFilter2D(nmea_file,mcpc_f
     %nmea_file='data/coordinates3.txt'; mcpc_file='data/MCPC_180502_142439.txt'; numBins=[40 50]; r=16; resolution=2;
     %startTimesMat = ['02-May-2018 14:28:09';'02-May-2018 14:35:09';'02-May-2018 14:42:09';'02-May-2018 14:49:09';'02-May-2018 14:56:09'];
     %Load training1 and training2 that is saved from Python script
-    %[Y_pred,var_pred,diff,binned_data] = FixedRankFilter2D(nmea_file,mcpc_file,startTimesMat,r,numBins,resolution, training1, training2);
+    %[Y_pred,var_pred,diff,binned_data] = FixedRankFilter2D(nmea_file,mcpc_file,startTimesMat,r,numBins,resolution, training1, training2, training1_var, training2_var);
     
     %Get arrays for x coordinates, y coordinates, and their respective
     %times from nmea data, and get average concentration and their
@@ -229,6 +229,8 @@ function [Y_pred,var_pred,diff,binned_data] = FixedRankFilter2D(nmea_file,mcpc_f
     img = imread(fp);
     img = imresize(img, [xSize, ySize]);
     startIndices = getStartIndices(combined_data, startTimesMat);
+    
+    %save('/Users/jaredbrauner/Documents/data/Pollution_Monitoring/PollutionMapping/FRF/dat.mat', 'central_coord', 'Y_pred', 'var_pred')
     
     graph2D(Y_2d, df, bd, var, cc, fp, xSize, ySize, img, central_coord, combined_data, startIndices);
     

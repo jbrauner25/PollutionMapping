@@ -33,7 +33,7 @@ def calc_variance_slope(data, numBins, binSize):
     #Calculate slope of line of best fit for points
     m = (((np.mean(xs) * np.mean(ys)) - np.mean(xs * ys)) /
          ((np.mean(xs) * np.mean(xs)) - np.mean(xs * xs)))
-    print(m)
+    #print(m)
     return m
 
 def calc_variance_slope_UCR(data, numBins, binSize):

@@ -31,7 +31,7 @@ def convert_data_cart(data, origin=False):
     new_data = []
     for point in data:
         x, y = coord_to_cart(point[0], point[1], origin[0], origin[1])
-        new_data.append([x, y, point[2]])
+        new_data.append([x, y])
     return new_data
 
 def distance(point1, point2):

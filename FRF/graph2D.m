@@ -59,7 +59,7 @@ function graph2D(Y_2d, df, bd, var, cc, fp, xSize, ySize, img, central_coord, co
     xlabel('x position (m)');
     ylabel('y position (m)');
     zlabel('Average Concentration (#/cc)');
-    title('Average Concentration vs Position (Morning, t=1)');
+    title('Average Concentration vs Position (Afternoon, t=1)');
     hold on
     g = hgtransform('Matrix', makehgtform('xrotate', pi, 'translate', [central_coord(1,1),-1*xSize-central_coord(1,2),-7000]));
     image(g, img);
@@ -74,7 +74,7 @@ function graph2D(Y_2d, df, bd, var, cc, fp, xSize, ySize, img, central_coord, co
     xlabel('x position (m)');
     ylabel('y position (m)');
     zlabel('Average Concentration (#/cc)');
-    title('Average Concentration vs Position (Morning, t=2)');
+    title('Average Concentration vs Position (Afternoon, t=2)');
     hold on
     g = hgtransform('Matrix', makehgtform('xrotate', pi, 'translate', [central_coord(1,1),-1*xSize-central_coord(1,2),-7000]));
     image(g, img);
@@ -84,11 +84,13 @@ function graph2D(Y_2d, df, bd, var, cc, fp, xSize, ySize, img, central_coord, co
     
     subplot(2,4,3);
     surf(cc(:,:,2), cc(:,:,1), Y_2d(:,:,3), 'FaceAlpha', .35, 'FaceColor', 'interp', 'EdgeColor', 'none');
-    axis('square')
+    axis('square');
+    g1 = colorbar; 
+    ylabel(g1, 'Average Concentration (#/cc)');
     xlabel('x position (m)');
     ylabel('y position (m)');
     zlabel('Average Concentration (#/cc)');
-    title('Average Concentration vs Position (Morning, t=3)');
+    title('Average Concentration vs Position (Afternoon, t=3)');
     hold on
     g = hgtransform('Matrix', makehgtform('xrotate', pi, 'translate', [central_coord(1,1),-1*xSize-central_coord(1,2),-7000]));
     image(g, img);
@@ -98,11 +100,13 @@ function graph2D(Y_2d, df, bd, var, cc, fp, xSize, ySize, img, central_coord, co
     
     subplot(2,4,4);
     surf(cc(:,:,2), cc(:,:,1), Y_2d(:,:,4), 'FaceAlpha', .35, 'FaceColor', 'interp', 'EdgeColor', 'none');
-    axis('square')
+    axis('square');
+    g1 = colorbar; 
+    ylabel(g1, 'Average Concentration (#/cc)');
     xlabel('x position (m)');
     ylabel('y position (m)');
     zlabel('Average Concentration (#/cc)');
-    title('Average Concentration vs Position (Morning, t=4)');
+    title('Average Concentration vs Position (Afternoon, t=4)');
     hold on
     g = hgtransform('Matrix', makehgtform('xrotate', pi, 'translate', [central_coord(1,1),-1*xSize-central_coord(1,2),-7000]));
     image(g, img);
@@ -116,8 +120,8 @@ function graph2D(Y_2d, df, bd, var, cc, fp, xSize, ySize, img, central_coord, co
     xlabel('x position (m)');
     ylabel('y position (m)');
     zlabel('Mean Squared Error ((#/cc)^{2})');
-    title('Mean Squared Error vs Position (Morning, t=1)');
-    caxis([1e3, 5e6]);
+    title('Mean Squared Error vs Position (Afternoon, t=1)');
+    %caxis([1e3, 5e6]);
     hold on
     g = hgtransform('Matrix', makehgtform('xrotate', pi, 'translate', [central_coord(1,1),-1*xSize-central_coord(1,2),0]));
     image(g, img);
@@ -131,8 +135,8 @@ function graph2D(Y_2d, df, bd, var, cc, fp, xSize, ySize, img, central_coord, co
     xlabel('x position (m)');
     ylabel('y position (m)');
     zlabel('Mean Squared Error ((#/cc)^{2})');
-    title('Mean Squared Error vs Position (Morning, t=2)');
-    caxis([1e3, 5e6]);
+    title('Mean Squared Error vs Position (Afternoon, t=2)');
+    %caxis([1e3, 5e6]);
     g = hgtransform('Matrix', makehgtform('xrotate', pi, 'translate', [central_coord(1,1),-1*xSize-central_coord(1,2),0]));
     image(g, img);
     hold on
@@ -141,12 +145,14 @@ function graph2D(Y_2d, df, bd, var, cc, fp, xSize, ySize, img, central_coord, co
     
     subplot(2,4,7);
     surf(cc(:,:,2), cc(:,:,1), var(:,:,3), 'FaceAlpha', .35, 'FaceColor', 'interp', 'EdgeColor', 'none');
-    axis('square')
+    axis('square');
+    g2 = colorbar; 
+    ylabel(g2, 'Mean Squared Error ((#/cc)^{2})');
     xlabel('x position (m)');
     ylabel('y position (m)');
     zlabel('Mean Squared Error ((#/cc)^{2})');
-    title('Mean Squared Error vs Position (Morning, t=3)');
-    caxis([1e3, 5e6]);
+    title('Mean Squared Error vs Position (Afternoon, t=3)');
+    %caxis([1e3, 5e6]);
     hold on
     g = hgtransform('Matrix', makehgtform('xrotate', pi, 'translate', [central_coord(1,1),-1*xSize-central_coord(1,2),0]));
     image(g, img);
@@ -156,12 +162,14 @@ function graph2D(Y_2d, df, bd, var, cc, fp, xSize, ySize, img, central_coord, co
     
     subplot(2,4,8);
     surf(cc(:,:,2), cc(:,:,1), var(:,:,4), 'FaceAlpha', .35, 'FaceColor', 'interp', 'EdgeColor', 'none');
-    axis('square')
+    axis('square');
+    g2 = colorbar; 
+    ylabel(g2, 'Mean Squared Error ((#/cc)^{2})');
     xlabel('x position (m)');
     ylabel('y position (m)');
     zlabel('Mean Squared Error ((#/cc)^{2})');
-    title('Mean Squared Error vs Position (Morning, t=4)');
-    caxis([1e3, 5e6]);
+    title('Mean Squared Error vs Position (Afternoon, t=4)');
+    %caxis([1e3, 5e6]);
     hold on
     g = hgtransform('Matrix', makehgtform('xrotate', pi, 'translate', [central_coord(1,1),-1*xSize-central_coord(1,2),0]));
     image(g, img);
