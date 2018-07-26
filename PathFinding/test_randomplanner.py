@@ -15,6 +15,11 @@ import planning2
 ox.config(use_cache=True, log_console=True)
 import randomplanner
 import random
+import matplotlib.pyplot as plt
+import time
+import utm
+
+
 
 class tester(object):
     def __init__(self, env=None):
@@ -130,22 +135,32 @@ class tester(object):
 
     def grid_weighting_nodes(self, meters, n):
         self.planner = randomplanner.planner(self.kalman.env)
-        self.planner.grid_weight_nodes(self.north, self.south, self.east, self.west, meters, n)
+        coords = self.planner.grid_weight_nodes(self.north, self.south, self.east, self.west, meters, n)
+        nc = ox.get_node_colors_by_attr(self.planner.graph, 'grid_weight', cmap='plasma', num_bins=20)
+        fig, ax = ox.plot_graph(self.planner.env.G, fig_height=6, node_color=nc, node_zorder=2,
+                                edge_color='#dddddd', use_geom=True, show=False, close=False)
+        for lat, long in coords:
+            print("(" + str(lat) + ", " + str(long) +")")
+            ax.scatter(long, lat, c='red', alpha=0.3, s=3)
+        ax.set_title("Weighted nodes from Grid")
+        plt.show()
 
-
+#34.092116, -117.719905
 
 
 test = tester()
-#test.create_bounds(34.0987490224, 34.0918462621, -117.7147334535, -117.7205464802)  # Testing region
-test.create_bounds(34.108257, 34.091846, -117.703695, -117.720559)  # Testing region
+test.create_bounds(34.0987490224, 34.0918462621, -117.7147334535, -117.7205464802)  # Testing region
+#test.create_bounds(34.108257, 34.091846, -117.703695, -117.720559)  # Testing region
 #test.create_bounds(34.073797, 34.040584, -118.099624, -118.161938)
 
 #test.create_bounds(34.1, 34, -117, -117.1)
 
 test.create_graph()
+test.env.load_data('dat.mat', (34.092116, -117.719905))
+test.plan_random_cost_per_node(4, 0.09, 0.1, 1500, 1500)
 
 #test.random_kalman(25, 15000, 20000)
-test.grid_weighting_nodes(1, 3)
+#test.grid_weighting_nodes(50, 5)
 #test.plan_brute_force(0.09, 0.1, 2200)
 # test.plan_random_cost_per_node(4, 0.09, 0.1, 1500, 1500)
 # test.plan_dijkstras_node_counting(3, 0.09, 0.1, 1500, 100)

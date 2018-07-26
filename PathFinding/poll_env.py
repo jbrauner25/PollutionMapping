@@ -1,6 +1,14 @@
 from env import *
 import numpy as np
 import utils
+import copy
+import osmnx as ox
+import networkx as nx
+import scipy.io as sio
+import math
+import utm
+import matplotlib.pyplot as plt
+
 
 
 class PolEnv(Env):
@@ -17,7 +25,7 @@ class PolEnv(Env):
         return self.stats[stat][node]
 
     def get_edge_data(self, edge, data):
-        """Get traffic of edge. Currently uses shortest edge if there are multiple edges that share origin/dest."""
+        """Get length of edge. Currently uses shortest edge if there are multiple edges that share origin/dest."""
         shortest_edge = min(self.graph.get_edge_data(edge[0], edge[1]).values(), key=lambda x: x['length'])
         return shortest_edge[data]
 
@@ -37,8 +45,8 @@ class PolEnv(Env):
             self.origin = self.get_node_lat_long(self.origin_id)
 
     def update_cart_coords(self):
-        """Update environment class with cart coord information. Update graph
-			nodes. If no origin is previously set, it sets an origin."""
+        """Update environment class with cart coord information. Update graph nodes.
+        If no origin is previously set, it sets an origin."""
         earthRadius = 6.371e6
         origin = self.origin
         if self.origin is None:
@@ -79,4 +87,62 @@ class PolEnv(Env):
     def set_node_attribute(self, node_location, node_attribute, data):
         self.graph.nodes()[node_location][node_attribute] = data
 
-    '''NEW####################################################################################################'''
+    def load_data(self, file_path, origin):
+        r_earth = 6378137
+        mat_contents = sio.loadmat(file_path)
+        array_mat = mat_contents
+        var = array_mat['var_pred']
+        pol = array_mat['Y_pred']
+        coord = mat_contents['central_coord']
+        min0 = min(coord[0])
+        min1 = min(coord[1])
+        max0 = max(coord[0])
+        max1 = max(coord[1])
+        bottom_left = (min0, min1)
+        bottom_right = (min0, max1)
+        top_right = (max0, max1)
+        top_left = (max0, min1)
+        grid = nx.Graph()
+        nodes_visualized = []
+        for n in range(len(coord)):
+            # Origin[0] = lat Origin[1] = long
+            new_latitude = origin[0] + (1.73*coord[n][0] / r_earth) * (180 / math.pi)
+            new_longitude = origin[1] + (1.5*coord[n][1] / r_earth) * (180 / math.pi) / math.cos(new_latitude * math.pi / 180)
+            print(str(new_latitude) + str(new_longitude))
+            nodes_visualized.append((new_latitude, new_longitude))
+            x, y, _, _ = utm.from_latlon(new_latitude, new_longitude)
+            grid.add_node(n, lat=new_latitude, lon=new_longitude, pol=pol[n][-1], var=var[n][-1], y=y, x=x)
+        for n, data in self.graph.nodes(data=True):
+            node = self.graph.nodes()[n]  # Returns the node attribute's dictionary.
+            grid_copy = copy.deepcopy(grid)
+            pol_var_dist = []
+            total_dist = 0.0
+            for grid_node in range(4):
+                node_location, dist = ox.get_nearest_node(grid_copy, (node['y'], node['x']), method='euclidean', return_dist=True)
+                print(dist)
+                pol = grid_copy.node[node_location]['pol']
+                var = grid_copy.node[node_location]['var']
+                pol_var_dist.append((pol, var, dist))
+                total_dist += dist
+                grid_copy.remove_node(node_location)
+            summed_pol = 0.0
+            summed_var = 0.0
+            for m in range(4):
+                summed_pol += (1 - (pol_var_dist[m][2] / total_dist)) * pol_var_dist[m][0]
+                summed_var += (1 - pol_var_dist[m][2] / total_dist) * pol_var_dist[m][1]
+            summed_var = summed_var / 3
+            summed_pol = summed_pol / 3
+            data['pol'] = summed_pol
+            data['var'] = summed_var
+            print("pol " + str(summed_pol))
+        print("finished")
+        nc = ox.get_node_colors_by_attr(self.graph, 'pol', cmap='plasma', num_bins=20)
+        fig, ax = ox.plot_graph(self.G, fig_height=6, node_zorder=2,
+                                edge_color='#dddddd', node_color=nc, use_geom=True, show=False, close=False)  # node_color=nc
+        for lat, long in nodes_visualized:
+            ax.scatter(long, lat, c='red', alpha=0.1, s=2)
+        ax.set_title("Imported FRF Pollution")
+        plt.show()
+
+
+

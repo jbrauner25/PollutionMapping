@@ -12,6 +12,7 @@ import copy
 import math
 import numpy as np
 import bisect
+import scipy.io as sio
 
 
 #
@@ -543,7 +544,10 @@ class planner(object):
         return (1-self.lambda2) * (self.lambda1 * node_var + (1-self.lambda1)*node_pol) + self.lambda2 * node_avg_wt_nbr_dgre
 
     def grid_weight_nodes(self, north, south, east, west, meter_box, n):
-        r_earth = 3959
+        for node in self.env.graph.nodes():
+            self.graph.nodes()[node]['grid_weight'] = random.uniform(0, 0.00100)
+            print(self.graph.nodes()[node]['grid_weight'])
+        r_earth = 6378137
         old_lat = south
         old_long = west
         #
@@ -553,26 +557,39 @@ class planner(object):
         # y = north - south
         # step_x = x // d_x
         # step_y = y / d_y
+        coords = []
+        row = 0
+        col = 0
         while old_lat <= north:
             print("old lat " + str(old_lat))
             new_latitude = old_lat + (meter_box / r_earth) * (180 / math.pi)
+            old_long = west
+            row += 1
             while old_long <= east:
+                col += 1
                 print("old_long " + str(old_long))
                 new_longitude = old_long + (meter_box / r_earth) * (180 / math.pi) / math.cos(old_lat * math.pi / 180)
                 temp_graph = copy.deepcopy(self.env.graph)
                 temp_unproj_graph = copy.deepcopy(self.env.G)
-                for iterr in range(n):
+                nodes = []
+                dist_sum = 0
+                for _ in range(n):
                     node_location, dist = ox.get_nearest_node(temp_unproj_graph, (old_lat, old_long), return_dist=True)
-                    node = self.graph.nodes()[node_location]
-                    try:
-                        node['grid_weight'] += dist
-                    except KeyError:
-                        node['grid_weight'] = dist
+                    nodes.append((self.graph.nodes()[node_location], dist))
+                    dist_sum += dist
                     temp_unproj_graph.remove_node(node_location)
-                print("new long " + str(new_longitude))
-                print("new lat " + str(new_latitude))
+                for node, dist in nodes:
+                    update = dist_sum ** 2 / (n * dist)
+                    # update = dist
+                    try:
+                        node['grid_weight'] += update
+                    except KeyError:
+                        node['grid_weight'] = update
+                coords.append((old_lat, old_long))
                 old_long = new_longitude
             old_lat = new_latitude
+        print("(row, col) (" + str(row) + ", " + str(col) + ")")
+        return coords
 
 
 
@@ -600,3 +617,10 @@ class planner(object):
         self.branch_per_expansion = branch_per_expans
         self.lambda1 = lambda1
         self.lambda2 = lambda2
+
+
+
+
+
+
+
