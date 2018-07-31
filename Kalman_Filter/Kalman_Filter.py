@@ -10,11 +10,14 @@ from scipy import stats
 import scipy.io
 import time
 
-def Kalman_Filter(map, data, filter_radius):
+def Kalman_Filter(map, data, m=None, filter_radius=None):
     '''Performs the Kalman Filter algorithm for every data point in "data"
     Only nodes on the map that are within the filter_radius of the data point
     are put through the filter.'''
-    m = calc_variance_slope(data, 5, 200)
+    if not m:
+        m = calc_variance_slope(data, 5, 40)
+        if m < 0:
+            m = -1 * m
     for point in data:
         for i in range(map.numCols):
             for j in range(map.numRows):

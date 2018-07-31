@@ -66,7 +66,7 @@ def data_parser_staticPA(sensor_dicts, origin, upper_coord):
     data = []
     for p in range(len(sensor_dicts)):
         coords = coord_to_cart(sensor_dicts[p].get('Lat'), sensor_dicts[p].get('Lon'), origin[0], origin[1])
-        data.append([coords[0], coords[1], json.loads(sensor_dicts[p].get('Stats')).get('v')])
+        data.append([coords[0], coords[1], json.loads(sensor_dicts[p].get('Stats')).get('v2')])
     width, height = coord_to_cart(upper_coord[0], upper_coord[1], origin[0], origin[1])
     return data, width, height
 

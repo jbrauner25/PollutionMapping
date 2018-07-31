@@ -15,7 +15,12 @@ function [startIndices] = getStartIndices(matched_data_mat,startTimesMat)
 indices = ones(size(startTimesMat,1),1);
 for i=1:size(startTimesMat,1)
     startTime = double(datenum(datetime(startTimesMat(i,:),'InputFormat','dd-MMM-yyyy HH:mm:ss')));
-    indices(i) = find(matched_data_mat(:,1) == startTime);
+    ind = find(matched_data_mat(:,1) == startTime);
+    if length(ind) > 1  
+        indices(i) = ind(1);
+    else
+        indices(i) = ind;
+    end
 end
 startIndices = indices;
 end

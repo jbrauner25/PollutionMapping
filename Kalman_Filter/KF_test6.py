@@ -17,7 +17,7 @@ map = Map(cols, rows, [fullWidth / cols, fullHeight / rows])
 print(map.numCols, map.numRows, map.cellSize)
 print(len(data))
 
-filtered_map = Kalman_Filter(map, data, None)
+filtered_map = Kalman_Filter(map, data, None, None)
 y_pred = []; var_pred = []
 for j in range(map.numRows): #Create 2D arrays for x, y, z axis
     y_pred_row = []; var_pred_row = []
