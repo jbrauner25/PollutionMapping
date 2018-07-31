@@ -10,27 +10,23 @@ import random
 import time
 import copy
 import math
+import signal
+import time
+import threading
+import _thread
+from time import sleep
+from time import sleep
+import os
 import numpy as np
 import bisect
 import scipy.io as sio
 
-
-#
-# class PriorityQueue:
-# 	def __init__(self):
-# 		self.elements = []
-#
-# 	def empty(self):
-# 		return len(self.elements) == 0
-#
-# 	def put(self, item, priority):
-# 		heapq.heappush(self.elements, (priority, item))
-#
-# 	def get(self):
-# 		return heapq.heappop(self.elements)[1]
-#
-# 	def get_no_pop(self):
-# 		return heapq.heappop(self.elements)[0]
+def watchdog_timer(state, sleeping):
+    print("start timer")
+    sleep(sleeping)
+    print("end timer")
+    if not state['completed']:
+        _thread.interrupt_main()
 
 class planner(object):
     def __init__(self, env):
@@ -83,6 +79,7 @@ class planner(object):
         return end_node, G, unique_to_node
 
     def random_paths_expansion_breadth_first(self, origin_node, max_dist):
+        ''' TODO: Update priori to cost/nodes visited'''
         c = itertools.count()
         G = nx.Graph()
         unique_to_node = {}
@@ -204,6 +201,7 @@ class planner(object):
                 succ_nodeset.add(successor_node)
                 if new_length >= max_dist:
                     route_count += 1
+                    print("route count: " + str(route_count))
                     if end_node is None:
                         end_node = counter_start
                         current_max = priori
@@ -334,6 +332,89 @@ class planner(object):
             _, node, counter_start, nodeset = pop(fringe)
             succ = list(self.env.graph.successors(node))
             edit_succ = [x for x in succ if x not in nodeset]
+            if len(edit_succ) > self.branch_per_expansion:
+                edit_succ = random.sample(edit_succ, self.branch_per_expansion)
+            successors = edit_succ
+            _, cost, length, priori, node_counter = unique_to_node[counter_start]
+            node_counter += 1
+            for successor_node in successors:
+                new_edge_cost = self.env.get_edge_data((node, successor_node), 'weight')  # returns tuple (cost, length)
+                new_length = length + new_edge_cost[1]
+                new_cost = cost + new_edge_cost[0]
+                new_priori = node_counter/ new_cost # new_length
+                counter = next(c)
+                unique_to_node[counter] = (successor_node, new_cost, new_length, new_priori, node_counter)
+                G.add_edge(counter_start, counter)
+                G.node[counter]['weight'] = new_priori
+                succ_nodeset = copy.copy(nodeset)
+                succ_nodeset.add(successor_node)
+                if new_length >= max_dist:
+                    route_count += 1
+                    if end_nodes is None:
+                        end_nodes = [(counter_start, cost/node_counter)]
+                    else:
+                        end_nodes.append((counter_start, cost/node_counter))
+                    break
+                else:
+                    push(fringe, (new_priori, successor_node, counter, succ_nodeset))
+            if route_count >= min_routes_considered:
+                break
+        sorted_end_nodes = sorted(end_nodes, key=lambda x: x[1], reverse=True)
+        edited_sorted_end_nodes = [x[0] for x in sorted_end_nodes]
+        print("objective: " + str(sorted_end_nodes[0][1]))
+        return edited_sorted_end_nodes, G, unique_to_node
+
+    def dij_timer(self, origin_node, max_dist, min_routes_considered, sleeping):
+        """Magic ft. Stackoverflow
+        https://stackoverflow.com/questions/37412234/timeout-function-if-it-takes-too-long"""
+        while True:
+            state = {'completed': False}
+            watchdog = threading.Thread(target=watchdog_timer, args=(state, sleeping))
+            watchdog.daemon = True
+            watchdog.start()
+            try:
+                sorted_end_list, graph, dict = self.dijkstras(origin_node, max_dist, min_routes_considered)
+                path_converted = self.path_converter(dict, graph, 0, sorted_end_list[0])
+                state['completed'] = True
+                print("finished")
+                return sleeping
+            except:
+                print("repeating")
+                self.dij_timer(origin_node, max_dist, min_routes_considered, sleeping + 1.0)
+
+    # def dij_timer(self, origin_node, max_dist, min_routes_considered):
+    #     sig = signal.signal(signal.SIGALRM, handler)
+    #     sig.alarm(2)
+    #     try:
+    #         function_result = self.dijkstras(origin_node, max_dist, min_routes_considered)
+    #     except:
+    #         print("excepting")
+    #         self.dij_timer(self, origin_node, max_dist, min_routes_considered)
+    #     sig.alarm(0)
+    #     return function_result
+
+
+    def dijkstras_diminishing_returns(self, origin_node, max_dist, min_routes_considered):
+        c = itertools.count()
+        G = nx.Graph()
+        push = heappush
+        pop = heappop
+        route_count = 0
+        unique_to_node = {}
+        nodeset = set()
+        nodeset.add(origin_node)
+        fringe = []
+        push(fringe, (0, origin_node, 0, nodeset))
+        end_nodes = None
+        counter = next(c)
+        G.add_node(counter)
+        # nx.add_node(G, counter)
+        unique_to_node[counter] = (origin_node, 0, 0, 0, 0)
+        next(c)
+        while fringe:
+            _, node, counter_start, nodeset = pop(fringe)
+            succ = list(self.env.graph.successors(node))
+            edit_succ = [x for x in succ if x not in nodeset]
             if len(edit_succ) >= self.branch_per_expansion:
                 edit_succ = random.sample(edit_succ, self.branch_per_expansion)
             successors = edit_succ
@@ -343,7 +424,7 @@ class planner(object):
                 new_edge_cost = self.env.get_edge_data((node, successor_node), 'weight')  # returns tuple (cost, length)
                 new_length = length + new_edge_cost[1]
                 new_cost = cost + new_edge_cost[0]
-                new_priori = new_length / new_cost
+                new_priori = ((max_dist * 10 * new_length) / (new_length + max_dist * 10)) / new_cost
                 counter = next(c)
                 unique_to_node[counter] = (successor_node, new_cost, new_length, new_priori, node_counter)
                 G.add_edge(counter_start, counter)
@@ -475,8 +556,7 @@ class planner(object):
         edited_sorted_end_nodes = [x[0] for x in sorted_end_nodes]
         return edited_sorted_end_nodes, G, unique_to_node
 
-
-    def dijstras_node_counting(self, origin_node, max_dist, min_routes_considered):
+    def dijkstras_length(self, origin_node, max_dist, min_routes_considered):
         c = itertools.count()
         G = nx.Graph()
         push = heappush
@@ -491,7 +571,7 @@ class planner(object):
         counter = next(c)
         G.add_node(counter)
         # nx.add_node(G, counter)
-        unique_to_node[counter] = (origin_node, 0, 0, 0)
+        unique_to_node[counter] = (origin_node, 0, 0, 0, 0)
         next(c)
         while queue:
             _, node, counter_start, nodeset = pop(queue)
@@ -506,7 +586,58 @@ class planner(object):
                 new_edge_cost = self.env.get_edge_data((node, successor_node), 'weight')  # returns tuple (cost, length)
                 new_length = length + new_edge_cost[1]
                 new_cost = cost + new_edge_cost[0]
-                new_priori = nodes_visited_counter / (new_cost * new_length)
+                new_priori = (nodes_visited_counter**2) / (new_cost * new_length)
+                counter = next(c)
+                unique_to_node[counter] = (successor_node, new_cost, new_length, new_priori, nodes_visited_counter)
+                G.add_edge(counter_start, counter)
+                G.node[counter]['weight'] = new_priori
+                succ_nodeset = copy.copy(nodeset)
+                succ_nodeset.add(successor_node)
+                if new_length >= max_dist:
+                    route_count += 1
+                    if end_nodes is None:
+                        end_nodes = [(counter_start, cost / nodes_visited_counter)]
+                    else:
+                        end_nodes.append((counter_start, cost/nodes_visited_counter))
+                    break
+                else:
+                    push(queue, (new_priori, successor_node, counter, succ_nodeset))
+            if route_count >= min_routes_considered:
+                break
+        sorted_end_nodes = sorted(end_nodes, key=lambda x: x[1], reverse=True)
+        edited_sorted_end_nodes = [x[0] for x in sorted_end_nodes]
+        return edited_sorted_end_nodes, G, unique_to_node
+    def dijkstras_node_counting1(self, origin_node, max_dist, min_routes_considered):
+        c = itertools.count()
+        G = nx.Graph()
+        push = heappush
+        pop = heappop
+        route_count = 0
+        unique_to_node = {}
+        nodeset = set()
+        nodeset.add(origin_node)
+        queue = []
+        push(queue, (0, origin_node, 0, nodeset))
+        end_nodes = None
+        counter = next(c)
+        G.add_node(counter)
+        # nx.add_node(G, counter)
+        unique_to_node[counter] = (origin_node, 0, 0, 0, 0)
+        next(c)
+        while queue:
+            _, node, counter_start, nodeset = pop(queue)
+            succ = list(self.env.graph.successors(node))
+            edit_succ = [x for x in succ if x not in nodeset]
+            if len(edit_succ) >= self.branch_per_expansion:
+                edit_succ = random.sample(edit_succ, self.branch_per_expansion)
+            successors = edit_succ
+            _, cost, length, priori, nodes_visited_counter = unique_to_node[counter_start]
+            nodes_visited_counter += 1
+            for successor_node in successors:
+                new_edge_cost = self.env.get_edge_data((node, successor_node), 'weight')  # returns tuple (cost, length)
+                new_length = length + new_edge_cost[1]
+                new_cost = cost + new_edge_cost[0]
+                new_priori = (nodes_visited_counter**2) / (new_cost * new_length)
                 counter = next(c)
                 unique_to_node[counter] = (successor_node, new_cost, new_length, new_priori, nodes_visited_counter)
                 G.add_edge(counter_start, counter)
@@ -528,6 +659,150 @@ class planner(object):
         edited_sorted_end_nodes = [x[0] for x in sorted_end_nodes]
         return edited_sorted_end_nodes, G, unique_to_node
 
+    def dijkstras_node_counting2(self, origin_node, max_dist, min_routes_considered):
+        '''Has diminishing returns in its priority function'''
+        c = itertools.count()
+        G = nx.Graph()
+        push = heappush
+        pop = heappop
+        route_count = 0
+        unique_to_node = {}
+        nodeset = set()
+        nodeset.add(origin_node)
+        queue = []
+        push(queue, (0, origin_node, 0, nodeset))
+        end_nodes = None
+        counter = next(c)
+        G.add_node(counter)
+        # nx.add_node(G, counter)
+        unique_to_node[counter] = (origin_node, 0, 0, 0, 0)
+        next(c)
+        while queue:
+            _, node, counter_start, nodeset = pop(queue)
+            succ = list(self.env.graph.successors(node))
+            edit_succ = [x for x in succ if x not in nodeset]
+            if len(edit_succ) >= self.branch_per_expansion:
+                edit_succ = random.sample(edit_succ, self.branch_per_expansion)
+            successors = edit_succ
+            _, cost, length, priori, nodes_visited_counter = unique_to_node[counter_start]
+            nodes_visited_counter += 1
+            for successor_node in successors:
+                new_edge_cost = self.env.get_edge_data((node, successor_node), 'weight')  # returns tuple (cost, length)
+                new_length = length + new_edge_cost[1]
+                new_objective = cost + new_edge_cost[0]
+                new_priori = (nodes_visited_counter**2) / (new_objective * ((max_dist*10*new_length)/(new_length+max_dist*10)))
+                counter = next(c)
+                unique_to_node[counter] = (successor_node, new_objective, new_length, new_priori, nodes_visited_counter)
+                G.add_edge(counter_start, counter)
+                G.node[counter]['weight'] = new_priori
+                succ_nodeset = copy.copy(nodeset)
+                succ_nodeset.add(successor_node)
+                if new_length >= max_dist:
+                    route_count += 1
+                    if end_nodes is None:
+                        end_nodes = [(counter_start, cost / nodes_visited_counter)]
+                    else:
+                        end_nodes.append((counter_start, cost / nodes_visited_counter))
+                    break
+                else:
+                    push(queue, (new_priori, successor_node, counter, succ_nodeset))
+            if route_count >= min_routes_considered:
+                break
+        sorted_end_nodes = sorted(end_nodes, key=lambda x: x[1], reverse=True)
+        edited_sorted_end_nodes = [x[0] for x in sorted_end_nodes]
+        return edited_sorted_end_nodes, G, unique_to_node
+
+    def dijkstras_node_counting3(self, origin_node, max_dist, min_routes_considered):
+        '''Has diminishing returns in its priority function'''
+        c = itertools.count()
+        G = nx.Graph()
+        push = heappush
+        pop = heappop
+        route_count = 0
+        unique_to_node = {}
+        nodeset = set()
+        nodeset.add(origin_node)
+        queue = []
+        push(queue, (0, origin_node, 0, nodeset))
+        end_nodes = None
+        counter = next(c)
+        G.add_node(counter)
+        # nx.add_node(G, counter)
+        unique_to_node[counter] = (origin_node, 0, 0, 0, 0)
+        next(c)
+        while queue:
+            _, node, counter_start, nodeset = pop(queue)
+            succ = list(self.env.graph.successors(node))
+            edit_succ = [x for x in succ if x not in nodeset]
+            if len(edit_succ) >= self.branch_per_expansion:
+                edit_succ = random.sample(edit_succ, self.branch_per_expansion)
+            successors = edit_succ
+            _, cost, length, priori, nodes_visited_counter = unique_to_node[counter_start]
+            nodes_visited_counter += 1
+            for successor_node in successors:
+                new_edge_cost = self.env.get_edge_data((node, successor_node), 'weight')  # returns tuple (cost, length)
+                new_length = length + new_edge_cost[1]
+                new_objective = cost + new_edge_cost[0]
+                new_priori = new_objective / ((max_dist*10*new_length)/(new_length+max_dist*10))
+                counter = next(c)
+                unique_to_node[counter] = (successor_node, new_objective, new_length, new_priori, nodes_visited_counter)
+                G.add_edge(counter_start, counter)
+                G.node[counter]['weight'] = new_priori
+                succ_nodeset = copy.copy(nodeset)
+                succ_nodeset.add(successor_node)
+                if new_length >= max_dist:
+                    route_count += 1
+                    if end_nodes is None:
+                        end_nodes = [(counter_start, cost / nodes_visited_counter)]
+                    else:
+                        end_nodes.append((counter_start, cost / nodes_visited_counter))
+                    break
+                else:
+                    push(queue, (new_priori, successor_node, counter, succ_nodeset))
+            if route_count >= min_routes_considered:
+                break
+        sorted_end_nodes = sorted(end_nodes, key=lambda x: x[1], reverse=True)
+        edited_sorted_end_nodes = [x[0] for x in sorted_end_nodes]
+        return edited_sorted_end_nodes, G, unique_to_node
+
+    def difference_pathing(self, origin_node, max_dist):
+        '''Has diminishing returns in its priority function'''
+        c = itertools.count()
+        G = nx.Graph()
+        unique_to_node = {}
+        nodeset = set()
+        nodeset.add(origin_node)
+        next_node = origin_node
+        dist_current = 0
+        path = [origin_node]
+        prev_priori = 0
+        prev_cost = 0
+        while True:
+            node_current = next_node
+            succ = list(self.env.graph.successors(node_current))
+            successors = [x for x in succ if x not in nodeset]
+            if dist_current >= max_dist or len(succ) == 0:
+                return path
+            next_node = 0
+            max_priori = 0
+            for successor_node in successors:
+                new_edge_cost = self.env.get_edge_data((node_current, successor_node), 'weight')  # returns tuple (cost, length)
+                length = new_edge_cost[1]
+                cost = new_edge_cost[0]
+                priori = math.fabs(cost - prev_cost)
+                if priori > max_priori:
+                    next_node = successor_node
+                    max_priori = priori
+                    add_dist = length
+            path.append(next_node)
+            nodeset.add(next_node)
+            dist_current += add_dist
+            if next_node == 0:
+                return path
+
+
+    # TODO path planner weighting difference from past node to next node.
+
     def path_converter(self, dict, G, start_node, end_node):
         path = nx.shortest_simple_paths(G, start_node, end_node)
         new_path = []
@@ -540,8 +815,9 @@ class planner(object):
     def priority(self, node):
         node_var = self.env.get_node_attribute(node, 'var')
         node_pol = self.env.get_node_attribute(node, 'pol')
-        node_avg_wt_nbr_dgre = self.env.get_stat(node, 'avg_weighted_neighbor_degree', )
-        return (1-self.lambda2) * (self.lambda1 * node_var + (1-self.lambda1)*node_pol) + self.lambda2 * node_avg_wt_nbr_dgre
+        print(self.env.graph.nodes()[node])
+        grid_weight = self.env.graph.nodes()[node]['grid_weight']
+        return (1-self.lambda2) * (self.lambda1 * node_var + (1-self.lambda1)*node_pol) + self.lambda2 * grid_weight
 
     def grid_weight_nodes(self, north, south, east, west, meter_box, n):
         for node in self.env.graph.nodes():
@@ -560,6 +836,7 @@ class planner(object):
         coords = []
         row = 0
         col = 0
+        # north += (meter_box / r_earth) * (180 / math.pi)
         while old_lat <= north:
             print("old lat " + str(old_lat))
             new_latitude = old_lat + (meter_box / r_earth) * (180 / math.pi)
@@ -575,23 +852,83 @@ class planner(object):
                 dist_sum = 0
                 for _ in range(n):
                     node_location, dist = ox.get_nearest_node(temp_unproj_graph, (old_lat, old_long), return_dist=True)
+                    nodes.append((self.graph.nodes()[node_location], dist, node_location))
+                    dist_sum += dist
+                    temp_unproj_graph.remove_node(node_location)
+                for node, dist, node_loc in nodes:
+                    # update = dist_sum ** 2 / (n * dist)
+                    # update = (dist* n )/(dist_sum ** 2)
+                    update = dist
+                    try:
+                        #if node['grid_weight'] < update:
+                        node['grid_weight'] += update
+                        self.env.set_node_attribute(node_loc, 'grid_weight', update + self.env.graph.nodes()[node_loc])
+                    except:
+                         node['grid_weight'] = update
+                         self.env.set_node_attribute(node_loc, 'grid_weight', update)
+                coords.append((old_lat, old_long))
+                old_long = new_longitude
+            old_lat = new_latitude
+        print("(row, col) (" + str(row) + ", " + str(col) + ")")
+        for node in self.graph.nodes():
+            print(str(self.graph.nodes()[node]['grid_weight']))
+        return coords
+
+    def grid_weight_nodes_max_dist(self, north, south, east, west, meter_box, n, max_dist):
+        for node in self.env.graph.nodes():
+            self.graph.nodes()[node]['grid_weight'] = random.uniform(0, 0.00100)
+            print(self.graph.nodes()[node]['grid_weight'])
+        r_earth = 6378137
+        old_lat = south
+        old_long = west
+        #
+        # d_x = new_longitude - west
+        # d_y = new_latitude - south
+        # x = east - west
+        # y = north - south
+        # step_x = x // d_x
+        # step_y = y / d_y
+        coords = []
+        row = 0
+        col = 0
+        north += (meter_box / r_earth) * (180 / math.pi)
+        east += (meter_box / r_earth) * (180 / math.pi) / math.cos(south * math.pi / 180)
+        while old_lat <= north:
+            print("old lat " + str(old_lat))
+            new_latitude = old_lat + (meter_box / r_earth) * (180 / math.pi)
+            old_long = west
+            row += 1
+            while old_long <= east:
+                col += 1
+                print("old_long " + str(old_long))
+                new_longitude = old_long + (meter_box / r_earth) * (180 / math.pi) / math.cos(old_lat * math.pi / 180)
+                temp_graph = copy.deepcopy(self.env.graph)
+                temp_unproj_graph = copy.deepcopy(self.env.G)
+                nodes = []
+                dist_sum = 0
+                current_dist = 0
+                while current_dist <= max_dist:
+                    node_location, dist = ox.get_nearest_node(temp_unproj_graph, (old_lat, old_long), return_dist=True)
                     nodes.append((self.graph.nodes()[node_location], dist))
+                    current_dist = dist
                     dist_sum += dist
                     temp_unproj_graph.remove_node(node_location)
                 for node, dist in nodes:
-                    update = dist_sum ** 2 / (n * dist)
-                    # update = dist
+                    # update = dist_sum ** 2 / (n * dist)
+                    # update = (dist* n )/(dist_sum ** 2)
+                    update = dist
                     try:
+                        #if node['grid_weight'] < update:
                         node['grid_weight'] += update
-                    except KeyError:
+                    except:
                         node['grid_weight'] = update
                 coords.append((old_lat, old_long))
                 old_long = new_longitude
             old_lat = new_latitude
         print("(row, col) (" + str(row) + ", " + str(col) + ")")
+        for node in self.graph.nodes():
+            print(str(self.graph.nodes()[node]['grid_weight']))
         return coords
-
-
 
 
     def update_edge_weight(self):

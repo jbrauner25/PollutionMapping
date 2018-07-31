@@ -8,6 +8,7 @@ import scipy.io as sio
 import math
 import utm
 import matplotlib.pyplot as plt
+import random
 
 
 
@@ -87,6 +88,61 @@ class PolEnv(Env):
     def set_node_attribute(self, node_location, node_attribute, data):
         self.graph.nodes()[node_location][node_attribute] = data
 
+    def grid_weight_nodes(self, north, south, east, west, meter_box, n):
+        for node in self.graph.nodes():
+            self.graph.nodes()[node]['grid_weight'] = random.uniform(0, 0.00100)
+            print(self.graph.nodes()[node]['grid_weight'])
+        r_earth = 6378137
+        old_lat = south
+        old_long = west
+        #
+        # d_x = new_longitude - west
+        # d_y = new_latitude - south
+        # x = east - west
+        # y = north - south
+        # step_x = x // d_x
+        # step_y = y / d_y
+        coords = []
+        row = 0
+        col = 0
+        # north += (meter_box / r_earth) * (180 / math.pi)
+        while old_lat <= north:
+            print("old lat " + str(old_lat))
+            new_latitude = old_lat + (meter_box / r_earth) * (180 / math.pi)
+            old_long = west
+            row += 1
+            while old_long <= east:
+                col += 1
+                print("old_long " + str(old_long))
+                new_longitude = old_long + (meter_box / r_earth) * (180 / math.pi) / math.cos(old_lat * math.pi / 180)
+                temp_graph = copy.deepcopy(self.graph)
+                temp_unproj_graph = copy.deepcopy(self.G)
+                nodes = []
+                dist_sum = 0
+                for _ in range(n):
+                    node_location, dist = ox.get_nearest_node(temp_unproj_graph, (old_lat, old_long), return_dist=True)
+                    nodes.append((self.graph.nodes()[node_location], dist, node_location))
+                    dist_sum += dist
+                    temp_unproj_graph.remove_node(node_location)
+                for node, dist, node_loc in nodes:
+                    # update = dist_sum ** 2 / (n * dist)
+                    # update = (dist* n )/(dist_sum ** 2)
+                    update = dist
+                    try:
+                        if node['grid_weight'] < update:
+                            node['grid_weight'] = update
+                            self.env.set_node_attribute(node_loc, 'grid_weight', update)
+                    except:
+                         node['grid_weight'] = update
+                         self.set_node_attribute(node_loc, 'grid_weight', update)
+                coords.append((old_lat, old_long))
+                old_long = new_longitude
+            old_lat = new_latitude
+        print("(row, col) (" + str(row) + ", " + str(col) + ")")
+        for node in self.graph.nodes():
+            print(str(self.graph.nodes()[node]['grid_weight']))
+        return coords
+
     def load_data(self, file_path, origin):
         r_earth = 6378137
         mat_contents = sio.loadmat(file_path)
@@ -106,8 +162,8 @@ class PolEnv(Env):
         nodes_visualized = []
         for n in range(len(coord)):
             # Origin[0] = lat Origin[1] = long
-            new_latitude = origin[0] + (1.73*coord[n][0] / r_earth) * (180 / math.pi)
-            new_longitude = origin[1] + (1.5*coord[n][1] / r_earth) * (180 / math.pi) / math.cos(new_latitude * math.pi / 180)
+            new_latitude = origin[0] + (1*coord[n][0] / r_earth) * (180 / math.pi)
+            new_longitude = origin[1] + (1*coord[n][1] / r_earth) * (180 / math.pi) / math.cos(new_latitude * math.pi / 180)
             print(str(new_latitude) + str(new_longitude))
             nodes_visualized.append((new_latitude, new_longitude))
             x, y, _, _ = utm.from_latlon(new_latitude, new_longitude)

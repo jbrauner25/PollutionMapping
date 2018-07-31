@@ -12,6 +12,8 @@ from CoordCart import coord_cart
 import time
 import MCPC_Parser
 import time
+
+
 def collect_data(kalman):
 	# FILES TO CHANGE
 	CSV_filename = ''

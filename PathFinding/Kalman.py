@@ -5,11 +5,184 @@ from CoordCart import coord_cart
 from poll_env import PolEnv
 import utils
 import random
+import serial
+import csv
+import NMEA_Coord_Parser
+from CoordCart import coord_cart
+import time
+import numpy as np
+import scipy.io as sio
+import datetime
+import msvcrt
 
+def num(x):
+    try:
+        return int(x)
+    except:
+        return 0
 
 class kalman(object):
     def __init__(self, PolEnv):
         self.env = PolEnv
+        self.last_loc = (0, 0)
+
+    def mean(numbers):  # Takes in a list, returns average.
+        return float(sum(numbers)) / max(len(numbers), 1)
+
+    def test_gps(self):
+        NMEA_port = 'COM4'
+
+        ser_NMEA = serial.Serial()
+        ser_NMEA.baudrate = 4800
+        ser_NMEA.port = NMEA_port
+        ser_NMEA.open()
+        while True:
+            time.sleep(1)
+            line_NEMA = str(ser_NMEA.readline())
+            dat_NEMA = list(line_NEMA.split(','))
+            coord = self.test_parse(dat_NEMA)
+            print(coord)
+
+    def test_parse(self, dat):
+        coordinate = None
+        if dat[0] == "b'$GPGGA":  # message
+            # $GPGGA,hhmmss.ss,Latitude,N,Longitude,E,FS,NoSV,HDOP,msl,m,Altref,m,DiffAge,DiffStation*cs<CR><LF>
+            if dat[7] != "" and num(dat[7]) > 0 and dat[6] != "" and num(dat[6]) > 0:
+                latitude = float(dat[2])
+                degWhole = float(int(latitude / 100))
+                degDec = (latitude - degWhole * 100) / 60
+                new_lat = degWhole + degDec
+                longitude = float(dat[4])
+                degWhole = float(int(longitude / 100))
+                degDec = (longitude - degWhole * 100) / 60
+                new_long = degWhole + degDec
+                coordinate = (new_lat, -new_long)
+        if dat[0] == "b'GPGLL":
+            # $GPGLL,Latitude,N,Longitude,E,hhmmss.ss,Valid,Mode*cs<CR><LF>
+            if dat[6] != "" and (dat[6] == "A" or dat[6] == "D"):
+                latitude = float(dat[1])
+                degWhole = float(int(latitude / 100))
+                degDec = (latitude - degWhole * 100) / 60
+                new_lat = degWhole + degDec
+                longitude = float(dat[3])
+                degWhole = float(int(longitude / 100))
+                degDec = (longitude - degWhole * 100) / 60
+                new_long = degWhole + degDec
+                coordinate = (new_lat, -new_long)
+        if dat[0] == "b'$GPRMC":
+            # $GPRMC,hhmmss,status,latitude,N,longitude,E,spd,cog,ddmmyy,mv,mvE,mode*cs<CR><LF>
+            if dat[2] == "A":  # Status valid
+                latitude = float(dat[3])
+                degWhole = float(int(latitude / 100))
+                degDec = (latitude - degWhole * 100) / 60
+                new_lat = degWhole + degDec
+                longitude = float(dat[5])
+                degWhole = float(int(longitude / 100))
+                degDec = (longitude - degWhole * 100) / 60
+                new_long = degWhole + degDec
+                coordinate = (new_lat, -new_long)
+        if coordinate:
+            return coordinate
+        else:
+            return
+
+
+
+    def collect_data(self, save_file_name):
+        # FILES TO CHANGE
+        CSV_filename = ''
+        MCPC_filename = 'C:/MCPC/Data/180727/MCPC_180727_132031.txt'
+        time_current = datetime.datetime.now().strftime('%x-%H-%M-%S')
+        NMEA_filename = "wee.txt"
+        NMEA_port = 'COM5'
+        MCPC_port = 'COM4'
+
+        ser_NMEA = serial.Serial()
+        ser_NMEA.baudrate = 4800
+        ser_NMEA.port = NMEA_port
+
+        ser_NMEA.open()
+        with open(MCPC_filename) as f:
+            reader = csv.reader(f)
+            header_dat = list(reader)
+            header_row = header_dat[14]
+
+        MCPC_file = open(MCPC_filename, 'a+')  # Appends (a+) to prevent accidental data loss.
+        # Creates a new file if one doesn't exist.
+
+        NEMA_file = open(NMEA_filename, 'a+')  # Appends (a+) to prevent accidental data loss.
+        # Creates a new file if one doesn't exist.
+
+        # ser_MCPC.write(b'autorpt=1\r\n')  # Make the MCPC autoreport
+        time.sleep(1)
+
+        # First line is junk, don't analyze it
+        # noinspection PyArgumentList
+        NEMA_bad_line = ser_NMEA.readline()
+        # MCPC_bad_line = ser_MCPC.read(254).decode('utf-8')
+
+        counter = 0  # Used for averaging multiple points
+
+        pollutions = []  # Holds multiple pollution data as it comes in.
+        # Wiped after averaged
+
+        locations = []  # Holds multiple location data as it comes in.
+        # Wiped after averaged
+
+        location_hold = []  # Holds locations until the next pollution data comes in.
+
+        MCPC_data = []
+
+        times = []
+        last_mcpc_data = 0
+        while True:
+            line_NEMA = str(ser_NMEA.readline())
+            dat_NEMA = list(line_NEMA.split(','))
+            coord = self.test_parse(dat_NEMA)  # For every loop, coord will be None type if no new data.
+            if coord:  # Keeps grabbing valid coordinates as available
+                location_hold.append(coord)
+            with open(MCPC_filename) as f:
+                reader = csv.reader(f)
+                dat_file = list(reader)
+
+            if location_hold and dat_file:
+                current = dat_file[-1][0]
+                line = current.split('\t')
+                if location_hold and line[2] != last_mcpc_data:
+                    MCPC_data.append(line[2])
+                    last_mcpc_data = line[2]
+
+                    pollutions.append(MCPC_data[-1])  # Writes new pollution to pollutions list
+                    locations.append(location_hold[-1])
+                    time1 = time.time()
+                    self.kalman_loop(MCPC_data[-1], (location_hold[-1]))
+                    now = time.time()
+                    print(str(MCPC_data[-1]) + ", " + str(location_hold[-1]) + ", " + str(now - time1))
+                    times.append(datetime.datetime.now().strftime('%x-%H-%M-%S'))
+                    if msvcrt.kbhit():
+                        break
+        ser_NMEA.close()
+        # ser_MCPC.close()
+        NEMA_file.close()
+        # NCPC_file.close()
+        self.last_loc = location_hold[-1]
+        a = {}
+        a['pol'] = np.array(pollutions)
+        a['time'] = np.array(times)
+        a['location'] = np.array(locations)
+        sio.savemat(time_current[9:], a)
+
+    def manual_collect_data(self):
+        while True:
+            cont = input("continue? y")
+            if cont == "y":
+                pol = input("pol data")
+                lat = input("lat (~34")
+                long = input("lon (~-117)")
+                coord = (float(lat), float(long))
+                self.kalman_loop(float(pol), coord)
+            else:
+                return
 
     def wipe_initilize(self):
         '''Sets all pol to 0 and variance to 9999'''
@@ -21,7 +194,7 @@ class kalman(object):
     def kalman_filter(node_pol, node_var, meas_pol, meas_var):
         '''Function returns a filtered pollution and variance through kalman filtering'''
         kg = node_var / (node_var + meas_var)
-        new_pol = float(node_pol) + kg * (meas_pol - node_pol)
+        new_pol = float(node_pol) + kg * (float(meas_pol) - float(node_pol))
         new_var = (1 - kg) * node_var
         return new_pol, new_var
 
@@ -37,7 +210,7 @@ class kalman(object):
     def meas_var_dist(distance):
         """calculates the measured value variance for a given point given
         the variance is linear with respect to distance"""
-        var = 500 * distance
+        var = 800 * distance
         return var
 
     def update(self, pollution, location_point, count_max):  # Loc_point in lat/long
