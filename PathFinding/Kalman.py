@@ -15,6 +15,12 @@ import scipy.io as sio
 import datetime
 import msvcrt
 
+def convert_string_time(str_time):
+    h = int(str_time[0:2])
+    m = int(str_time[3:5])
+    s = int(str_time[6:8])
+    return (h * 3600) + (m * 60) + s
+
 def num(x):
     try:
         return int(x)
@@ -25,6 +31,10 @@ class kalman(object):
     def __init__(self, PolEnv):
         self.env = PolEnv
         self.last_loc = (0, 0)
+
+    def set_last_loc(self, lat, lon):
+        '''For testing purposes'''
+        self.last_loc = (lat, lon)
 
     def mean(numbers):  # Takes in a list, returns average.
         return float(sum(numbers)) / max(len(numbers), 1)
@@ -86,12 +96,135 @@ class kalman(object):
         else:
             return
 
+    def UCR_Parse(self, gpsfile, filename2):
 
+        '''Takes a filepath and returns data, a 2D array where each index is a seperate
+        data point in the form [latitude, longitude, ch4_ppm]'''
+        gps_parsed = []
+        with open(gpsfile) as f:
+            reader = csv.reader(f, delimiter=",")
+            gps_file = list(reader)
+        for index in range(len(gps_file)):
+            gps_file[index][0] = convert_string_time(gps_file[index][0][9:])
+            gps_file[index][1] = gps_file[index][1][1:]
+            gps_file[index][2] = gps_file[index][2][:-1]
+        gps_parsed = gps_file
+        with open(filename2) as g:
+            reader = csv.reader(g, delimiter="\t")
+            dat_file = list(reader)
+
+        new_data = []
+        for index in dat_file:
+            index = index[0]
+            new = index.split(" ")
+            newest = list(filter(None, new))
+            new_data.append(newest)
+        new_new_data = []
+        for n in range(len(new_data) - 1):
+            time_hour = str(float(new_data[n + 1][1][0:2]))
+            if len(time_hour) == 3:
+                time_hour = "0" + time_hour
+            time_min = str(float(new_data[n + 1][1][3:5]))
+            if len(time_min) == 3:
+                time_min = "0" + time_min
+            time_second = str(float(new_data[n + 1][1][6:8]))
+            if len(time_second) == 3:
+                time_second = "0" + time_second
+            new_time = convert_string_time(str(time_hour[:-2]) + ":" + time_min[:-2] + ":" + time_second[:-2])
+            new_time = new_time - convert_string_time("07:00:00")
+            try:
+                new_new_data.append([new_time, new_data[n + 1][19]])
+            except:
+                print("okay")
+        # plt.plot(range(len(new_new_data)), [a[0] for a in new_new_data])
+        # plt.show()
+        data = []
+        for n in range(len(gps_parsed)):
+            timee = gps_parsed[n][0]
+            lat = gps_parsed[n][1]
+            lon = gps_parsed[n][2]
+            for m in new_new_data:
+                if m[0] == timee:
+                    pol = m[1]
+                    data.append([float(lat), float(lon), float(pol), timee])
+                    break
+        self.last_loc = (data[-1][0], data[-1][1])
+        # data = [];
+        # for x in dat_file[1:]:
+        #     data.append([float(x[0]), float(x[1]), float(x[4])])
+        for lat, lon, pol, _ in data:
+            self.kalman_loop(pol * 20000, (lat, lon))
+
+    def UCR_collect_data(self, save_file_name):
+        # FILES TO CHANGE
+        CSV_filename = ''
+        time_current = datetime.datetime.now().strftime('%x-%H-%M-%S')
+        NMEA_filename = "wee.txt"
+        Picarro_port = 'COM4'
+        NMEA_port = 'COM5'
+
+        ser_NMEA = serial.Serial()
+        ser_NMEA.baudrate = 4800
+        ser_NMEA.port = NMEA_port
+
+        ser_NMEA.open()
+        # ser_MCPC.write(b'autorpt=1\r\n')  # Make the MCPC autoreport
+        time.sleep(1)
+
+        # First line is junk, don't analyze it
+        # noinspection PyArgumentList
+        NMEA_bad_line = ser_NMEA.readline()
+        # MCPC_bad_line = ser_MCPC.read(254).decode('utf-8')
+
+        counter = 0  # Used for averaging multiple points
+
+        pollutions = []  # Holds multiple pollution data as it comes in.
+        # Wiped after averaged
+
+        locations = []  # Holds multiple location data as it comes in.
+        # Wiped after averaged
+
+        location_hold = []  # Holds locations until the next pollution data comes in.
+
+        last_picarro_data = 0
+
+        times = []
+        while True:
+            line_NMEA = str(ser_NMEA.readline())
+            dat_NMEA = list(line_NMEA.split(','))
+            coord = self.test_parse(dat_NMEA)  # For every loop, coord will be None type if no new data.
+            if not location_hold[-1] or coord != location_hold[-1]:  # Keeps grabbing valid coordinates as available
+                location_hold.append(coord)
+
+            if location_hold:
+                #grab latest picarro data
+                if data[2] != last_picarro_data:
+                    last_picarro_data = data[2]
+
+                    pollutions.append(MCPC_data[-1])  # Writes new pollution to pollutions list
+                    locations.append(location_hold[-1])
+                    time1 = time.time()
+                    self.kalman_loop(MCPC_data[-1], (location_hold[-1]))
+                    now = time.time()
+                    print(str(MCPC_data[-1]) + ", " + str(location_hold[-1]) + ", " + str(now - time1))
+                    times.append(datetime.datetime.now().strftime('%x-%H-%M-%S'))
+                    if msvcrt.kbhit():
+                        break
+        ser_NMEA.close()
+        # ser_MCPC.close()
+        NEMA_file.close()
+        # NCPC_file.close()
+        self.last_loc = location_hold[-1]
+        a = {}
+        a['pol'] = np.array(pollutions)
+        a['time'] = np.array(times)
+        a['location'] = np.array(locations)
+        sio.savemat(time_current[9:], a)
 
     def collect_data(self, save_file_name):
         # FILES TO CHANGE
         CSV_filename = ''
-        MCPC_filename = 'C:/MCPC/Data/180727/MCPC_180727_132031.txt'
+        MCPC_filename = 'C:/MCPC/Data/180806/MCPC_180806_134045.txt'
         time_current = datetime.datetime.now().strftime('%x-%H-%M-%S')
         NMEA_filename = "wee.txt"
         NMEA_port = 'COM5'
@@ -323,3 +456,4 @@ def expand_itter(self, queued, finished, meas_pollution, location_point, count, 
                 return
     # Using a directed graph, so need to find nodes with edges going to and going away from node expanded, while removing duplicates.
     # Can loop through all recorded data points for areas that have None as var at the end.
+

@@ -374,13 +374,12 @@ class planner(object):
             watchdog.start()
             try:
                 sorted_end_list, graph, dict = self.dijkstras(origin_node, max_dist, min_routes_considered)
-                path_converted = self.path_converter(dict, graph, 0, sorted_end_list[0])
                 state['completed'] = True
                 print("finished")
-                return sleeping
+                return sorted_end_list, graph, dict, sleeping + .25
             except:
                 print("repeating")
-                self.dij_timer(origin_node, max_dist, min_routes_considered, sleeping + 1.0)
+                sleeping += 0.15
 
     # def dij_timer(self, origin_node, max_dist, min_routes_considered):
     #     sig = signal.signal(signal.SIGALRM, handler)
@@ -765,40 +764,38 @@ class planner(object):
         edited_sorted_end_nodes = [x[0] for x in sorted_end_nodes]
         return edited_sorted_end_nodes, G, unique_to_node
 
-    def difference_pathing(self, origin_node, max_dist):
+    def difference_pathing(self, node_current, max_dist, nodeset_prev=None, prev_cost=0, prev_length=None):
+        print("Diff")
         '''Has diminishing returns in its priority function'''
-        c = itertools.count()
-        G = nx.Graph()
-        unique_to_node = {}
-        nodeset = set()
-        nodeset.add(origin_node)
-        next_node = origin_node
-        dist_current = 0
-        path = [origin_node]
-        prev_priori = 0
-        prev_cost = 0
-        while True:
-            node_current = next_node
-            succ = list(self.env.graph.successors(node_current))
-            successors = [x for x in succ if x not in nodeset]
-            if dist_current >= max_dist or len(succ) == 0:
-                return path
-            next_node = 0
-            max_priori = 0
-            for successor_node in successors:
-                new_edge_cost = self.env.get_edge_data((node_current, successor_node), 'weight')  # returns tuple (cost, length)
+        if nodeset_prev:
+            nodeset = nodeset_prev
+        else:
+            nodeset = set()
+            nodeset.add(node_current)
+        succ = list(self.env.graph.successors(node_current))
+        successors = [x for x in succ if x not in nodeset]
+        if prev_length and prev_length >= max_dist:
+            return [node_current]
+        if successors is None or successors == "":
+            return None
+        recurse_list = []
+        for successor_node in successors:
+            new_edge_cost = self.env.get_edge_data((node_current, successor_node), 'weight')  # returns tuple (cost, length)
+            if prev_length:
+                length = new_edge_cost[1] + prev_length
+            else:
                 length = new_edge_cost[1]
-                cost = new_edge_cost[0]
-                priori = math.fabs(cost - prev_cost)
-                if priori > max_priori:
-                    next_node = successor_node
-                    max_priori = priori
-                    add_dist = length
-            path.append(next_node)
-            nodeset.add(next_node)
-            dist_current += add_dist
-            if next_node == 0:
-                return path
+            cost = new_edge_cost[0]
+            priori = math.fabs(cost - prev_cost)
+            copy_set = copy.copy(nodeset)
+            copy_set.add(node_current)
+            recurse_list.append([priori, length, cost, copy_set, successor_node])
+        sorted_recurse_list = sorted(recurse_list, key=lambda x: x[0], reverse=False )
+        for x in sorted_recurse_list:
+            future = self.difference_pathing(x[4], max_dist, x[3], x[2], x[1])
+            if future:
+                return [node_current] + future
+        return None
 
 
     # TODO path planner weighting difference from past node to next node.
@@ -954,7 +951,6 @@ class planner(object):
         self.branch_per_expansion = branch_per_expans
         self.lambda1 = lambda1
         self.lambda2 = lambda2
-
 
 
 
