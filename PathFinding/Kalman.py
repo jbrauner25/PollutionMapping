@@ -343,7 +343,7 @@ class kalman(object):
     def meas_var_dist(distance):
         """calculates the measured value variance for a given point given
         the variance is linear with respect to distance"""
-        var = 800 * distance
+        var = 1000 * distance
         return var
 
     def update(self, pollution, location_point, count_max):  # Loc_point in lat/long

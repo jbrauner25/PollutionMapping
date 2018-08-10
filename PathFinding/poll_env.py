@@ -20,7 +20,7 @@ class PolEnv(Env):
         if self.origin is None:
             self.set_origin()
         self.update_cart_coords()
-        self.stats = ox.extended_stats(self.graph, ecc=False, bc=True, cc=False)
+        #self.stats = ox.extended_stats(self.graph, ecc=False, bc=True, cc=False)
 
     def get_stat(self, node, stat):
         return self.stats[stat][node]

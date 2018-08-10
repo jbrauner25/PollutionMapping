@@ -15,11 +15,11 @@ import time
 import threading
 import _thread
 from time import sleep
-from time import sleep
 import os
 import numpy as np
 import bisect
 import scipy.io as sio
+import matplotlib.pyplot as plt
 
 def watchdog_timer(state, sleeping):
     print("start timer")
@@ -341,11 +341,11 @@ class planner(object):
                 new_edge_cost = self.env.get_edge_data((node, successor_node), 'weight')  # returns tuple (cost, length)
                 new_length = length + new_edge_cost[1]
                 new_cost = cost + new_edge_cost[0]
-                new_priori = node_counter/ new_cost # new_length
+                new_priori = node_counter / new_cost # new_length
                 counter = next(c)
                 unique_to_node[counter] = (successor_node, new_cost, new_length, new_priori, node_counter)
                 G.add_edge(counter_start, counter)
-                G.node[counter]['weight'] = new_priori
+                G.node[counter]['weight'] = new_priori #This builds a tree of paths.
                 succ_nodeset = copy.copy(nodeset)
                 succ_nodeset.add(successor_node)
                 if new_length >= max_dist:
@@ -363,6 +363,63 @@ class planner(object):
         edited_sorted_end_nodes = [x[0] for x in sorted_end_nodes]
         print("objective: " + str(sorted_end_nodes[0][1]))
         return edited_sorted_end_nodes, G, unique_to_node
+
+    def dijkstras1(self, origin_node, max_dist, min_routes_considered):
+        #Initilize starting variables
+        c = itertools.count()
+        G = nx.Graph()
+        push = heappush
+        pop = heappop
+        route_count = 0
+        unique_to_node = {}
+        nodeset = set()
+        nodeset.add(origin_node)
+        fringe = []
+        push(fringe, (0, origin_node, nodeset, 0, 0, 0, 0, [origin_node]))
+        end_nodes = None
+        counter = next(c)
+        G.add_node(counter)
+        # nx.add_node(G, counter)
+        unique_to_node[counter] = origin_node
+        next(c)
+        paths = []
+        while fringe:
+            _, node, nodeset, cost, length, priori, node_counter, path = pop(fringe)
+            succ = list(self.env.graph.successors(node))
+            edit_succ = [x for x in succ if x not in nodeset]
+            if len(edit_succ) > self.branch_per_expansion:
+                edit_succ = random.sample(edit_succ, self.branch_per_expansion)
+            successors = edit_succ
+            node_counter += 1
+            for successor_node in successors:
+                new_edge_cost = self.env.get_edge_data((node, successor_node), 'weight')  # returns tuple (cost, length)
+                new_length = length + new_edge_cost[1]
+                new_cost = cost + new_edge_cost[0]
+                new_priori = node_counter / new_cost
+                unique_to_node[counter] = successor_node
+                succ_nodeset = copy.copy(nodeset)
+                succ_nodeset.add(successor_node)
+                unique_path = copy.copy(path)
+                unique_path.append(successor_node)
+                if new_length >= max_dist:
+                    route_count += 1
+                    if paths is None:
+                        paths = [(path, cost / node_counter)]
+                    else:
+                        paths.append((path, cost / node_counter))
+                    break
+                else:
+                    push(fringe, (new_priori, successor_node, succ_nodeset, new_cost, new_length, new_priori, node_counter, unique_path))
+            if route_count >= min_routes_considered:
+                break
+        if len(paths) > 1:
+            sorted_paths = sorted(paths, key=lambda x: x[1], reverse=True)
+        else:
+            print("objective =" + str(paths[0][1]))
+            return paths[0][0]
+        print("objective = " + str(sorted_paths[0][1]))
+        return sorted_paths[0][0]
+
 
     def dij_timer(self, origin_node, max_dist, min_routes_considered, sleeping):
         """Magic ft. Stackoverflow
@@ -798,15 +855,14 @@ class planner(object):
         return None
 
 
-    # TODO path planner weighting difference from past node to next node.
 
     def path_converter(self, dict, G, start_node, end_node):
         path = nx.shortest_simple_paths(G, start_node, end_node)
         new_path = []
-        for node in path:
-            for no in node:
-                ok = dict[no]
-                new_path.append(ok[0])
+        for nodes in path: #Path is 2d List
+            for node in nodes:
+                new_path.append(dict[node][0])
+        print(len(new_path))
         return new_path
 
     def priority(self, node):

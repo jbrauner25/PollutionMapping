@@ -119,7 +119,26 @@ class tester(object):
         path_converted = self.planner.path_converter(dict, graph, 0, end)
         self.plot_graph_route_over_cost(path_converted)
 
-    def plan_dijkstras(self, branch_per_expans, lambda_1, lambda_2, length, paths_to_consider, from_data=False, filename=None):
+    def plan_dijkstras1(self, branch_per_expans, lambda_1, lambda_2, length, paths_to_consider, from_data=False, filename=None):
+        if from_data:
+            start_node = ox.get_nearest_node(self.unproj, self.kalman.last_loc)
+        else:
+            print(self.env.origin)
+            start_node = ox.get_nearest_node(self.unproj, self.env.origin)
+        self.planner = randomplanner.planner(self.kalman.env)
+        self.planner.set_config(branch_per_expans, lambda_1, lambda_2)
+        self.planner.update_edge_weight()
+        start = time.time()
+        route = self.planner.dijkstras1(start_node, length, paths_to_consider)
+        print("time was " + str(time.time() - start))
+        # nc = ox.get_node_colors_by_attr(self.kalman.env.graph, 'pol', cmap='plasma', num_bins=20)
+        # ns = [50 if node in self.updated_nodes else 8 for node in self.kalman.env.graph.nodes()]
+        # fig, ax = ox.plot_graph(self.kalman.env.graph, fig_height=6, node_color=nc, node_size=ns, node_zorder=2, edge_color='#dddddd', use_geom=True)
+        self.plot_graph_route_over_cost(route, filename=filename)
+
+
+    def plan_dijkstras(self, branch_per_expans, lambda_1, lambda_2, length, paths_to_consider, from_data=False,
+                       filename=None):
         if from_data:
             start_node = ox.get_nearest_node(self.unproj, self.kalman.last_loc)
         else:
@@ -131,10 +150,15 @@ class tester(object):
         start = time.time()
         sorted_end_list, graph, dict = self.planner.dijkstras(start_node, length, paths_to_consider)
         path_converted = self.planner.path_converter(dict, graph, 0, sorted_end_list[0])
+        print("time was " + str(time.time() - start))
         # nc = ox.get_node_colors_by_attr(self.kalman.env.graph, 'pol', cmap='plasma', num_bins=20)
         # ns = [50 if node in self.updated_nodes else 8 for node in self.kalman.env.graph.nodes()]
         # fig, ax = ox.plot_graph(self.kalman.env.graph, fig_height=6, node_color=nc, node_size=ns, node_zorder=2, edge_color='#dddddd', use_geom=True)
         self.plot_graph_route_over_cost(path_converted, filename=filename)
+
+
+
+
     def plan_dijkstras_edge_length(self, branch_per_expans, lambda_1, lambda_2, length, paths_to_consider, from_data=False, filename=None):
         if from_data:
             start_node = ox.get_nearest_node(self.unproj, self.kalman.last_loc)
@@ -333,7 +357,7 @@ def main():
     test.create_bounds(34.099918, 34.090174, -117.7142334535, -117.723778)
     # Testing region
     test.create_graph()
-    test.env.grid_weight_nodes(test.north, test.south, test.east, test.west, 50, 2)
+    test.env.grid_weight_nodes(test.north, test.south, test.east, test.west, 2000, 2)
     test.kalman.wipe_initilize()
     data_collection_loop(test)
 
@@ -345,8 +369,10 @@ def main():
 def UCRdata_collection_loop(test):
     testerr = test
     count = itertools.count()
-    testerr.kalman.set_last_loc(33.989097, -117.375862)
-    testerr.plan_dijkstras(3, 0.2, 1.0, 5000, 500, from_data=True)
+    #testerr.kalman.set_last_loc(33.989097, -117.375862)
+    testerr.plan_dijkstras(3, 0.2, 1.0, 21000, 1, from_data=True)
+    test = input("pause")
+    testerr.plan_dijkstras(3, 0.2, 1.0, 21000, 1, from_data=True)
     while True:
             testerr.kalman.wipe_initilize()
             filename1 = input("filename of gps to load")
@@ -358,18 +384,15 @@ def UCRdata_collection_loop(test):
 
 def UCRmain():
     test = tester()
-    test.create_bounds(33.99264, 33.9725, -117.3632322, -117.3861644)
+    #test.create_bounds(33.99264, 33.9725, -117.3632322, -117.3861644)
+    test.create_bounds(34.074527, 34.011466, -117.648199, -117.724124)
     # Testing region
     test.create_graph()
     # test.create_downtown_riverside_graph()
-    test.env.grid_weight_nodes(test.north, test.south, test.east, test.west, 250, 3)
+    test.env.grid_weight_nodes(test.north, test.south, test.east, test.west, 2000, 3)
     test.kalman.wipe_initilize()
     UCRdata_collection_loop(test)
 
-def rot_matrix(theta):
-    theta = np.deg2rad(theta)
-    c, s = np.cos(theta), np.sin(theta)
-    return np.array(((c,-s), (s, c)))
 
 # fig, ax = ox.plot_graph(graph)
 
@@ -378,18 +401,23 @@ def rot_matrix(theta):
 #test.create_bounds(34.073797, 34.040584, -118.099624, -118.161938)
 #test.create_bounds(34.090749, 34.075594, -117.718872, -117.737704)
 
-UCRmain()
+# UCRmain()
 # test.create_bounds(34.1, 34, -117, -117.1)
 # #
-# test = tester()
-# # test.create_bounds(34.056514, 34.011466, -117.669868, -117.724124)
+test = tester()
+#test.create_bounds(34.029543, 34.011465, -117.702374, -117.724131)
 # # #test.create_bounds(34.099918, 34.090174, -117.7142334535, -117.723778) # -117.723543)#  Testing region
-# # #test.create_bounds(34.019617, 33.982164, -117.592865, -117.651027)
-# # #test.create_bounds(34.019617, 33.982164, -117.592865, -117.651027)
-# test.create_downtown_riverside_graph()
-# test.create_bounds(34.019617, 33.982164, -117.592865, -117.651027)
-# test.create_graph()
-# test.grid_weighting_nodes(800, 2)
+#test.create_bounds(34.019617, 33.982164, -117.592865, -117.651027)
+#test.create_bounds(34.019617, 33.982164, -117.592865, -117.651027)
+#test.create_downtown_riverside_graph()
+test.create_bounds(34.019617, 33.982164, -117.592865, -117.651027)
+test.create_graph()
+test.grid_weighting_nodes(1000, 3)
+test.random_kalman(100, 20000, 40000)
+test.plan_dijkstras1(3, 0.2, 0.1, 18000, 300, from_data=False)
+pause = input("stop")
+test.plan_dijkstras(3, 0.2, 0.1, 18000, 300, from_data=False)
+
 # # # # test.kalman.test_gps()
 # test.grid_weighting_nodes(1000, 4)
 # test.
@@ -397,93 +425,3 @@ UCRmain()
 # test.timer_test2()
 # print("kalman")
 
-# test.random_kalman(30, 18000, 70000)
-#test.kalman.set_last_loc(33.9851, -117.373)
-# print("starting")
-# test.plan_diff(0.1, 0.1, 20000)
-# test.plan_random_cost_per_node(3, 0.2, 1.0, 18000, 5)
-#
-# test.plan_dijkstras(2, 0.1, 1.0, 17000, 400)
-# x = input("o")
-# test.random_kalman(350, 22000, 50000)
-# x = input("o")
-# test.plan_dijkstras(2, 0.1, 0.4, 21000, 200)
-# test.random_kalman(350, 22000, 50000)
-# x = input("o")
-# test.plan_dijkstras(2, 0.1, 0.4, 21000, 200)
-# test.random_kalman(350, 22000, 50000)
-# x = input("o")
-# test.plan_dijkstras(2, 0.1, 0.4, 21000, 200)
-# test.random_kalman(350, 22000, 50000)
-# x = input("o")
-# test.plan_dijkstras(2, 0.1, 0.4, 21000, 200)
-# test.random_kalman(100, 22000, 50000)
-# x = input("o")
-# test.plan_dijkstras(3, 0.1, 0.0, 8000, 1)
-# test.random_kalman(100, 22000, 50000)
-
-# # test.kalman.last_loc = (34.055338, -117.431591)
-# test.env.load_data('dat.mat', (34.092116, -117.719905))
-# test.plan_difference(3, 0.1, 0.4, 2000, 1, from_data=True)
-# #
-
-# main()
-#
-
-
-#test.grid_weighting_nodes(100, 2)
-# test.grid_weighting_nodes_dist(100, 4, 200)
-# test.grid_weighting_nodes_dist(100, 4, 300)
-#test.plan_brute_force(0.09, 0.1, 2200)
-#test.plan_random_cost_per_node(2, 0.09, 0.01, 4000, 200)
-# test.plan_dijkstras_node_counting(2, 0.05, 0.01, 8000, 100)
-# test.plan_dijkstras_node_counting(2, 0.05, 0.01, 8000, 50)
-# test.plan_dijkstras_node_counting(2, 0.05, 0.01, 8000, 10)
-# test.plan_dijkstras_node_counting(2, 0.05, 0.01, 8000, 5)
-#test.plan_dijkstras_node_counting(4, 0.09, 0.01, 10000, 2000)
-
-
-#test.plan_dijkstras(3, 0.05, 0.01, 8000, 2)
-
-# test.plan_dijkstras_obj_sum(3, 0.09, 0.1, 1500, 100)
-# test.plan_dijkstras_obj_sum_test(3, 0.09, 0.1, 1500, 100)
-
-# print("pol")
-# #test.plan_random(4, 0.4, 0.1, 3000)
-# # print("half")
-# # test.plan(3, 0.5, 0.0)
-# # print("var")
-# # test.plan(3, 1, 0.0)
-# #
-# test.plan_dijkstras_multi(4, 0.0, 0.0, 20000, 30)
-# test.plan_dijkstras(4,0.0,0.0,20000,30)
-# test.plan_dijkstras(4,0.2,0.0,20000,30)
-# print("Dijstras")
-# test.plan_dijkstras(4, 0.5, 0.1, 1000)
-# print("random")
-#test.plan_random(2, 0.5, 0.1, 2000)
-
-
-# north, south, east, west = 34.05, 34, -117, -117.05
-# #north, south, east, west = 34.108161, 34.099192, -117.710652, -117.721394
-#
-# G = ox.graph_from_bbox(north, south, east, west, network_type='drive', simplify=True, truncate_by_edge=True)
-#
-# env = PolEnv(G)
-#
-# kalman = kalman(env)
-#
-# kalman.update(30, (34.05, -117.0), 300)  # bot right
-# kalman.update(603, (34.05, -117.05), 300)  # bot left
-# kalman.update(550, (34.025, -117.025), 300)
-#
-# kalman.update(495, (34.0, -117.0), 300)  # top right
-# kalman.update(400, (34.0, -117.05), 300)  # top left
-# planner = randomplanner.planner(env)
-# planner.set_config(10, 5, 0.5, 0.4)
-# planner.update_edge_weight()
-# end, graph, dict = planner.random_paths_unique_random_queue(54570674, 7000, 200)
-# path = planner.path_recreator(graph, 0, end)
-# path_converted = planner.path_converter(dict, path, 0, end)
-# print(path_converted)
-# fig, ax = ox.plot_graph_route(env.graph, path_converted, node_size=0)
