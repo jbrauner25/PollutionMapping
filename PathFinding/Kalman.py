@@ -36,6 +36,9 @@ class kalman(object):
         '''For testing purposes'''
         self.last_loc = (lat, lon)
 
+    def set_random_loc(self):
+        self.last_loc = self.env.get_node_lat_long(random.choice(self.env.graph.nodes))
+
     def mean(numbers):  # Takes in a list, returns average.
         return float(sum(numbers)) / max(len(numbers), 1)
 

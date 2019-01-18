@@ -1,5 +1,6 @@
 from env import *
 import numpy as np
+import gridandcell
 import utils
 import copy
 import osmnx as ox
@@ -9,6 +10,7 @@ import math
 import utm
 import matplotlib.pyplot as plt
 import random
+import time
 
 
 
@@ -17,13 +19,48 @@ class PolEnv(Env):
         Env.__init__(self, unproj_graph, node_location_list)
         self.origin = origin
         self.origin_id = origin_id
+        self.cart_x_width = 0
+        self.cart_y_width = 0
+        self.grid = None
         if self.origin is None:
-            self.set_origin()
+            self.set_origin(self.find_bottom_left())
         self.update_cart_coords()
+        self.create_2d_grid()
+        self.grid.plot_coords()
+        print('ENVIRONMENT LOADED')
+        pos = nx.get_node_attributes(self.graph, 'pos')
+        nx.draw(self.graph, pos)
+        plt.show()
+
+
         #self.stats = ox.extended_stats(self.graph, ecc=False, bc=True, cc=False)
 
     def get_stat(self, node, stat):
         return self.stats[stat][node]
+
+    def create_2d_grid(self):
+        self.grid = gridandcell.Grid2DCartesian(self.cart_x_width, self.cart_y_width, 10)
+        max_distance = math.sqrt(self.grid.width**2 + self.grid.height**2)
+        for n, data in self.graph.nodes(data=True):
+            node = self.graph.nodes()[n]  # Returns the node attribute's dictionary.
+            data['gridindex'] = self.grid.whichCellAmIIn(data['x_cart'], data['y_cart'])
+            distances = []
+            currentNode = self.grid.list.myHead
+            node_position = data['pos']  # returns x, y
+            while currentNode.myNext:
+                coord = (currentNode.myData[0], currentNode.myData[1])  # x,y
+                distance = math.sqrt((node_position[0] - coord[0]) ** 2 + (node_position[1] - coord[1]) ** 2)
+                if distance > max_distance:
+                    raise Exception('Distance greater than max distance, error in code')
+                distances.append(distance)
+
+                currentNode = currentNode.myNext
+            data['distances'] = distances
+            print("Finished node distance calculations, onto next node")
+        print("done")
+
+
+
 
     def get_edge_data(self, edge, data):
         """Get length of edge. Currently uses shortest edge if there are multiple edges that share origin/dest."""
@@ -41,27 +78,54 @@ class PolEnv(Env):
         else:
             lat_coords = [coord[0] for coord in self.get_lat_long_coords()]  # For finding the min/origin
             index = lat_coords.index(min(
-                lat_coords))  # Finds southmost node because Northern hemispere has latitude coordinates decreasing towards equator
+                lat_coords))  # Finds southmost node because Northern hemispere has latitude coordinates
+            # decreasing towards equator
             self.origin_id = list(self.graph.nodes())[index]
             self.origin = self.get_node_lat_long(self.origin_id)
+
+    def find_bottom_left(self):
+        lat_coords = [coord[0] for coord in self.get_lat_long_coords()]  # For finding the min/origin
+        lon_coords = [coord[1] for coord in self.get_lat_long_coords()]  # For finding the min/origin
+        print('Minimum coordinate: ' + str(min(lat_coords)) + ', ' + str(min(lon_coords)))
+        return (min(lat_coords), min(lon_coords))
 
     def update_cart_coords(self):
         """Update environment class with cart coord information. Update graph nodes.
         If no origin is previously set, it sets an origin."""
         earthRadius = 6.371e6
         origin = self.origin
+        max_x_cart = 0
+        max_y_cart = 0
+        x_list = []
+        y_list = []
         if self.origin is None:
-            self.set_origin()
+            self.set_origin(self.find_bottom_left())
         for n, data in self.graph.nodes(data=True):
             node = self.graph.nodes()[n]  # Returns the node attribute's dictionary.
             # print(node)
             if self.origin_id and n == self.origin_id:  # Sets (0, 0) meters as value of origin node.
                 data['x_cart'] = 0.0
                 data['y_cart'] = 0.0
+                data['pos'] = 0.0
             else:
-                data['y_cart'] = (node['lat'] - self.origin[0]) * (np.pi / 180) * np.cos(
-                    (node['lon'] - self.origin[1]) / 2 * np.pi / 180) * earthRadius
-                data['x_cart'] = (node['lon'] - self.origin[1]) * np.pi / 180 * earthRadius
+                x_cart = (node['lon'] - self.origin[1]) * (np.pi / 180) * np.cos(
+                    (node['lat'] - self.origin[0]) / 2 * np.pi / 180) * earthRadius
+
+                y_cart = (node['lat'] - self.origin[0]) * np.pi / 180 * earthRadius
+                data['x_cart'] = x_cart
+                data['y_cart'] = y_cart
+                x_list.append(x_cart)
+                y_list.append(y_cart)
+                data['pos'] = (x_cart, y_cart)
+                if x_cart > max_x_cart:
+                    max_x_cart = x_cart
+                if y_cart > max_y_cart:
+                    max_y_cart = y_cart
+        self.cart_x_width = max_x_cart
+        self.cart_y_width = max_y_cart
+        plt.scatter(x_list, y_list)
+        print("plotting")
+        plt.show()
 
     def get_lat_long_coords(self):
         """returns list of tuples giving latitude, longitude pair"""
@@ -72,10 +136,15 @@ class PolEnv(Env):
         node = self.graph.nodes()[node_location]
         return (node['lat'], node['lon'])
 
+    # def get_node_to_cart(self, node_location):
+    #     """Returns stored cart coordinates given node location of graph"""
+    #     node = self.graph.nodes()[node_location]
+    #     return (node['y_cart'], node['x_cart'])
+
     def get_node_to_cart(self, node_location):
         """Returns stored cart coordinates given node location of graph"""
         node = self.graph.nodes()[node_location]
-        return (node['y_cart'], node['x_cart'])
+        return node['pos']
 
     def get_node_attribute(self, node_location, node_attribute):
         """Returns lat long coordinates given node location of graph"""

@@ -30,7 +30,7 @@ def watchdog_timer(state, sleeping):
 
 class planner(object):
     def __init__(self, env):
-        self.env= copy.deepcopy(env)
+        self.env = copy.copy(env)
         self.graph = self.env.graph
 
     def random_paths_expansion_depth_first(self, origin_node, max_dist, time_max):
@@ -165,55 +165,56 @@ class planner(object):
                     queued.append((successor_node, counter, succ_nodeset))
         return end_node, G, unique_to_node
 
-    def random_paths_unique_random_queue(self, origin_node, max_dist, min_routes_considered):
-        time_start = time.time()
-        c = itertools.count()
-        G = nx.Graph()
+
+#Updated new code
+    def random_paths_unique_random_queue(self, origin_node, max_dist, min_routes_considered, loopcounting=False):
+        #Initilize starting variables
         route_count = 0
         unique_to_node = {}
+        loopcount = 0
         nodeset = set()
         nodeset.add(origin_node)
-        current_max = 99999999
-        queued = [(origin_node, 0, nodeset)]
-        end_node = None
-        counter = next(c)
-        G.add_node(counter)
-        unique_to_node[counter] = (origin_node, 0, 0, 0)
-        next(c)
+        queued = [(0, origin_node, nodeset, 0, 0, 0, 0, [origin_node])]
+        paths = []
         while queued:
-            node, counter_start, nodeset = queued.pop(random.randrange(len(queued)))
+            _, node, nodeset, cost, length, priori, node_counter, path = queued.pop(random.randrange(len(queued)))
             succ = list(self.env.graph.successors(node))
             edit_succ = [x for x in succ if x not in nodeset]
             if len(edit_succ) >= self.branch_per_expansion:
                 edit_succ = random.sample(edit_succ, self.branch_per_expansion)
             successors = edit_succ
-            _, cost, length, priori = unique_to_node[counter_start]
+            node_counter += 1
+            loopcount += 1
             for successor_node in successors:
                 new_edge_cost = self.env.get_edge_data((node, successor_node), 'weight')  # returns tuple (cost, length)
                 new_length = length + new_edge_cost[1]
                 new_cost = cost + new_edge_cost[0]
-                new_priori = new_cost / new_length
-                counter = next(c)
-                unique_to_node[counter] = (successor_node, new_cost, new_length, new_priori)
-                G.add_edge(counter_start, counter)
-                G.node[counter]['weight'] = new_priori
+                new_priori = node_counter / new_cost
                 succ_nodeset = copy.copy(nodeset)
                 succ_nodeset.add(successor_node)
+                unique_path = copy.copy(path)
+                unique_path.append(successor_node)
                 if new_length >= max_dist:
                     route_count += 1
-                    print("route count: " + str(route_count))
-                    if end_node is None:
-                        end_node = counter_start
-                        current_max = priori
-                    elif priori < current_max:
-                        current_max = priori
-                        end_node = counter_start
+                    if paths is None:
+                        paths = [(path, cost / node_counter)]
+                    else:
+                        paths.append((path, cost / node_counter))
                     break
                 else:
-                    queued.insert(0, (successor_node, counter, succ_nodeset))
+                    queued.append((new_priori, successor_node, succ_nodeset, new_cost, new_length, new_priori, node_counter, unique_path) )
             if route_count >= min_routes_considered:
-                return end_node, G, unique_to_node
-        return end_node, G, unique_to_node
+                break
+        if len(paths) > 1:
+            sorted_paths = sorted(paths, key=lambda x: x[1], reverse=True)
+        else:
+            if loopcounting:
+                return ("error", "error", "error")
+            return ("error", "error")
+        print("objective = " + str(sorted_paths[0][1]))
+        if loopcounting:
+            return sorted_paths[0][0], str(sorted_paths[0][1]), loopcount
+        return sorted_paths[0][0], str(sorted_paths[0][1])
 
     def random_paths_unique_random_queue_multiple_routes(self, origin_node, max_dist, min_routes_considered):
         time_start = time.time()
@@ -364,24 +365,18 @@ class planner(object):
         print("objective: " + str(sorted_end_nodes[0][1]))
         return edited_sorted_end_nodes, G, unique_to_node
 
-    def dijkstras1(self, origin_node, max_dist, min_routes_considered):
+
+# Best So far.
+    def dijkstras1(self, origin_node, max_dist, min_routes_considered, loopcounting=False):
         #Initilize starting variables
-        c = itertools.count()
-        G = nx.Graph()
         push = heappush
         pop = heappop
         route_count = 0
-        unique_to_node = {}
+        loopcount = 0
         nodeset = set()
         nodeset.add(origin_node)
         fringe = []
         push(fringe, (0, origin_node, nodeset, 0, 0, 0, 0, [origin_node]))
-        end_nodes = None
-        counter = next(c)
-        G.add_node(counter)
-        # nx.add_node(G, counter)
-        unique_to_node[counter] = origin_node
-        next(c)
         paths = []
         while fringe:
             _, node, nodeset, cost, length, priori, node_counter, path = pop(fringe)
@@ -391,12 +386,12 @@ class planner(object):
                 edit_succ = random.sample(edit_succ, self.branch_per_expansion)
             successors = edit_succ
             node_counter += 1
+            loopcount += 1
             for successor_node in successors:
                 new_edge_cost = self.env.get_edge_data((node, successor_node), 'weight')  # returns tuple (cost, length)
                 new_length = length + new_edge_cost[1]
                 new_cost = cost + new_edge_cost[0]
                 new_priori = node_counter / new_cost
-                unique_to_node[counter] = successor_node
                 succ_nodeset = copy.copy(nodeset)
                 succ_nodeset.add(successor_node)
                 unique_path = copy.copy(path)
@@ -404,9 +399,9 @@ class planner(object):
                 if new_length >= max_dist:
                     route_count += 1
                     if paths is None:
-                        paths = [(path, cost / node_counter)]
+                        paths = [(unique_path, new_cost / node_counter)]
                     else:
-                        paths.append((path, cost / node_counter))
+                        paths.append([(unique_path, new_cost / node_counter)])
                     break
                 else:
                     push(fringe, (new_priori, successor_node, succ_nodeset, new_cost, new_length, new_priori, node_counter, unique_path))
@@ -415,10 +410,16 @@ class planner(object):
         if len(paths) > 1:
             sorted_paths = sorted(paths, key=lambda x: x[1], reverse=True)
         else:
-            print("objective =" + str(paths[0][1]))
-            return paths[0][0]
+            # print("objective =" + str(paths[0][1]))
+            # return paths[0][0]
+            if loopcounting:
+                return "error", "error", "error"
+            return "error", "error"
         print("objective = " + str(sorted_paths[0][1]))
-        return sorted_paths[0][0]
+        if loopcounting:
+            return sorted_paths[0][0], str(sorted_paths[0][1]), loopcount
+            # Path, objective, loopcount
+        return sorted_paths[0][0], str(sorted_paths[0][1])
 
 
     def dij_timer(self, origin_node, max_dist, min_routes_considered, sleeping):
@@ -873,7 +874,7 @@ class planner(object):
         return (1-self.lambda2) * (self.lambda1 * node_var + (1-self.lambda1)*node_pol) + self.lambda2 * grid_weight
 
     def grid_weight_nodes(self, north, south, east, west, meter_box, n):
-        for node in self.env.graph.nodes():
+        for node in self.env.graph.nodes(): 
             self.graph.nodes()[node]['grid_weight'] = random.uniform(0, 0.00100)
             print(self.graph.nodes()[node]['grid_weight'])
         r_earth = 6378137
