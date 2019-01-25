@@ -1,6 +1,7 @@
 import numpy as np, networkx as nx, matplotlib.pyplot as plt
 import math
 import cellKalman
+import random
 
 
 
@@ -166,6 +167,20 @@ class Grid2DCartesian(object):
         '''
         cell = self.linkedList.whichcellamIin(x, y)
         return cell.col, cell.row
+
+    def random_kalman(self, pol_count, pol_min, pol_max):
+        # random.seed(100)
+        for x in range(pol_count):
+            point = (random.uniform(0, self.width), random.uniform(0, self.height))
+            print('Adding pollution at point ' + str(point))
+            # self.points.append(point)
+            # self.updated_nodes.append(ox.get_nearest_node(self.env.G, point))
+            # self.kalman.update(random.randint(pol_min, pol_max), point, 100)  # r
+            pollution = random.randint(pol_min, pol_max)
+            for x in range(len(self.grid)):
+                for y in range(len(self.grid[0])):
+                    pol, var = self.grid[x][y].update_cell_state(pollution, point[0], point[1])
+
 
 
 class linkedList(object):

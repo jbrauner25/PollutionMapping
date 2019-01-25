@@ -38,8 +38,9 @@ class PolEnv(Env):
     def get_stat(self, node, stat):
         return self.stats[stat][node]
 
+
     def create_2d_grid(self):
-        self.grid = gridandcell.Grid2DCartesian(self.cart_x_width, self.cart_y_width, 10)
+        self.grid = gridandcell.Grid2DCartesian(self.cart_x_width, self.cart_y_width, 120)
         max_distance = math.sqrt(self.grid.width**2 + self.grid.height**2)
         for n, data in self.graph.nodes(data=True):
             node = self.graph.nodes()[n]  # Returns the node attribute's dictionary.

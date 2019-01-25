@@ -42,14 +42,20 @@ class tester(object):
         self.unproj = None
         self.node = None
 
+
     def create_bounds(self, north, south, east, west):
         self.north, self.south, self.east, self.west = north, south, east, west
+
+    def create_planner(self):
+        self.planner = new_planner.planner(self.env)
 
     def update_kalman(self, kalman):
         self.kalman = kalman
 
     def random_kalman(self, pol_count, pol_min, pol_max):
-        self.planner.random_kalman(pol_count, pol_min, pol_max)
+        self.planner.grid.random_kalman(pol_count, pol_min, pol_max)
+        self.planner.env.grid.random_kalman(pol_count, pol_min, pol_max)
+
 
 
     def set_start_node(self):
@@ -87,14 +93,18 @@ class tester(object):
     def test(self):
         self.create_bounds(34.1018951292, 34.0963869167, -117.712251498, -117.7250724571)
         self.create_graph()
-        self.planner = new_planner.planner(self.env)
         node = self.randomStartNode()
-        dist = 1000
-        routes = 5000
-        route = self.planner.intelligentsampling(origin_node=node, max_dist=dist, min_routes_considered=routes, lambda_1=.5)
+        dist = 500
+        routes = 1
+        route = self.planner.Coverage(origin_node=node, max_dist=dist, min_routes_considered=routes, loopcounting=True)
+        print("one" + str(route[1]) + 'count: ' + str(route[2]))
         self.plot_graph_route(route[0])
-        print(route[1])
-        #print(route[2])
+        print("one" + str(route[1]) + 'count: ' + str(route[2]))
+        route = self.planner.NormalizedCoverage(origin_node=node, max_dist=dist, min_routes_considered=routes, loopcounting=True)
+        print("two: " + str(route[1]) + 'count: ' + str(route[2]))
+        self.plot_graph_route(route[0])
+        print("two: " + str(route[1]) + 'count: ' + str(route[2]))
+
 
     def script(self, routes, loop):
         if not self.node:
@@ -127,17 +137,25 @@ class tester(object):
             node = self.randomStartNode()
         else:
             node = self.node
-        dist = 3000
         objective = []
+        for x in range(1, 49):
+            route1k = self.planner.RandomCoverage(origin_node=node, max_dist=1000, min_routes_considered=x)
+            route2k = self.planner.RandomCoverage(origin_node=node, max_dist=2000, min_routes_considered=x)
+            route3k = self.planner.RandomCoverage(origin_node=node, max_dist=3000, min_routes_considered=x)
+            objective.append((x, route1k[1], route2k[1], route3k[1]))
+            print(x)
         for x in range(routes):
-            route = self.planner.Coverage(origin_node=node, max_dist=dist, min_routes_considered=x *3)
-            objective.append((route[1], x*3))
-        with open('BFS' + str(routes) + 'route' + 'compare.csv', 'w', newline='') as csvfile:
+            route1k = self.planner.RandomCoverage(origin_node=node, max_dist=1000, min_routes_considered=x*50)
+            route2k = self.planner.RandomCoverage(origin_node=node, max_dist=2000, min_routes_considered=x*50)
+            route3k = self.planner.RandomCoverage(origin_node=node, max_dist=3000, min_routes_considered=x*50)
+            objective.append((x*50, route1k[1], route2k[1], route3k[1]))
+            print(str(x*50))
+        with open('Random1k2k3kPath40mcellData1Through50' + str(routes * 50) + 'route' + 'compare.csv', 'w', newline='') as csvfile:
             spamwriter = csv.writer(csvfile, dialect='excel')
-            spamwriter.writerow(['1000 objective', '2000 objective', '3000 objective'])
-            for x in range(objective):
+            spamwriter.writerow(['route', 'O_1k', 'O_2k', 'O_3k'])
+            for x in range(len(objective)):
                 spamwriter.writerow(
-                    [objective[0], objective[1]])
+                    [objective[x][0], objective[x][1], objective[x][2], objective[x][3]])
 
     def randomscript(self, routes, loop):
         if not self.node:
@@ -169,8 +187,10 @@ class tester(object):
 planner = tester()
 planner.create_map()
 planner.set_start_node()
+planner.create_planner()
 planner.random_kalman(50, 100, 1000)
-planner.script_platau(200)
+planner.test()
+#planner.script_platau(10)
 # planner.randomscript(500, 100)
 # planner.randomscript(1, 100)
 # planner.randomscript(1000, 100)
