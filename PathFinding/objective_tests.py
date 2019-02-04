@@ -53,10 +53,7 @@ class tester(object):
         self.kalman = kalman
 
     def random_kalman(self, pol_count, pol_min, pol_max):
-        self.planner.grid.random_kalman(pol_count, pol_min, pol_max)
-        self.planner.env.grid.random_kalman(pol_count, pol_min, pol_max)
-
-
+        self.planner.env.random_kalman(pol_count, pol_min, pol_max)
 
     def set_start_node(self):
         self.node = self.randomStartNode()

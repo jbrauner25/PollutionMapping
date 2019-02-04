@@ -170,6 +170,7 @@ class Grid2DCartesian(object):
 
     def random_kalman(self, pol_count, pol_min, pol_max):
         # random.seed(100)
+        pointpollutionList = []
         for x in range(pol_count):
             point = (random.uniform(0, self.width), random.uniform(0, self.height))
             print('Adding pollution at point ' + str(point))
@@ -177,9 +178,19 @@ class Grid2DCartesian(object):
             # self.updated_nodes.append(ox.get_nearest_node(self.env.G, point))
             # self.kalman.update(random.randint(pol_min, pol_max), point, 100)  # r
             pollution = random.randint(pol_min, pol_max)
+            pointpollutionList.append((point, pollution))
             for x in range(len(self.grid)):
                 for y in range(len(self.grid[0])):
                     pol, var = self.grid[x][y].update_cell_state(pollution, point[0], point[1])
+            return pointpollutionList
+
+
+    def add_pollution(self, pol, cart_loc):
+        '''Loops through all cels to update pollution values'''
+        for x in range(len(self.grid)):
+            for y in range(len(self.grid[0])):
+                pol, var = self.grid[x][y].update_cell_state(pol, cart_loc[0], cart_loc[1])
+
 
 
 

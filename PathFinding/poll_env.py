@@ -38,6 +38,15 @@ class PolEnv(Env):
     def get_stat(self, node, stat):
         return self.stats[stat][node]
 
+    def compare_truth(self, route):
+        self.truthGrid = gridandcell.Grid2DCartesian(self.cart_x_width, self.cart_y_width, 120)
+        for node in route:
+            cartesian_position = self.get_node_attribute(node, 'pos')
+            pollution = self.get_node_attribute(node, 'pol')
+            self.truthGrid.add_pollution(pollution, cartesian_position)
+
+
+
 
     def create_2d_grid(self):
         self.grid = gridandcell.Grid2DCartesian(self.cart_x_width, self.cart_y_width, 120)
@@ -270,5 +279,43 @@ class PolEnv(Env):
         ax.set_title("Imported FRF Pollution")
         plt.show()
 
+    '''''''*******************************************************************'''
 
+    def kalman_loop(self, meas_pollution, location_point):
+        '''Loops through every node in given graph and runs kalman filtering on it's data'''
+        for node in self.nodes():
+            # node_loc = self.env.get_node_to_cart(node)
+            # node_to_loc = utils.distance(node_loc, location_point)
+            meas_dist_var = self.meas_var_dist(node, location_point)
+            priori_node_var = self.get_node_attribute(node, 'var')  # Calls before to check if it exists
+            if priori_node_var:
+                priori_node_pol = self.get_node_attribute(node, 'pol')
+                node_pol, node_var = self.kalman_filter(priori_node_pol, priori_node_var, meas_pollution,
+                                                        meas_dist_var)
+            else:
+                node_pol = meas_pollution
+                node_var = meas_dist_var
+                print("stop")
+            self.env.set_node_attribute(node, 'pol', node_pol)
+            self.env.set_node_attribute(node, 'var', node_var)
 
+    def meas_var_dist(self, node1, loc):
+        node1Loc = self.get_node_attribute(node1, 'pos')
+        distance = math.sqrt((node1Loc[0] - loc[0]) ** 2 + (node1Loc[1] - loc[2]) ** 2)
+        var = (1 / 5) * distance
+        return var
+
+    @staticmethod
+    def kalman_filter(node_pol, node_var, meas_pol, meas_var):
+        '''Function returns a filtered pollution and variance through kalman filtering'''
+        kg = node_var / (node_var + meas_var)
+        new_pol = float(node_pol) + kg * (float(meas_pol) - float(node_pol))
+        new_var = (1 - kg) * node_var
+        return new_pol, new_var
+
+    def random_kalman(self, pol_count, pol_min, pol_max):
+        '''Updates grid, returns points and polltion,
+        then runs kalman filtering on graph nodes for use in truth table '''
+        pointlocationlist = self.grid.random_kalman(pol_count, pol_min, pol_max)
+        for element in pointlocationlist:
+            self.kalman_loop(element[1], element[0]) #pollution, point
