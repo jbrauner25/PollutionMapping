@@ -39,13 +39,14 @@ class PolEnv(Env):
         return self.stats[stat][node]
 
     def compare_truth(self, route):
-        self.truthGrid = gridandcell.Grid2DCartesian(self.cart_x_width, self.cart_y_width, 120)
+        self.sampleGrid = gridandcell.Grid2DCartesian(self.cart_x_width, self.cart_y_width, 120)
         for node in route:
             cartesian_position = self.get_node_attribute(node, 'pos')
             pollution = self.get_node_attribute(node, 'pol')
-            self.truthGrid.add_pollution(pollution, cartesian_position)
-
-
+            self.sampleGrid.add_pollution(pollution, cartesian_position)
+        hold = self.grid.compare(self.sampleGrid)
+        mean = np.mean(hold)
+        print(mean)
 
 
     def create_2d_grid(self):
@@ -68,8 +69,6 @@ class PolEnv(Env):
             data['distances'] = distances
             print("Finished node distance calculations, onto next node")
         print("done")
-
-
 
 
     def get_edge_data(self, edge, data):
@@ -296,12 +295,12 @@ class PolEnv(Env):
                 node_pol = meas_pollution
                 node_var = meas_dist_var
                 print("stop")
-            self.env.set_node_attribute(node, 'pol', node_pol)
-            self.env.set_node_attribute(node, 'var', node_var)
+            self.set_node_attribute(node, 'pol', node_pol)
+            self.set_node_attribute(node, 'var', node_var)
 
     def meas_var_dist(self, node1, loc):
         node1Loc = self.get_node_attribute(node1, 'pos')
-        distance = math.sqrt((node1Loc[0] - loc[0]) ** 2 + (node1Loc[1] - loc[2]) ** 2)
+        distance = np.sqrt((node1Loc[0] - loc[0]) ** 2 + (node1Loc[1] - loc[1]) ** 2)
         var = (1 / 5) * distance
         return var
 

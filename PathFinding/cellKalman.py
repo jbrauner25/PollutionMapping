@@ -7,10 +7,10 @@ def meas_var_dist(distance):
 
 #Performs the Kalman Filter algorithm for 1 cycle, returns the posteri estimate
 #	and variance for the next cycle'''
-def kalman_filter(priori_est, priori_estVar, meas_val, meas_valVar):
-    if priori_estVar is None:
-        return meas_val, meas_valVar
-    KG = priori_estVar/(priori_estVar + meas_valVar)
-    posteri_est = priori_est + KG*(meas_val - priori_est)
-    posteri_estVar = (1 - KG) * priori_estVar
-    return posteri_est, posteri_estVar
+def kalman_filter(node_pol, node_var, meas_pol, meas_var):
+    if node_var is None:
+        return meas_pol, meas_var
+    kg = node_var / (node_var + meas_var)
+    new_pol = float(node_pol) + kg * (float(meas_pol) - float(node_pol))
+    new_var = (1 - kg) * node_var
+    return new_pol, new_var
