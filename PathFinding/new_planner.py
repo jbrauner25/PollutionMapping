@@ -384,3 +384,62 @@ class planner(object):
         if loopcounting:
             return paths[max_index][0], paths[max_index][1], loopcount
         return paths[max_index]
+
+    def informationgain(self, origin_node, max_dist, min_routes_considered, lambda_1, loopcounting=False):
+        # Initilize starting variables
+        push = heapq.heappush
+        pop = heapq.heappop
+        route_count = 0
+        loopcount = 0
+        nodeset = set()
+        cellset = set()
+        starting_point = self.env.get_node_to_cart(origin_node)
+        starting_cell_loc = self.grid.whichCellAmIIn_index(starting_point[0], starting_point[1])
+        nodeset.add(origin_node)
+        cellset.add(starting_cell_loc)
+        cell_size = self.grid.gridsize
+        fringe = []
+        starting_objective = self.grid.get_cell_from_index(int(starting_cell_loc[0]), int(starting_cell_loc[1])).o_i(lambda_1)
+        push(fringe, (starting_objective, origin_node, nodeset, cellset, 0, [origin_node], starting_objective))
+        paths = []
+        while fringe:
+            _, node, nodeset, prev_cellset, length, path, prev_sum = pop(fringe)
+            succ = list(self.env.graph.successors(node))
+            edit_succ = [x for x in succ if x not in nodeset]
+            successors = edit_succ
+            loopcount += 1
+            for successor_node in successors:
+                new_length = length + self.env.get_edge_data((node, successor_node), 'length')
+                position = self.env.get_node_to_cart(origin_node)
+                cell_loc = self.grid.whichCellAmIIn_index(position[0], position[1])
+                cell_obj = self.grid.get_cell_from_index(int(cell_loc[0]), int(cell_loc[1])).o_i(lambda_1)
+                new_objective, new_objective_sum = ObjectiveFunctions.o_IntelligentSampling(cellset, cell_obj, cell_loc, prev_sum, cell_size)
+                new_objective_flipped = 1/new_objective
+                succ_nodeset = copy.copy(nodeset)
+                succ_nodeset.add(successor_node)
+                succ_cellset = copy.copy(prev_cellset)
+                succ_cellset.add(cell_loc)
+                unique_path = copy.copy(path)
+                unique_path.append(successor_node)
+                if new_length >= max_dist:
+                    route_count += 1
+                    paths.append((unique_path, new_objective))
+                    break
+                else:
+                    push(fringe, (
+                    new_objective_flipped, successor_node, succ_nodeset, succ_cellset, new_length, unique_path, new_objective_sum))
+            if route_count >= min_routes_considered:
+                break
+        if len(paths) <= 0:
+            if loopcounting:
+                return "error", "error", "error"
+            return "error", "error"
+        max_index = 0
+        max_objective = 0
+        for x in range(len(paths)):
+            if max_objective < paths[x][1]:
+                max_index = x
+                max_objective = paths[x][1]
+        if loopcounting:
+            return paths[max_index][0], paths[max_index][1], loopcount
+        return paths[max_index]

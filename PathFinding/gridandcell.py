@@ -2,6 +2,7 @@ import numpy as np, networkx as nx, matplotlib.pyplot as plt
 import math
 import cellKalman
 import random
+import scipy
 
 
 
@@ -41,7 +42,7 @@ class Cell(object):
         '''Updates the parameters for the Kalman Filter'''
         distSquared = (xPos - self.x) ** 2 + (yPos - self.y) ** 2
         dist = np.sqrt(distSquared)
-        measVar = cellKalman.meas_var_dist(dist) + .01
+        measVar = cellKalman.meas_var_dist(dist)
         if self.polEst is None:
             self.polEst = measVal
             self.polEstVar = measVar
@@ -49,6 +50,7 @@ class Cell(object):
             posteriEst, posteriEstVar = cellKalman.kalman_filter(self.polEst, self.polEstVar, measVal, measVar)
             self.polEst = posteriEst
             self.polEstVar = posteriEstVar
+        print("x location: " + str(xPos) + "y loc " + str(yPos) + "measured value: " + str(measVal) + "Pol estimate: " + str(self.polEst) + "Var estimate: " + str(self.polEstVar) + "My cell's x: " + str(self.x) + " my y: " + str(self.y))
         return self.polEst, self.polEstVar
 
     def cell_objective_function(self, alpha):
@@ -59,11 +61,12 @@ class Cell(object):
 
 class Grid2DCartesian(object):
 
-    def __init__(self, width, height, meter_box):
+    def __init__(self, width, height, meter_box, truth_function=False):
         '''Initializes a 2D Grid given the length (x) and width (y) of the grid. The data parameter should be given as a 2D list.
 		The length of the main list should be size X and the lenght of each list within the list should be size Y. The grid
 		origin is the bottom left most point of the grid.'''
         self.graph = nx.Graph()
+
         r_earth = 6378137
         coords = []
         col = 0
@@ -120,10 +123,25 @@ class Grid2DCartesian(object):
         self.linkedList = CompiledLinkedList(self.grid, meter_box)
         self.gridsize = len(coords)
 
+        if truth_function:
+            for x in range(len(self.grid)):
+                for y in range(len(self.grid[0])):
+                    new_x = self.grid[x][y].x
+                    new_y = self.grid[x][y].y
+                    pollution = self.pollutionfunction(new_x, new_y)
+                    self.grid[x][y].polEst = pollution
+                    self.grid[x][y].polEstVar = 0
+
+
         #self.plot_coords()
 
         # Build Linked list
 
+    @staticmethod
+    def pollutionfunction(x, y):
+        #if x < 700 and y < 500 and x > 500 and y > 200:
+         #   return 999999
+        return x
     def get_cell(self, col, row):
         return self.grid[col][row]
 
@@ -189,7 +207,7 @@ class Grid2DCartesian(object):
         '''Loops through all cels to update pollution values'''
         for x in range(len(self.grid)):
             for y in range(len(self.grid[0])):
-                pol, var = self.grid[x][y].update_cell_state(pol, cart_loc[0], cart_loc[1])
+                self.grid[x][y].update_cell_state(pol, cart_loc[0], cart_loc[1])
 
     def compare(self, other):
         residuals = []
@@ -200,6 +218,22 @@ class Grid2DCartesian(object):
                 value = np.abs(selfPollution - otherPollution)
                 residuals.append(value)
         return residuals
+
+    def save_grid(self, fileName):
+        new_grid = []
+        for x in range(len(self.grid)):
+            vector = []
+            for y in range(len(self.grid[0])):
+                pollution = self.grid[x][y].polEst
+                var = self.grid[x][y].polEstVar
+                locationx = self.grid[x][y].x
+                locationy = self.grid[x][y].y
+                vector.append((locationx, locationy, pollution, var))
+            new_grid.append(vector)
+        numpyarray = np.array(new_grid)
+
+        scipy.io.savemat(fileName, mdict={'dataarray': numpyarray})
+
 
 
 

@@ -52,9 +52,6 @@ class tester(object):
     def update_kalman(self, kalman):
         self.kalman = kalman
 
-    def random_kalman(self, pol_count, pol_min, pol_max):
-        self.planner.env.random_kalman(pol_count, pol_min, pol_max)
-
     def set_start_node(self):
         self.node = self.randomStartNode()
 
@@ -91,21 +88,25 @@ class tester(object):
         self.create_bounds(34.1018951292, 34.0963869167, -117.712251498, -117.7250724571)
         self.create_graph()
         node = self.randomStartNode()
-        dist = 200
+        dist = 2000
         routes = 1
         route = self.planner.Coverage(origin_node=node, max_dist=dist, min_routes_considered=routes, loopcounting=True)
         print("1111one" + str(route[1]) + 'count: ' + str(route[2]))
         self.plot_graph_route(route[0])
-        self.planner.env.compare_truth(route[0])
+        self.planner.env.save_mat(route[0])
+        self.planner.env.save_route(route[0])
+        #self.planner.env.compare_truth(route[0])
         print("1111one" + str(route[1]) + 'count: ' + str(route[2]))
-        time.sleep(5)
-        dist = 5000
-        route = self.planner.Coverage(origin_node=node, max_dist=dist, min_routes_considered=routes, loopcounting=True)
-        print("2****ONE" + str(route[1]) + 'count: ' + str(route[2]))
-        self.plot_graph_route(route[0])
-        self.planner.env.compare_truth(route[0])
-        print("2********one" + str(route[1]) + 'count: ' + str(route[2]))
-        time.sleep(5)
+        # time.sleep(5)
+        # dist = 2000
+        # route = self.planner.Coverage(origin_node=node, max_dist=dist, min_routes_considered=routes, loopcounting=True)
+        # #route = self.planner.intelligentsampling(origin_node=node, max_dist=dist, min_routes_considered=routes, lambda_1=1.0, loopcounting=True)
+        # print("2****ONE" + str(route[1]) + 'count: ' + str(route[2]))
+        # self.plot_graph_route(route[0])
+        # #self.planner.env.compare_truth(route[0])
+        # self.planner.env.save_mat(route[0])
+        # print("2********one" + str(route[1]) + 'count: ' + str(route[2]))
+        # time.sleep(5)
         # route = self.planner.NormalizedCoverage(origin_node=node, max_dist=dist, min_routes_considered=routes, loopcounting=True)
         # self.planner.env.compare_truth(route[0])
         # print("two: " + str(route[1]) + 'count: ' + str(route[2]))
@@ -195,7 +196,6 @@ planner = tester()
 planner.create_map()
 planner.set_start_node()
 planner.create_planner()
-planner.random_kalman(100, 100, 1000)
 planner.test()
 #planner.script_platau(10)
 # planner.randomscript(500, 100)
