@@ -287,7 +287,7 @@ class planner(object):
             for successor_node in successors:
                 new_length = length + self.env.get_edge_data((node, successor_node), 'length')
                 cell_loc = self.grid.whichCellAmIIn_loc(self.env.get_node_to_cart(origin_node))
-                cell_obj = self.grid.get_cell_from_index(cell_loc).o_i(lamba_1)
+                cell_obj = self.grid.get_cell_from_index(cell_loc).o_i(lambda_1)
                 new_objective, new_objective_sum, new_sum_length = ObjectiveFunctions.o_IntelligentSampling_incremental(
                     cellset, cell_obj, cell_loc, prev_sum, prev_sum_len)
                 new_objective_flipped = 1 / new_objective

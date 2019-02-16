@@ -88,13 +88,12 @@ class tester(object):
         self.create_bounds(34.1018951292, 34.0963869167, -117.712251498, -117.7250724571)
         self.create_graph()
         node = self.randomStartNode()
-        dist = 2000
+        dist = 3000
         routes = 1
-        route = self.planner.Coverage(origin_node=node, max_dist=dist, min_routes_considered=routes, loopcounting=True)
+        route = self.planner.informationgain(origin_node=node, max_dist=dist, min_routes_considered=routes, lambda_1=0.5, loopcounting=True)
         print("1111one" + str(route[1]) + 'count: ' + str(route[2]))
         self.plot_graph_route(route[0])
         self.planner.env.save_mat(route[0])
-        self.planner.env.save_route(route[0])
         #self.planner.env.compare_truth(route[0])
         print("1111one" + str(route[1]) + 'count: ' + str(route[2]))
         # time.sleep(5)

@@ -9,6 +9,8 @@ import numpy as np
 from matplotlib.collections import LineCollection
 import time
 import copy
+ox.utils.config(useful_tags_path=['bridge', 'tunnel', 'oneway', 'lanes', 'ref', 'name', 'highway', 'maxspeed', 'service', 'access', 'area', 'landuse', 'width', 'est_width', 'junction'])
+
 
 
 class Env(object):

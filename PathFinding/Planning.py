@@ -142,8 +142,6 @@ class planner(object):
                     cost = dist[v][1] + new_edge_cost[1]
                     priori = length / cost
                     if cutoff is not None:
-                        print("LEBNGTT")
-                        print(length)
                         if length >= cutoff:  # Checks distance in vu_distance tuple in case it is above cutoff distance.
                             #TODO Make the program save the paths (or find out how to access them) once above the cutoff. This is our limiting factor, along with processing time, hopefully.
                             routes.append((paths[v], dist[v]))

@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import random
 import scipy
 import time
+ox.utils.config(useful_tags_path=['bridge', 'tunnel', 'oneway', 'lanes', 'ref', 'name', 'highway', 'maxspeed', 'service', 'access', 'area', 'landuse', 'width', 'est_width', 'junction'])
 
 
 
@@ -22,6 +23,7 @@ class PolEnv(Env):
         self.origin_id = origin_id
         self.cart_x_width = 0
         self.cart_y_width = 0
+        self.griddensity = 15
         self.grid = None
         if self.origin is None:
             self.set_origin(self.find_bottom_left())
@@ -40,41 +42,77 @@ class PolEnv(Env):
         return self.stats[stat][node]
 
     def compare_truth(self, route):
-        self.sampleGrid = gridandcell.Grid2DCartesian(self.cart_x_width, self.cart_y_width, 120)
-        for node in route:
-            cartesian_position = self.get_node_attribute(node, 'pos')
+        self.sampleGrid = gridandcell.Grid2DCartesian(self.cart_x_width, self.cart_y_width, self.griddensity)
+        for i in range(len(route)):
+            currentNode = route[i]
+            cartesian_position = self.get_node_attribute(currentNode, 'pos')
             pollution = self.grid.pollutionfunction(cartesian_position[0], cartesian_position[1])
             self.sampleGrid.add_pollution(pollution, cartesian_position)
+            if i != len(route)-1:
+                nextNode = route[i+1]
+                try:
+                    speed_limit = ox.utils.get_route_edge_attributes(self.G, [currentNode, nextNode], attribute='max speed')
+                #peed_limit = self.G.get_edge_data(currentNode, nextNode)['max speed']/3.6 #Km per hour to m per sec
+                    print("Obtained correct speed limit")
+                    time.sleep(5)
+                except:
+                    speed_limit = 8.7
+                next_cartesian_position = self.get_node_attribute(nextNode, 'pos')
+                deltaT = 1.0 #time step
+                x = cartesian_position[0]
+                y = cartesian_position[1]
+                while math.sqrt((x-next_cartesian_position[0])**2 + (y - next_cartesian_position[1])**2) > 1.1*speed_limit*deltaT:
+                    theta = math.atan2(next_cartesian_position[1]-cartesian_position[1], next_cartesian_position[0] - cartesian_position[0])
+                    x = x + speed_limit * math.cos(theta)
+                    y = y + speed_limit * math.sin(theta)
+                    pollution = self.grid.pollutionfunction(x, y)
+                    self.sampleGrid.add_pollution(pollution, (x, y))
         hold = self.grid.compare(self.sampleGrid)
         mean = np.mean(hold)
         print("the mean is " + str(mean))
 
     def save_mat(self, route):
-        self.sampleGrid = gridandcell.Grid2DCartesian(self.cart_x_width, self.cart_y_width, 120)
-        for node in route:
-            cartesian_position = self.get_node_attribute(node, 'pos')
+        self.sampleGrid = gridandcell.Grid2DCartesian(self.cart_x_width, self.cart_y_width, self.griddensity)
+        x_storage = []
+        y_storage= []
+        pol_storage = []
+        for i in range(len(route)):
+            currentNode = route[i]
+            cartesian_position = self.get_node_attribute(currentNode, 'pos')
             pollution = self.grid.pollutionfunction(cartesian_position[0], cartesian_position[1])
             self.sampleGrid.add_pollution(pollution, cartesian_position)
+            if i != len(route)-1:
+                nextNode = route[i+1]
+                try:
+                    speed_limit = ox.utils.get_route_edge_attributes(self.G, [currentNode, nextNode], attribute='max speed')
+                #peed_limit = self.G.get_edge_data(currentNode, nextNode)['max speed']/3.6 #Km per hour to m per sec
+                    print("Obtained correct speed limit")
+                    time.sleep(5)
+                except:
+                    speed_limit = 8.7
+                next_cartesian_position = self.get_node_attribute(nextNode, 'pos')
+                deltaT = 1.0 #time step
+                x = cartesian_position[0]
+                y = cartesian_position[1]
+                while math.sqrt((x-next_cartesian_position[0])**2 + (y - next_cartesian_position[1])**2) > 1.1*speed_limit*deltaT:
+                    theta = math.atan2(next_cartesian_position[1]-cartesian_position[1], next_cartesian_position[0] - cartesian_position[0])
+                    x = x + speed_limit * math.cos(theta)
+                    y = y + speed_limit * math.sin(theta)
+                    pollution = self.grid.pollutionfunction(x, y)
+                    self.sampleGrid.add_pollution(pollution, (x, y))
+                    x_storage.append(x)
+                    y_storage.append(y)
+                    pol_storage.append(pollution)
         self.sampleGrid.save_grid('pathed.mat')
         self.grid.save_grid('truth.mat')
+        scipy.io.savemat('routedata.mat', mdict={'routeX': x_storage, 'routeY': y_storage, 'routePol': pol_storage})
 
-    def save_route(self, route):
-        x = []
-        y = []
-        pol = []
-        for node in route:
-            cartesian_position = self.get_node_attribute(node, 'pos')
-            pollution = self.grid.pollutionfunction(cartesian_position[0], cartesian_position[1])
-            x.append(cartesian_position[0])
-            y.append(cartesian_position[1])
-            pol.append(pollution)
-        scipy.io.savemat('routedata.mat', mdict={'routeX': x, 'routeY': y, 'routePol': pol})
 
 
 
 
     def create_2d_grid(self):
-        self.grid = gridandcell.Grid2DCartesian(self.cart_x_width, self.cart_y_width, 120, truth_function = True)
+        self.grid = gridandcell.Grid2DCartesian(self.cart_x_width, self.cart_y_width, self.griddensity, truth_function = True)
         max_distance = math.sqrt(self.grid.width**2 + self.grid.height**2)
         for n, data in self.graph.nodes(data=True):
             node = self.graph.nodes()[n]  # Returns the node attribute's dictionary.

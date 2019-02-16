@@ -23,8 +23,8 @@ for i=1:arraysize(1)
         truthY = truth(i, j, 2);
         estimatedPollution = estimated(i, j, 3);
         estimatedVar = estimated(i, j, 4);
-        scatter(truthX, truthY, pointSize, estimatedPollution);
-        hold on
+        %scatter(truthX, truthY, pointSize, estimatedPollution);
+        %hold on
         x_locations(i) = truthX;
         y_locations(j) = truthY;
         z_truth_pollution(i,j) = truthPollution;
@@ -33,15 +33,18 @@ for i=1:arraysize(1)
         z_estimated_var(i, j) = estimatedVar;
     end
 end
-pause();
+%pause();
 figure;
 subplot(1,3,1)
 surf(x_locations, y_locations, z_truth_pollution')
+title("Truth")
 subplot(1,3,2)
 surf(x_locations, y_locations, z_estimated_pollution')
+title("Estimated")
 subplot(1,3,3)
 iterations = numel(routedata.routeX)
 for i=1:iterations
     scatter(routedata.routeX(i), routedata.routeY(i), 100, routedata.routePol(i));
     hold on
 end
+title("Data")

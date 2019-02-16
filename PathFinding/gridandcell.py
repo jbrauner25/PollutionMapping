@@ -139,9 +139,10 @@ class Grid2DCartesian(object):
 
     @staticmethod
     def pollutionfunction(x, y):
-        #if x < 700 and y < 500 and x > 500 and y > 200:
-         #   return 999999
-        return x
+        return math.sin(x/100) + math.cos(y/100)
+        # if x < 700 and y < 500 and x > 500 and y > 200:
+        #     return 5000
+        # return 100
     def get_cell(self, col, row):
         return self.grid[col][row]
 
