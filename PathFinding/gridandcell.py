@@ -50,7 +50,7 @@ class Cell(object):
             posteriEst, posteriEstVar = cellKalman.kalman_filter(self.polEst, self.polEstVar, measVal, measVar)
             self.polEst = posteriEst
             self.polEstVar = posteriEstVar
-        print("x location: " + str(xPos) + "y loc " + str(yPos) + "measured value: " + str(measVal) + "Pol estimate: " + str(self.polEst) + "Var estimate: " + str(self.polEstVar) + "My cell's x: " + str(self.x) + " my y: " + str(self.y))
+        #print("x location: " + str(xPos) + "y loc " + str(yPos) + "measured value: " + str(measVal) + "Pol estimate: " + str(self.polEst) + "Var estimate: " + str(self.polEstVar) + "My cell's x: " + str(self.x) + " my y: " + str(self.y))
         return self.polEst, self.polEstVar
 
     def cell_objective_function(self, alpha):
@@ -95,7 +95,6 @@ class Grid2DCartesian(object):
                 row_hold.append(new_cell)
                 y += meter_box
                 row += 1
-                print('ding')
             self.grid.append(row_hold)
             x += meter_box
             y = meter_box/2  # Reset for new iteration
@@ -103,7 +102,6 @@ class Grid2DCartesian(object):
             row_hold = []
             col += 1
         #for node in self.graph.nodes():
-        #    print(str(self.graph.nodes()[node]['grid_weight']))
         #self.coordinates = coords
         self.numCol = len(self.grid)
         self.numRow = len(self.grid[0])
@@ -139,7 +137,7 @@ class Grid2DCartesian(object):
 
     @staticmethod
     def pollutionfunction(x, y):
-        return math.sin(x/100) + math.cos(y/100)
+        return math.sin(y/100) + math.cos(x/100)
         # if x < 700 and y < 500 and x > 500 and y > 200:
         #     return 5000
         # return 100
@@ -192,7 +190,6 @@ class Grid2DCartesian(object):
         pointpollutionList = []
         for z in range(pol_count):
             point = (random.uniform(0, self.width), random.uniform(0, self.height))
-            print('Adding pollution at point ' + str(point))
             # self.points.append(point)
             # self.updated_nodes.append(ox.get_nearest_node(self.env.G, point))
             # self.kalman.update(random.randint(pol_min, pol_max), point, 100)  # r

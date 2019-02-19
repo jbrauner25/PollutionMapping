@@ -88,14 +88,13 @@ class tester(object):
         self.create_bounds(34.1018951292, 34.0963869167, -117.712251498, -117.7250724571)
         self.create_graph()
         node = self.randomStartNode()
-        dist = 3000
+        dist = 3500
         routes = 1
         route = self.planner.informationgain(origin_node=node, max_dist=dist, min_routes_considered=routes, lambda_1=0.5, loopcounting=True)
-        print("1111one" + str(route[1]) + 'count: ' + str(route[2]))
         self.plot_graph_route(route[0])
         self.planner.env.save_mat(route[0])
-        #self.planner.env.compare_truth(route[0])
-        print("1111one" + str(route[1]) + 'count: ' + str(route[2]))
+        print("The average difference is:")
+        self.planner.env.compare_truth(route[0])
         # time.sleep(5)
         # dist = 2000
         # route = self.planner.Coverage(origin_node=node, max_dist=dist, min_routes_considered=routes, loopcounting=True)
@@ -139,30 +138,27 @@ class tester(object):
             for x in range(0, loop):
                 spamwriter.writerow([distance_1000_objective[x], distance_2000_objective[x], distance_3000_objective[x]])
 
-    def script_platau(self, routes):
+    def script_truth(self):
         if not self.node:
             node = self.randomStartNode()
         else:
             node = self.node
         objective = []
-        for x in range(1, 49):
-            route1k = self.planner.RandomCoverage(origin_node=node, max_dist=1000, min_routes_considered=x)
-            route2k = self.planner.RandomCoverage(origin_node=node, max_dist=2000, min_routes_considered=x)
-            route3k = self.planner.RandomCoverage(origin_node=node, max_dist=3000, min_routes_considered=x)
-            objective.append((x, route1k[1], route2k[1], route3k[1]))
-            print(x)
-        for x in range(routes):
-            route1k = self.planner.RandomCoverage(origin_node=node, max_dist=1000, min_routes_considered=x*50)
-            route2k = self.planner.RandomCoverage(origin_node=node, max_dist=2000, min_routes_considered=x*50)
-            route3k = self.planner.RandomCoverage(origin_node=node, max_dist=3000, min_routes_considered=x*50)
-            objective.append((x*50, route1k[1], route2k[1], route3k[1]))
-            print(str(x*50))
-        with open('Random1k2k3kPath40mcellData1Through50' + str(routes * 50) + 'route' + 'compare.csv', 'w', newline='') as csvfile:
+        for x in range(1, 100):
+            route1 = self.planner.Coverage(origin_node=node, max_dist=3000, min_routes_considered=100)
+            route2 = self.planner.SimAnnealCoverage(origin_node=node, max_dist=3000, min_routes_considered=100)
+            route3 = self.planner.RandomCoverage(origin_node=node, max_dist=3000, min_routes_considered=100)
+            route4 = self.planner.intelligentsampling(origin_node=node, max_dist=3000, min_routes_considered=100, lambda_1=0.5)
+            route5 = self.planner.intelligentsampling(origin_node=node, max_dist=3000, min_routes_considered=100, lambda_1=0.999)
+            route6 = self.planner.intelligentsampling(origin_node=node, max_dist=3000, min_routes_considered=100, lambda_1=0.001)
+            objective.append((self.planner.env.compare_truth(route1[0]), self.planner.env.compare_truth(route2[0]), self.planner.env.compare_truth(route3[0]), self.planner.env.compare_truth(route4[0]), self.planner.env.compare_truth(route5[0]), self.planner.env.compare_truth(route6[0])))
+
+        with open('MeanDifferenceCoveragePlanner1k2k3k' + str(routes * 50) + 'route' + 'compare.csv', 'w', newline='') as csvfile:
             spamwriter = csv.writer(csvfile, dialect='excel')
-            spamwriter.writerow(['route', 'O_1k', 'O_2k', 'O_3k'])
+            spamwriter.writerow(['coverage', 'simannealcoverage', 'randomcoverage', 'IntelSamplelambda1', 'IntelSamplelambda05', 'IntelSamplelambda00'])
             for x in range(len(objective)):
                 spamwriter.writerow(
-                    [objective[x][0], objective[x][1], objective[x][2], objective[x][3]])
+                    [objective[x][0], objective[x][1], objective[x][2], objective[x][3], objective[x][4], objective[x][5]])
 
     def randomscript(self, routes, loop):
         if not self.node:
@@ -195,8 +191,8 @@ planner = tester()
 planner.create_map()
 planner.set_start_node()
 planner.create_planner()
-planner.test()
-#planner.script_platau(10)
+#planner.test()
+planner.script_truth()
 # planner.randomscript(500, 100)
 # planner.randomscript(1, 100)
 # planner.randomscript(1000, 100)

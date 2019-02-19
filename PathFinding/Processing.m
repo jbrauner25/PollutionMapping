@@ -2,7 +2,6 @@ truthdata = load('truth.mat');
 estimateddata = load('pathed.mat');
 routedata = load('routedata.mat');
 
-5
 truth = truthdata.dataarray;
 estimated = estimateddata.dataarray;
 
@@ -14,6 +13,7 @@ z_truth_pollution = zeros(arraysize(1), arraysize(2)); %Setting a similarly size
 z_estimated_pollution = zeros(arraysize(1), arraysize(2));
 z_truth_var = zeros(arraysize(1), arraysize(2));
 z_estimated_var =zeros(arraysize(1), arraysize(2));
+residuals = [];
 for i=1:arraysize(1)
     for j=1:arraysize(2)
         estimatedElement = estimated();
@@ -25,6 +25,7 @@ for i=1:arraysize(1)
         estimatedVar = estimated(i, j, 4);
         %scatter(truthX, truthY, pointSize, estimatedPollution);
         %hold on
+        residuals = [residuals, abs(z_truth_pollution - z_estimated_pollution)];
         x_locations(i) = truthX;
         y_locations(j) = truthY;
         z_truth_pollution(i,j) = truthPollution;
@@ -48,3 +49,4 @@ for i=1:iterations
     hold on
 end
 title("Data")
+mean2(residuals)
