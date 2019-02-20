@@ -34,8 +34,7 @@ class Cell(object):
 		from its parent grid'''
         return self.col, self.row
 
-    def o_i(self, lambda_1):
-        return lambda_1*self.polEst + (1-lambda_1)*math.sqrt(self.polEstVar)
+
 
 
     def update_cell_state(self, measVal, xPos, yPos):
@@ -137,10 +136,11 @@ class Grid2DCartesian(object):
 
     @staticmethod
     def pollutionfunction(x, y):
-        return math.sin(y/100) + math.cos(x/100)
-        # if x < 700 and y < 500 and x > 500 and y > 200:
-        #     return 5000
-        # return 100
+        #return math.sin(y/100) + math.cos(x/100)
+        if x < 700 and y < 500 and x > 500 and y > 200:
+             return 5000
+        return 100
+
     def get_cell(self, col, row):
         return self.grid[col][row]
 

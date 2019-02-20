@@ -27,7 +27,9 @@ from shapely.geometry import Polygon
 from shapely.geometry import LineString, MultiPolygon
 import geopandas as gpd
 import copy
+import sys
 
+sys.setrecursionlimit(100000)
 
 class tester(object):
     def __init__(self, env=None):
@@ -89,12 +91,18 @@ class tester(object):
         self.create_graph()
         node = self.randomStartNode()
         dist = 3500
-        routes = 1
-        route = self.planner.informationgain(origin_node=node, max_dist=dist, min_routes_considered=routes, lambda_1=0.5, loopcounting=True)
+        routes = 100
+        route = self.planner.informationgain(origin_node=node, max_dist=dist, min_routes_considered=routes, lambda_1=.000001, loopcounting=True)
         self.plot_graph_route(route[0])
         self.planner.env.save_mat(route[0])
         print("The average difference is:")
         self.planner.env.compare_truth(route[0])
+        route = self.planner.informationgain(origin_node=node, max_dist=dist, min_routes_considered=routes, lambda_1=.9999999, loopcounting=True)
+        self.plot_graph_route(route[0])
+        self.planner.env.save_mat(route[0])
+        print("The average difference is:")
+        self.planner.env.compare_truth(route[0])
+
         # time.sleep(5)
         # dist = 2000
         # route = self.planner.Coverage(origin_node=node, max_dist=dist, min_routes_considered=routes, loopcounting=True)
@@ -192,7 +200,7 @@ planner.create_map()
 planner.set_start_node()
 planner.create_planner()
 #planner.test()
-planner.script_truth()
+planner.test()
 # planner.randomscript(500, 100)
 # planner.randomscript(1, 100)
 # planner.randomscript(1000, 100)

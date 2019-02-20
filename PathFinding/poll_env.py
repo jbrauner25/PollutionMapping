@@ -75,6 +75,9 @@ class PolEnv(Env):
         except:
             return "error"
 
+    def create_grid(self):
+        return gridandcell.Grid2DCartesian(self.cart_x_width, self.cart_y_width, self.griddensity)
+
     def save_mat(self, route):
         self.sampleGrid = gridandcell.Grid2DCartesian(self.cart_x_width, self.cart_y_width, self.griddensity)
         x_storage = []
@@ -346,23 +349,24 @@ class PolEnv(Env):
 
     '''''''*******************************************************************'''
 
-    # def kalman_loop(self, meas_pollution, location_point):
-    #     '''Loops through every node in given graph and runs kalman filtering on it's data'''
-    #     for node in self.nodes():
-    #         # node_loc = self.env.get_node_to_cart(node)
-    #         # node_to_loc = utils.distance(node_loc, location_point)
-    #         meas_dist_var = self.meas_var_dist(node, location_point)
-    #         priori_node_var = self.get_node_attribute(node, 'var')  # Calls before to check if it exists
-    #         if priori_node_var:
-    #             priori_node_pol = self.get_node_attribute(node, 'pol')
-    #             node_pol, node_var = self.kalman_filter(priori_node_pol, priori_node_var, meas_pollution,
-    #                                                     meas_dist_var)
-    #         else:
-    #             node_pol = meas_pollution
-    #             node_var = meas_dist_var
-    #             print("stop")
-    #         self.set_node_attribute(node, 'pol', node_pol)
-    #         self.set_node_attribute(node, 'var', node_var)
+    def kalman_loop(self, meas_pollution, location_point, graph):
+        '''Loops through every node in given graph and runs kalman filtering on it's data'''
+        for node in graph.nodes():
+            # node_loc = self.env.get_node_to_cart(node)
+            # node_to_loc = utils.distance(node_loc, location_point)
+            meas_dist_var = self.meas_var_dist_2(graph, node, location_point)
+            priori_node_var = self.get_external_node_attribute(graph, node, 'var')  # Calls before to check if it exists
+            if priori_node_var:
+                priori_node_pol = self.get_external_node_attribute(graph, node, 'pol')
+                node_pol, node_var = self.kalman_filter(priori_node_pol, priori_node_var, meas_pollution,
+                                                        meas_dist_var)
+                print("Check")
+            else:
+                node_pol = meas_pollution
+                node_var = meas_dist_var
+            graph.nodes()[node]['pol'] = node_pol
+            graph.nodes()[node]['var'] = node_var
+        return graph
 
     def meas_var_dist(self, node1, loc):
         node1Loc = self.get_node_attribute(node1, 'pos')
@@ -384,3 +388,22 @@ class PolEnv(Env):
     #     pointlocationlist = self.grid.random_kalman(pol_count, pol_min, pol_max)
     #     for element in pointlocationlist:
     #         self.kalman_loop(element[1], element[0]) #pollution, point
+
+    @staticmethod
+    def get_external_node_attribute(graph, node_location, node_attribute):
+        """Returns lat long coordinates given node location of graph"""
+        try:
+            node = graph.nodes()[node_location]
+            return node[node_attribute]
+        except:
+            return None
+
+
+    @staticmethod
+    def meas_var_dist_2(graph, node1, loc):
+        node1index = graph.nodes()[node1]
+        node1Pos = node1index['pos']
+        distance = np.sqrt((node1Pos[0] - loc[0]) ** 2 + (node1Pos[1] - loc[1]) ** 2)
+        var = (1 / 5) * distance
+        return var
+

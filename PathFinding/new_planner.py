@@ -399,11 +399,13 @@ class planner(object):
         cellset.add(starting_cell_loc)
         cell_size = self.grid.gridsize
         fringe = []
-        starting_objective = self.grid.get_cell_from_index(int(starting_cell_loc[0]), int(starting_cell_loc[1])).o_i(lambda_1)
-        push(fringe, (starting_objective, origin_node, nodeset, cellset, 0, [origin_node], starting_objective))
+        new_variance_graph = copy.deepcopy(self.env.graph)
+        starting_cell = self.grid.get_cell_from_index(int(starting_cell_loc[0]), int(starting_cell_loc[1]))
+        starting_objective = ObjectiveFunctions.o_i(lambda_1, starting_cell.polEst, starting_cell.polEstVar)
+        push(fringe, (starting_objective, origin_node, nodeset, cellset, 0, [origin_node], starting_objective, new_variance_graph))
         paths = []
         while fringe:
-            _, node, nodeset, prev_cellset, length, path, prev_sum = pop(fringe)
+            _, node, nodeset, prev_cellset, length, path, prev_sum, old_graph = pop(fringe)
             succ = list(self.env.graph.successors(node))
             edit_succ = [x for x in succ if x not in nodeset]
             successors = edit_succ
@@ -412,7 +414,11 @@ class planner(object):
                 new_length = length + self.env.get_edge_data((node, successor_node), 'length')
                 position = self.env.get_node_to_cart(origin_node)
                 cell_loc = self.grid.whichCellAmIIn_index(position[0], position[1])
-                cell_obj = self.grid.get_cell_from_index(int(cell_loc[0]), int(cell_loc[1])).o_i(lambda_1)
+                cell = self.grid.get_cell_from_index(int(cell_loc[0]), int(cell_loc[1]))
+                new_graph = copy.deepcopy(old_graph)  # Copies previous graph
+                new_graph = self.env.kalman_loop(cell.polEst, position, new_graph)  # Adds pollution at current node to new grid
+                var_calc = self.env.get_external_node_attribute(new_graph, successor_node, 'var')
+                cell_obj = ObjectiveFunctions.o_i(lambda_1, cell.polEst, var_calc)
                 new_objective, new_objective_sum = ObjectiveFunctions.o_IntelligentSampling(cellset, cell_obj, cell_loc, prev_sum, cell_size)
                 new_objective_flipped = 1/new_objective
                 succ_nodeset = copy.copy(nodeset)
@@ -427,7 +433,7 @@ class planner(object):
                     break
                 else:
                     push(fringe, (
-                    new_objective_flipped, successor_node, succ_nodeset, succ_cellset, new_length, unique_path, new_objective_sum))
+                    new_objective_flipped, successor_node, succ_nodeset, succ_cellset, new_length, unique_path, new_objective_sum, new_graph))
             if route_count >= min_routes_considered:
                 break
         if len(paths) <= 0:

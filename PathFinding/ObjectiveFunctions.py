@@ -21,3 +21,6 @@ def o_IntelligentSampling(cellset, node_objective, cell_loc, prev_sum, cell_size
         return prev_sum / cell_size, prev_sum
     else:
         return (node_objective + prev_sum) / cell_size, node_objective + prev_sum
+
+def o_i(lambda_1, polEst, polEstVar):
+    return lambda_1*polEst + (1-lambda_1)*polEstVar

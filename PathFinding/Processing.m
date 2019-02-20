@@ -43,7 +43,7 @@ subplot(1,3,2)
 surf(x_locations, y_locations, z_estimated_pollution')
 title("Estimated")
 subplot(1,3,3)
-iterations = numel(routedata.routeX)
+iterations = numel(routedata.routeX);
 for i=1:iterations
     scatter(routedata.routeX(i), routedata.routeY(i), 100, routedata.routePol(i));
     hold on
