@@ -57,10 +57,10 @@ class tester(object):
     def set_start_node(self):
         self.node = self.randomStartNode()
 
-    def create_graph(self):
+    def create_graph(self, varParam):
         G = ox.graph_from_bbox(self.north, self.south, self.east, self.west, network_type='drive', simplify=True,
                                clean_periphery=True)
-        self.env = PolEnv(G)
+        self.env = PolEnv(G, varParam=varParam)
         self.graph = self.env.graph
         self.kalman = kalman(self.env)
         self.unproj = G
@@ -73,8 +73,8 @@ class tester(object):
         return ox.get_nearest_node(self.unproj, (newLat, newLong))
 
     def plot_graph_route(self, path, filename=None):
-        fig, ax = ox.plot_graph(self.kalman.env.graph, fig_height=6, node_zorder=2,
-                                use_geom=True)
+        #fig, ax = ox.plot_graph(self.env.graph, fig_height=6, node_zorder=2,
+        #                        use_geom=True)
         if filename:
             fig, ax = ox.plot_graph_route(self.planner.graph, path, route_alpha=0.3, save=True,
                                           filename=filename)

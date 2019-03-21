@@ -1,8 +1,8 @@
 
 '''Calculates the measured value variance for a given point given
 the variance is linear with respect to distance'''
-def meas_var_dist(distance):
-    var = 15*distance
+def meas_var_dist(distance, varParam):
+    var = varParam*distance
     return var
 
 '''Performs the Kalman Filter algorithm for 1 cycle, returns the posteri estimate

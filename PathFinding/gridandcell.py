@@ -37,11 +37,11 @@ class Cell(object):
 
 
 
-    def update_cell_state(self, measVal, xPos, yPos):
+    def update_cell_state(self, measVal, xPos, yPos, varParam):
         '''Updates the parameters for the Kalman Filter'''
         distSquared = (xPos - self.x) ** 2 + (yPos - self.y) ** 2
         dist = np.sqrt(distSquared)
-        measVar = cellKalman.meas_var_dist(dist)
+        measVar = cellKalman.meas_var_dist(dist, varParam)
         if self.polEst is None:
             self.polEst = measVal
             self.polEstVar = measVar
@@ -60,12 +60,12 @@ class Cell(object):
 
 class Grid2DCartesian(object):
 
-    def __init__(self, width, height, meter_box, truth_function=False):
+    def __init__(self, width, height, meter_box, truth_function=False, varParam=10):
         '''Initializes a 2D Grid given the length (x) and width (y) of the grid. The data parameter should be given as a 2D list.
 		The length of the main list should be size X and the lenght of each list within the list should be size Y. The grid
 		origin is the bottom left most point of the grid.'''
         self.graph = nx.Graph()
-
+        self.varParam = varParam
         r_earth = 6378137
         coords = []
         col = 0
@@ -205,7 +205,7 @@ class Grid2DCartesian(object):
         '''Loops through all cels to update pollution values'''
         for x in range(len(self.grid)):
             for y in range(len(self.grid[0])):
-                self.grid[x][y].update_cell_state(pol, cart_loc[0], cart_loc[1])
+                self.grid[x][y].update_cell_state(pol, cart_loc[0], cart_loc[1], self.varParam)
 
     def compare(self, other):
         residuals = []

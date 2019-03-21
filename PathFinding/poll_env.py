@@ -17,13 +17,14 @@ ox.utils.config(useful_tags_path=['bridge', 'tunnel', 'oneway', 'lanes', 'ref', 
 
 
 class PolEnv(Env):
-    def __init__(self, unproj_graph, node_location_list=None, origin=None, origin_id=None):
+    def __init__(self, unproj_graph, node_location_list=None, origin=None, origin_id=None, varParam=10):
         Env.__init__(self, unproj_graph, node_location_list)
         self.origin = origin
         self.origin_id = origin_id
         self.cart_x_width = 0
         self.cart_y_width = 0
         self.griddensity = 18
+        self.varParam = varParam
         self.grid = None
         if self.origin is None:
             self.set_origin(self.find_bottom_left())
@@ -43,7 +44,7 @@ class PolEnv(Env):
 
     def compare_truth(self, route):
         try:
-            self.sampleGrid = gridandcell.Grid2DCartesian(self.cart_x_width, self.cart_y_width, self.griddensity)
+            self.sampleGrid = gridandcell.Grid2DCartesian(self.cart_x_width, self.cart_y_width, self.griddensity, False, self.varParam)
             for i in range(len(route)):
                 currentNode = route[i]
                 cartesian_position = self.get_node_attribute(currentNode, 'pos')
@@ -76,12 +77,12 @@ class PolEnv(Env):
             return "error"
 
     def create_grid(self):
-        return gridandcell.Grid2DCartesian(self.cart_x_width, self.cart_y_width, self.griddensity)
+        return gridandcell.Grid2DCartesian(self.cart_x_width, self.cart_y_width, self.griddensity, False, self.varParam)
 
     def save_mat(self, route):
-        self.sampleGrid = gridandcell.Grid2DCartesian(self.cart_x_width, self.cart_y_width, self.griddensity)
+        self.sampleGrid = gridandcell.Grid2DCartesian(self.cart_x_width, self.cart_y_width, self.griddensity, False, self.varParam)
         x_storage = []
-        y_storage= []
+        y_storage = []
         pol_storage = []
         for i in range(len(route)):
             currentNode = route[i]
@@ -119,7 +120,7 @@ class PolEnv(Env):
 
 
     def create_2d_grid(self):
-        self.grid = gridandcell.Grid2DCartesian(self.cart_x_width, self.cart_y_width, self.griddensity, truth_function = True)
+        self.grid = gridandcell.Grid2DCartesian(self.cart_x_width, self.cart_y_width, self.griddensity, truth_function=True, self.varParam)
         max_distance = math.sqrt(self.grid.width**2 + self.grid.height**2)
         for n, data in self.graph.nodes(data=True):
             node = self.graph.nodes()[n]  # Returns the node attribute's dictionary.
@@ -136,8 +137,7 @@ class PolEnv(Env):
 
                 currentNode = currentNode.myNext
             data['distances'] = distances
-            print("Finished node distance calculations, onto next node")
-        print("done")
+        print("Done creating grid.")
 
 
     def get_edge_data(self, edge, data):
