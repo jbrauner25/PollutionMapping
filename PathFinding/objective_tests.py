@@ -149,26 +149,26 @@ class tester(object):
                 spamwriter.writerow([distance_1000_objective[x], distance_2000_objective[x], distance_3000_objective[x]])
 
     def script_truth(self):
-        if not self.node:
-            node = self.randomStartNode()
-        else:
-            node = self.node
-        objective = []
-        for x in range(1, 100):
-            route1 = self.planner.Coverage(origin_node=node, max_dist=3000, min_routes_considered=100)
-            route2 = self.planner.SimAnnealCoverage(origin_node=node, max_dist=3000, min_routes_considered=100)
-            route3 = self.planner.RandomCoverage(origin_node=node, max_dist=3000, min_routes_considered=100)
-            route4 = self.planner.intelligentsampling(origin_node=node, max_dist=3000, min_routes_considered=100, lambda_1=0.5)
-            route5 = self.planner.intelligentsampling(origin_node=node, max_dist=3000, min_routes_considered=100, lambda_1=0.999)
-            route6 = self.planner.intelligentsampling(origin_node=node, max_dist=3000, min_routes_considered=100, lambda_1=0.001)
-            objective.append((self.planner.env.compare_truth(route1[0]), self.planner.env.compare_truth(route2[0]), self.planner.env.compare_truth(route3[0]), self.planner.env.compare_truth(route4[0]), self.planner.env.compare_truth(route5[0]), self.planner.env.compare_truth(route6[0])))
+        min_routes = 1
+        for y in range(1, 41, 5):
+            objective = []
+            routeDistance = y*100
+            for x in range(1, 20):
+                node = self.randomStartNode()
+                route1 = self.planner.Coverage(origin_node=node, max_dist=routeDistance, min_routes_considered=min_routes)
+                route2 = self.planner.SimAnnealCoverage(origin_node=node, max_dist=routeDistance, min_routes_considered=min_routes)
+                route3 = self.planner.RandomCoverage(origin_node=node, max_dist=routeDistance, min_routes_considered=min_routes)
+                route4 = self.planner.objectiveCellSampling(origin_node=node, max_dist=routeDistance, min_routes_considered=min_routes, lambda_1=0.5)
+                route5 = self.planner.objectiveCellSampling(origin_node=node, max_dist=routeDistance, min_routes_considered=min_routes, lambda_1=0.99999)
+                route6 = self.planner.objectiveCellSampling(origin_node=node, max_dist=routeDistance, min_routes_considered=min_routes, lambda_1=0.00001)
+                objective.append((self.planner.env.compare_truth(route1[0]), self.planner.env.compare_truth(route2[0]), self.planner.env.compare_truth(route3[0]), self.planner.env.compare_truth(route4[0]), self.planner.env.compare_truth(route5[0]), self.planner.env.compare_truth(route6[0])))
 
-        with open('MeanDifferenceCoveragePlanner1k2k3k' + str(routes * 50) + 'route' + 'compare.csv', 'w', newline='') as csvfile:
-            spamwriter = csv.writer(csvfile, dialect='excel')
-            spamwriter.writerow(['coverage', 'simannealcoverage', 'randomcoverage', 'IntelSamplelambda1', 'IntelSamplelambda05', 'IntelSamplelambda00'])
-            for x in range(len(objective)):
-                spamwriter.writerow(
-                    [objective[x][0], objective[x][1], objective[x][2], objective[x][3], objective[x][4], objective[x][5]])
+            with open(str(y*100) + 'PathDistanceCompareTruth.csv', 'w', newline='') as csvfile:
+                spamwriter = csv.writer(csvfile, dialect='excel')
+                spamwriter.writerow(['coverage', 'simannealcoverage', 'randomcoverage', 'IntelSamplelambda05', 'IntelSamplelambda1', 'IntelSamplelambda00'])
+                for x in range(len(objective)):
+                    spamwriter.writerow(
+                        [objective[x][0], objective[x][1], objective[x][2], objective[x][3], objective[x][4], objective[x][5]])
 
     def randomscript(self, routes, loop):
         if not self.node:
@@ -202,7 +202,7 @@ planner.create_map()
 planner.set_start_node()
 planner.create_planner()
 #planner.test()
-planner.test()
+planner.script_truth()
 # planner.randomscript(500, 100)
 # planner.randomscript(1, 100)
 # planner.randomscript(1000, 100)
