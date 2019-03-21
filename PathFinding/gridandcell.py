@@ -136,10 +136,11 @@ class Grid2DCartesian(object):
 
     @staticmethod
     def pollutionfunction(x, y):
+        return x*y
         #return math.sin(y/100) + math.cos(x/100)
-        if x < 700 and y < 500 and x > 500 and y > 200:
-             return 5000
-        return 100
+        #if x < 300 and y < 550 and x > 100 and y > 400:
+        #     return 5000
+        #return 5
 
     def get_cell(self, col, row):
         return self.grid[col][row]
@@ -180,7 +181,7 @@ class Grid2DCartesian(object):
 
     def whichCellAmIIn_index(self, x, y):
         '''Input: cartesian coords
-        Output: lat,long of cell it is in
+        Output: col, row of cell it is in
         '''
         cell = self.linkedList.whichcellamIin(x, y)
         return cell.col, cell.row
@@ -216,6 +217,14 @@ class Grid2DCartesian(object):
                 value = np.abs(selfPollution - otherPollution)
                 residuals.append(value)
         return residuals
+
+    def objective(self, lambda_l, locations):
+        objective = 0
+        for x in range(len(self.grid)):
+            for y in range(len(self.grid[0])):
+                if (x, y) not in locations:
+                    objective += lambda_l * self.grid[x][y].polEst + (1 - lambda_l) * self.grid[x][y].polEstVar
+        return objective
 
     def save_grid(self, fileName):
         new_grid = []

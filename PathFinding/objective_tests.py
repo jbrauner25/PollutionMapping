@@ -90,14 +90,16 @@ class tester(object):
         self.create_bounds(34.1018951292, 34.0963869167, -117.712251498, -117.7250724571)
         self.create_graph()
         node = self.randomStartNode()
-        dist = 3500
-        routes = 100
-        route = self.planner.informationgain(origin_node=node, max_dist=dist, min_routes_considered=routes, lambda_1=.000001, loopcounting=True)
-        self.plot_graph_route(route[0])
-        self.planner.env.save_mat(route[0])
-        print("The average difference is:")
-        self.planner.env.compare_truth(route[0])
-        route = self.planner.informationgain(origin_node=node, max_dist=dist, min_routes_considered=routes, lambda_1=.9999999, loopcounting=True)
+        dist = 1100
+        routes = 1
+        # route = self.planner.informationgain(origin_node=node, max_dist=dist, min_routes_considered=routes, lambda_1=.000001, loopcounting=True)
+        # self.plot_graph_route(route[0])
+        # self.planner.env.save_mat(route[0])
+        # print("The average difference is:")
+        # self.planner.env.compare_truth(route[0])
+        #route = self.planner.informationGain(origin_node=node, max_dist=dist, min_routes_considered=routes, lambda_1=1, loopcounting=True)
+        route = self.planner.objectiveCellSampling(origin_node=node, max_dist=dist, min_routes_considered=routes, lambda_1=0.00001,
+                                             )
         self.plot_graph_route(route[0])
         self.planner.env.save_mat(route[0])
         print("The average difference is:")

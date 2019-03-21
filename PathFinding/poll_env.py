@@ -23,7 +23,7 @@ class PolEnv(Env):
         self.origin_id = origin_id
         self.cart_x_width = 0
         self.cart_y_width = 0
-        self.griddensity = 18
+        self.griddensity = 36
         self.grid = None
         if self.origin is None:
             self.set_origin(self.find_bottom_left())
@@ -360,7 +360,6 @@ class PolEnv(Env):
                 priori_node_pol = self.get_external_node_attribute(graph, node, 'pol')
                 node_pol, node_var = self.kalman_filter(priori_node_pol, priori_node_var, meas_pollution,
                                                         meas_dist_var)
-                print("Check")
             else:
                 node_pol = meas_pollution
                 node_var = meas_dist_var
@@ -371,6 +370,12 @@ class PolEnv(Env):
     def meas_var_dist(self, node1, loc):
         node1Loc = self.get_node_attribute(node1, 'pos')
         distance = np.sqrt((node1Loc[0] - loc[0]) ** 2 + (node1Loc[1] - loc[1]) ** 2)
+        var = (1 / 5) * distance
+        return var
+
+    @staticmethod
+    def meas_var_dist_loc(loc1, loc2):
+        distance = np.sqrt((loc1[0] - loc2[0]) ** 2 + (loc1[1] - loc2[1]) ** 2)
         var = (1 / 5) * distance
         return var
 
