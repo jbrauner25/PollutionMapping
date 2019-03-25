@@ -13,7 +13,7 @@ import time
 import numpy as np
 import scipy.io as sio
 import datetime
-import msvcrt
+#import msvcrt
 
 def convert_string_time(str_time):
     h = int(str_time[0:2])
@@ -211,8 +211,8 @@ class kalman(object):
                     now = time.time()
                     print(str(MCPC_data[-1]) + ", " + str(location_hold[-1]) + ", " + str(now - time1))
                     times.append(datetime.datetime.now().strftime('%x-%H-%M-%S'))
-                    if msvcrt.kbhit():
-                        break
+                    # if msvcrt.kbhit():
+                    #     break
         ser_NMEA.close()
         # ser_MCPC.close()
         NEMA_file.close()
@@ -295,8 +295,8 @@ class kalman(object):
                     now = time.time()
                     print(str(MCPC_data[-1]) + ", " + str(location_hold[-1]) + ", " + str(now - time1))
                     times.append(datetime.datetime.now().strftime('%x-%H-%M-%S'))
-                    if msvcrt.kbhit():
-                        break
+                    # if msvcrt.kbhit():
+                    #     break
         ser_NMEA.close()
         # ser_MCPC.close()
         NEMA_file.close()
