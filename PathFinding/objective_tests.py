@@ -153,6 +153,7 @@ class tester(object):
         for y in range(1, 41, 5):
             objective = []
             routeDistance = y*100
+            print("CURRENT ROUTE DISTANCE: " + str(routeDistance))
             for x in range(1, 20):
                 node = self.randomStartNode()
                 route1 = self.planner.Coverage(origin_node=node, max_dist=routeDistance, min_routes_considered=min_routes)
@@ -162,6 +163,7 @@ class tester(object):
                 route5 = self.planner.objectiveCellSampling(origin_node=node, max_dist=routeDistance, min_routes_considered=min_routes, lambda_1=0.99999)
                 route6 = self.planner.objectiveCellSampling(origin_node=node, max_dist=routeDistance, min_routes_considered=min_routes, lambda_1=0.00001)
                 objective.append((self.planner.env.compare_truth(route1[0]), self.planner.env.compare_truth(route2[0]), self.planner.env.compare_truth(route3[0]), self.planner.env.compare_truth(route4[0]), self.planner.env.compare_truth(route5[0]), self.planner.env.compare_truth(route6[0])))
+                print(str(x) + " point in loop. Goal: 20")
 
             with open(str(y*100) + 'PathDistanceCompareTruth.csv', 'w', newline='') as csvfile:
                 spamwriter = csv.writer(csvfile, dialect='excel')
