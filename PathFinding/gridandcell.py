@@ -145,11 +145,6 @@ class Grid2DCartesian(object):
     def get_cell(self, col, row):
         return self.grid[col][row]
 
-    def plot_coords(self):
-        plt.scatter(*zip(*self.coords))
-        print("plotting")
-        plt.show()
-
     # def kalman(self, pol, point):
     #
     #
@@ -210,13 +205,19 @@ class Grid2DCartesian(object):
 
     def compare(self, other):
         residuals = []
+        max = 0
+        min = 999999999
         for x in range(len(self.grid)):
             for y in range(len(self.grid[0])):
                 selfPollution = self.grid[x][y].polEst
                 otherPollution = other.grid[x][y].polEst
                 value = np.abs(selfPollution - otherPollution)
+                if value > max:
+                    max = value
+                if value < min:
+                    min = value
                 residuals.append(value)
-        return residuals
+        return (residuals, max, min)
 
     def objective(self, lambda_l, locations):
         objective = 0

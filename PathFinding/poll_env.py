@@ -29,11 +29,6 @@ class PolEnv(Env):
             self.set_origin(self.find_bottom_left())
         self.update_cart_coords()
         self.create_2d_grid()
-        self.grid.plot_coords()
-        print('ENVIRONMENT LOADED')
-        pos = nx.get_node_attributes(self.graph, 'pos')
-        nx.draw(self.graph, pos)
-        plt.show()
 
 
         #self.stats = ox.extended_stats(self.graph, ecc=False, bc=True, cc=False)
@@ -69,9 +64,9 @@ class PolEnv(Env):
                         pollution = self.grid.pollutionfunction(x, y)
                         self.sampleGrid.add_pollution(pollution, (x, y))
             hold = self.grid.compare(self.sampleGrid)
-            mean = np.mean(hold)
+            mean = np.mean(hold[0])
             print("the mean is " + str(mean))
-            return mean
+            return (mean, hold[1], hold[2])
         except:
             return "error"
 
@@ -201,9 +196,7 @@ class PolEnv(Env):
                     max_y_cart = y_cart
         self.cart_x_width = max_x_cart
         self.cart_y_width = max_y_cart
-        plt.scatter(x_list, y_list)
-        print("plotting")
-        plt.show()
+
 
     def get_lat_long_coords(self):
         """returns list of tuples giving latitude, longitude pair"""
@@ -340,12 +333,7 @@ class PolEnv(Env):
             print("pol " + str(summed_pol))
         print("finished")
         nc = ox.get_node_colors_by_attr(self.graph, 'pol', cmap='plasma', num_bins=20)
-        fig, ax = ox.plot_graph(self.G, fig_height=6, node_zorder=2,
-                                edge_color='#dddddd', node_color=nc, use_geom=True, show=False, close=False)  # node_color=nc
-        for lat, long in nodes_visualized:
-            ax.scatter(long, lat, c='red', alpha=0.1, s=2)
-        ax.set_title("Imported FRF Pollution")
-        plt.show()
+
 
     '''''''*******************************************************************'''
 

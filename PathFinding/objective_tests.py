@@ -73,13 +73,9 @@ class tester(object):
         return ox.get_nearest_node(self.unproj, (newLat, newLong))
 
     def plot_graph_route(self, path, filename=None):
-        fig, ax = ox.plot_graph(self.kalman.env.graph, fig_height=6, node_zorder=2,
-                                use_geom=True)
-        if filename:
-            fig, ax = ox.plot_graph_route(self.planner.graph, path, route_alpha=0.3, save=True,
-                                          filename=filename)
-        else:
-            fig, ax = ox.plot_graph_route(self.planner.graph, path, route_alpha=0.3)
+        return
+
+
 
     def create_map(self):
         self.create_bounds(34.1018951292, 34.0963869167, -117.712251498, -117.7250724571)
@@ -100,7 +96,6 @@ class tester(object):
         #route = self.planner.informationGain(origin_node=node, max_dist=dist, min_routes_considered=routes, lambda_1=1, loopcounting=True)
         route = self.planner.objectiveCellSampling(origin_node=node, max_dist=dist, min_routes_considered=routes, lambda_1=0.00001,
                                              )
-        self.plot_graph_route(route[0])
         self.planner.env.save_mat(route[0])
         print("The average difference is:")
         self.planner.env.compare_truth(route[0])
@@ -159,18 +154,18 @@ class tester(object):
                 route1 = self.planner.Coverage(origin_node=node, max_dist=routeDistance, min_routes_considered=min_routes)
                 route2 = self.planner.SimAnnealCoverage(origin_node=node, max_dist=routeDistance, min_routes_considered=min_routes)
                 route3 = self.planner.RandomCoverage(origin_node=node, max_dist=routeDistance, min_routes_considered=min_routes)
-                route4 = self.planner.objectiveCellSampling(origin_node=node, max_dist=routeDistance, min_routes_considered=min_routes, lambda_1=0.5)
-                route5 = self.planner.objectiveCellSampling(origin_node=node, max_dist=routeDistance, min_routes_considered=min_routes, lambda_1=0.99999)
-                route6 = self.planner.objectiveCellSampling(origin_node=node, max_dist=routeDistance, min_routes_considered=min_routes, lambda_1=0.00001)
-                objective.append((self.planner.env.compare_truth(route1[0]), self.planner.env.compare_truth(route2[0]), self.planner.env.compare_truth(route3[0]), self.planner.env.compare_truth(route4[0]), self.planner.env.compare_truth(route5[0]), self.planner.env.compare_truth(route6[0])))
+                # route4 = self.planner.objectiveCellSampling(origin_node=node, max_dist=routeDistance, min_routes_considered=min_routes, lambda_1=0.5)
+                # route5 = self.planner.objectiveCellSampling(origin_node=node, max_dist=routeDistance, min_routes_considered=min_routes, lambda_1=0.99999)
+                # route6 = self.planner.objectiveCellSampling(origin_node=node, max_dist=routeDistance, min_routes_considered=min_routes, lambda_1=0.00001)
+                objective.append((self.planner.env.compare_truth(route1[0]), self.planner.env.compare_truth(route2[0]), self.planner.env.compare_truth(route3[0])))
                 print(str(x) + " point in loop. Goal: 20")
 
-            with open(str(y*100) + 'PathDistanceCompareTruth.csv', 'w', newline='') as csvfile:
+            with open(str(y*100) + 'PathDistanceCompareTruthMaxMin.csv', 'w', newline='') as csvfile:
                 spamwriter = csv.writer(csvfile, dialect='excel')
-                spamwriter.writerow(['coverage', 'simannealcoverage', 'randomcoverage', 'IntelSamplelambda05', 'IntelSamplelambda1', 'IntelSamplelambda00'])
+                spamwriter.writerow(['coverage', 'max', 'min', 'simannealcoverage', 'max', 'min', 'randomcoverage', 'max', 'min'])
                 for x in range(len(objective)):
                     spamwriter.writerow(
-                        [objective[x][0], objective[x][1], objective[x][2], objective[x][3], objective[x][4], objective[x][5]])
+                        [objective[x][0][0], objective[x][0][1], objective[x][0][2], objective[x][1][0], objective[x][1][1], objective[x][1][2], objective[x][2][0],objective[x][2][1],objective[x][2][2]])
 
     def randomscript(self, routes, loop):
         if not self.node:
